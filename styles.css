@@ -1,0 +1,374 @@
+  :root {
+    --bg-0: #131516;
+    --bg-1: #1b1e20;
+    --bg-2: #23272a;
+    --line: #33383b;
+    --text-1: #f3f4f4;
+    --text-2: #a9afb2;
+    --green-1: #2fe6a6;
+    --green-2: #12a5a0;
+    --orange: #f0a83c;
+    --radius: 18px;
+  }
+ 
+  * { box-sizing: border-box; }
+ 
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: 'Inter', -apple-system, sans-serif;
+    min-height: 100%;
+  }
+ 
+  body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+ 
+  /* ---------- fondo decorativo con hexagonos ---------- */
+  .hex-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.5;
+    pointer-events: none;
+  }
+ 
+  /* ---------- header ---------- */
+  header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 28px clamp(20px, 6vw, 64px);
+  }
+ 
+  .brand-mark {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+  }
+ 
+  .brand-logo {
+    height: clamp(140px, 8vw, 64px);
+    width: auto;
+    display: block;
+  }
+ 
+  .brand-name {
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 1.15rem;
+    letter-spacing: 0.01em;
+  }
+ 
+  .brand-name .accent { color: var(--orange); }
+ 
+  /* ---------- hero ---------- */
+  main {
+    position: relative;
+    z-index: 2;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px clamp(20px, 6vw, 64px) 60px;
+  }
+ 
+  .hero {
+    width: 100%;
+    max-width: 920px;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: clamp(24px, 5vw, 64px);
+    align-items: center;
+  }
+ 
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; text-align: center; }
+    .qr-card { margin: 0 auto; }
+  }
+ 
+  h1 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.7rem, 4.4vw, 3.1rem);
+    line-height: 1.08;
+    margin: 0 0 18px;
+  }
+ 
+  h1 .line2 {
+    white-space: nowrap;
+  }
+ 
+  h1 .grad {
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+ 
+  .lead {
+    color: var(--text-2);
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 46ch;
+    margin: 0 0 28px;
+  }
+ 
+  @media (max-width: 760px) {
+    .lead { margin-left: auto; margin-right: auto; }
+  }
+ 
+  .steps {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+ 
+  @media (max-width: 760px) {
+    .steps { align-items: center; }
+  }
+ 
+  .step {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--text-2);
+    font-size: 0.95rem;
+  }
+ 
+  .step-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    color: var(--text-1);
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+ 
+  /* ---------- tarjeta QR ---------- */
+  .qr-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 28px;
+    width: 100%;
+    max-width: 320px;
+    text-align: center;
+    box-shadow: 0 24px 60px -30px rgba(0,0,0,0.6);
+    transition: filter 0.3s ease, opacity 0.3s ease;
+  }
+ 
+  .qr-card.locked {
+    filter: grayscale(1) blur(1.5px);
+    opacity: 0.5;
+    pointer-events: none;
+  }
+ 
+  .qr-frame {
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+ 
+  /* Reemplaza el <img id="qr-image"> de abajo por tu propio QR de la encuesta. */
+  #qr-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+ 
+  .qr-caption {
+    margin-top: 16px;
+    font-size: 0.85rem;
+    color: var(--text-2);
+  }
+ 
+  .qr-caption strong {
+    color: var(--text-1);
+    display: block;
+    font-size: 0.95rem;
+    margin-bottom: 4px;
+  }
+ 
+  .qr-status {
+    margin-top: 14px;
+    font-size: 0.8rem;
+    color: var(--orange);
+    display: none;
+  }
+ 
+  .qr-status.show { display: block; }
+ 
+  /* ---------- footer ---------- */
+  footer {
+    position: relative;
+    z-index: 2;
+    padding: 18px clamp(20px, 6vw, 64px) 26px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    color: var(--text-2);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--line);
+  }
+ 
+  footer a {
+    color: var(--text-2);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    font: inherit;
+    padding: 0;
+  }
+ 
+  footer a:hover { color: var(--text-1); }
+ 
+  /* ---------- popup de privacidad ---------- */
+  .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 11, 12, 0.72);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 50;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+ 
+  .overlay.open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+ 
+  .modal {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    max-width: 560px;
+    width: 100%;
+    max-height: 86vh;
+    overflow-y: auto;
+    padding: 28px 28px 24px;
+    transform: translateY(10px);
+    transition: transform 0.25s ease;
+  }
+ 
+  .overlay.open .modal { transform: translateY(0); }
+ 
+  .modal h2 {
+    font-family: 'Sora', sans-serif;
+    font-size: 1.15rem;
+    font-weight: 700;
+    margin: 0 0 14px;
+  }
+ 
+  .modal p {
+    color: var(--text-2);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    margin: 0 0 20px;
+  }
+ 
+  .modal a { color: var(--green-1); }
+ 
+  .choices {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 22px;
+  }
+ 
+  .choice {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: border-color 0.15s ease, background 0.15s ease;
+  }
+ 
+  .choice:hover { border-color: #4a5155; }
+ 
+  .choice input {
+    accent-color: var(--green-2);
+    width: 16px;
+    height: 16px;
+  }
+ 
+  .choice.selected {
+    border-color: var(--green-2);
+    background: rgba(47, 230, 166, 0.06);
+  }
+ 
+  .choice label {
+    font-size: 0.92rem;
+    cursor: pointer;
+    flex: 1;
+  }
+ 
+  .modal-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+ 
+  button.primary {
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    color: #0d1210;
+    border: none;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.92rem;
+    padding: 12px 26px;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+  }
+ 
+  button.primary:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+ 
+  button.primary:not(:disabled):hover { opacity: 0.9; }
+  button.primary:not(:disabled):active { transform: scale(0.98); }
+ 
+  .visually-hidden {
+    position: absolute;
+    width: 1px; height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+ 
+  :focus-visible {
+    outline: 2px solid var(--green-1);
+    outline-offset: 2px;
+  }
+ 
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; }
+  }

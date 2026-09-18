@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carro Sin Rollos · Encuesta</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+ 
+<svg class="hex-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <pattern id="hexes" width="140" height="121" patternUnits="userSpaceOnUse" patternTransform="translate(-40,-30)">
+      <polygon points="70,4 132,39 132,91 70,126 8,91 8,39"
+        fill="none" stroke="#2a3d3a" stroke-width="1.1" />
+    </pattern>
+    <radialGradient id="fade" cx="30%" cy="20%" r="75%">
+      <stop offset="0%" stop-color="#101213" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#101213" stop-opacity="0.9"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#hexes)" />
+  <rect width="1440" height="900" fill="url(#fade)" />
+</svg>
+ 
+<header>
+  <img class="brand-logo" src="logo.png" alt="Carro Sin Rollos, asistente inteligente de compra vehicular">
+</header>
+ 
+<main>
+  <div class="hero">
+    <div>
+      <h1>Asistente inteligente<br> <span class="line2">de <span class="grad">compra vehicular</span></span></h1>
+      <p class="lead">Compra tu carro usado con total seguridad, respaldado por inteligencia artificial y datos en tiempo real.</p>
+      <div class="steps">
+        <div class="step"><span class="step-num">1</span> Acepta el aviso de privacidad</div>
+        <div class="step"><span class="step-num">2</span> Escanea el código con tu celular</div>
+        <div class="step"><span class="step-num">3</span> Responde la encuesta, sin rollos</div>
+      </div>
+    </div>
+ 
+    <div class="qr-card locked" id="qr-card">
+      <div class="qr-frame">
+        <!-- Reemplaza este SVG por un <img id="qr-image" src="QR_Encuesta.jpeg" alt="QR de la encuesta"> con tu QR real -->
+        <img id="qr-image" src="QR_Encuesta.jpeg" alt="QR de la encuesta">
+      </div>
+            <rect x="22" y="0" width="7" height="7"/>
+            <rect x="23.4" y="1.4" width="4.2" height="4.2" fill="#ffffff"/>
+            <rect x="24.8" y="2.8" width="1.4" height="1.4" fill="#131516"/>
+            <rect x="0" y="22" width="7" height="7"/>
+            <rect x="1.4" y="23.4" width="4.2" height="4.2" fill="#ffffff"/>
+            <rect x="2.8" y="24.8" width="1.4" height="1.4" fill="#131516"/>
+            <rect x="9" y="1" width="1.4" height="1.4"/><rect x="11.8" y="1" width="1.4" height="1.4"/>
+            <rect x="14.6" y="1" width="1.4" height="1.4"/><rect x="17.4" y="1" width="1.4" height="1.4"/>
+            <rect x="9" y="3.8" width="1.4" height="1.4"/><rect x="15.9" y="3.8" width="1.4" height="1.4"/>
+            <rect x="9" y="6.6" width="1.4" height="1.4"/><rect x="12.9" y="6.6" width="1.4" height="1.4"/>
+            <rect x="18.9" y="6.6" width="1.4" height="1.4"/>
+            <rect x="1" y="9" width="1.4" height="1.4"/><rect x="5.4" y="9" width="1.4" height="1.4"/>
+            <rect x="9" y="9" width="1.4" height="1.4"/><rect x="11.8" y="9" width="1.4" height="1.4"/>
+            <rect x="14.6" y="9" width="1.4" height="1.4"/><rect x="19.9" y="9" width="1.4" height="1.4"/>
+            <rect x="23.3" y="9" width="1.4" height="1.4"/><rect x="26.6" y="9" width="1.4" height="1.4"/>
+            <rect x="2.9" y="11.8" width="1.4" height="1.4"/><rect x="9" y="11.8" width="1.4" height="1.4"/>
+            <rect x="16.5" y="11.8" width="1.4" height="1.4"/><rect x="21.1" y="11.8" width="1.4" height="1.4"/>
+            <rect x="24.9" y="11.8" width="1.4" height="1.4"/>
+            <rect x="0" y="14.6" width="1.4" height="1.4"/><rect x="4.2" y="14.6" width="1.4" height="1.4"/>
+            <rect x="10.4" y="14.6" width="1.4" height="1.4"/><rect x="13.2" y="14.6" width="1.4" height="1.4"/>
+            <rect x="17.9" y="14.6" width="1.4" height="1.4"/><rect x="22.5" y="14.6" width="1.4" height="1.4"/>
+            <rect x="27.5" y="14.6" width="1.4" height="1.4"/>
+            <rect x="2" y="17.4" width="1.4" height="1.4"/><rect x="6.4" y="17.4" width="1.4" height="1.4"/>
+            <rect x="11.8" y="17.4" width="1.4" height="1.4"/><rect x="15.6" y="17.4" width="1.4" height="1.4"/>
+            <rect x="19.4" y="17.4" width="1.4" height="1.4"/><rect x="25.8" y="17.4" width="1.4" height="1.4"/>
+            <rect x="9" y="20.2" width="1.4" height="1.4"/><rect x="13.2" y="20.2" width="1.4" height="1.4"/>
+            <rect x="17" y="20.2" width="1.4" height="1.4"/><rect x="21.1" y="20.2" width="1.4" height="1.4"/>
+            <rect x="27.5" y="20.2" width="1.4" height="1.4"/>
+            <rect x="9" y="23" width="1.4" height="1.4"/><rect x="11.8" y="23" width="1.4" height="1.4"/>
+            <rect x="14.6" y="23" width="1.4" height="1.4"/><rect x="19.4" y="25.8" width="1.4" height="1.4"/>
+            <rect x="9" y="25.8" width="1.4" height="1.4"/><rect x="12.9" y="25.8" width="1.4" height="1.4"/>
+            <rect x="16.5" y="25.8" width="1.4" height="1.4"/><rect x="22.5" y="25.8" width="1.4" height="1.4"/>
+            <rect x="25.3" y="27.5" width="1.4" height="1.4"/><rect x="17.9" y="27.5" width="1.4" height="1.4"/>
+            <rect x="13.2" y="27.5" width="1.4" height="1.4"/>
+          </g>
+        </svg>
+      </div>
+      <p class="qr-caption"><strong>Encuesta de experiencia</strong>Escanéalo con la cámara de tu celular.</p>
+      <p class="qr-status" id="qr-status">Acepta el aviso de privacidad para escanear el código.</p>
+    </div>
+  </div>
+</main>
+ 
+<footer>
+  <span>© 2026 Carro Sin Rollos.</span>
+  <button type="button" id="reopen-privacy">Ver aviso de privacidad y tratamiento de datos</button>
+</footer>
+ 
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="privacy-title">
+  <div class="modal">
+    <h2 id="privacy-title">Aviso de privacidad y tratamiento de datos</h2>
+    <p>
+      En cumplimiento de lo dispuesto en la Ley 1581 de 2012, "Por la cual se dictan disposiciones generales para la protección de datos personales", y de conformidad con lo señalado en el Capítulo 25 del Decreto 1074 de 2015, se informa al usuario que la información solicitada tiene como finalidad el registro, uso y gestión de su cuenta en el sitio web y/o la aplicación de Carro Sin Rollos, así como la publicación, consulta, compra y venta de vehículos a través de la plataforma. Asimismo, se informa que la información suministrada será tratada por Carro Sin Rollos como responsable del tratamiento, quien garantizará la confidencialidad, privacidad, seguridad y circulación restringida de los datos personales, conforme a la <a href="#" id="policy-link">Política de Tratamiento de Datos Personales</a> disponible en el enlace correspondiente.
+    </p>
+ 
+    <div class="choices">
+      <div class="choice" data-value="si">
+        <input type="radio" name="consent" id="consent-si" value="si">
+        <label for="consent-si">Sí acepto</label>
+      </div>
+      <div class="choice" data-value="no">
+        <input type="radio" name="consent" id="consent-no" value="no">
+        <label for="consent-no">No acepto</label>
+      </div>
+    </div>
+ 
+    <div class="modal-actions">
+      <button type="button" class="primary" id="confirm-consent" disabled>Continuar</button>
+    </div>
+  </div>
+</div>
+ 
+<script src="script.js"></script>
+ 
+</body>
+</html>
