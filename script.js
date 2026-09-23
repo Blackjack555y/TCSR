@@ -6,7 +6,7 @@
   var qrCard = document.getElementById('qr-card');
   var qrStatus = document.getElementById('qr-status');
   var reopenBtn = document.getElementById('reopen-privacy');
- 
+
   function getStoredConsent() {
     try {
       return localStorage.getItem('csr-consent');
@@ -14,7 +14,7 @@
       return null;
     }
   }
- 
+
   function storeConsent(value) {
     try {
       localStorage.setItem('csr-consent', value);
@@ -22,7 +22,7 @@
       /* si el almacenamiento no esta disponible, seguimos sin persistir */
     }
   }
- 
+
   function applyConsent(value) {
     if (value === 'si') {
       qrCard.classList.remove('locked');
@@ -35,15 +35,15 @@
         : 'Acepta el aviso de privacidad para escanear el código.';
     }
   }
- 
+
   function openModal() {
     overlay.classList.add('open');
   }
- 
+
   function closeModal() {
     overlay.classList.remove('open');
   }
- 
+
   choices.forEach(function (choice) {
     choice.addEventListener('click', function () {
       var radio = choice.querySelector('input');
@@ -53,7 +53,7 @@
       confirmBtn.disabled = false;
     });
   });
- 
+
   confirmBtn.addEventListener('click', function () {
     var selected = document.querySelector('input[name="consent"]:checked');
     if (!selected) return;
@@ -61,7 +61,7 @@
     applyConsent(selected.value);
     closeModal();
   });
- 
+
   reopenBtn.addEventListener('click', function () {
     var stored = getStoredConsent();
     if (stored) {
@@ -79,11 +79,11 @@
     }
     openModal();
   });
- 
+
   document.getElementById('policy-link').addEventListener('click', function (e) {
     e.preventDefault();
   });
- 
+
   var existing = getStoredConsent();
   if (existing) {
     applyConsent(existing);
