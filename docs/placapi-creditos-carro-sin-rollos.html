@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Créditos PlacApi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #131516;
+    --bg-1: #1b1e20;
+    --bg-2: #23272a;
+    --line: #33383b;
+    --text-1: #f3f4f4;
+    --text-2: #a9afb2;
+    --green-1: #2fe6a6;
+    --green-2: #12a5a0;
+    --orange: #f0a83c;
+    --neutral: #8a8f93;
+    --red: #ff6b6f;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 16px 56px;
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 920px; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Sora', sans-serif; margin: 0; }
+  h1 { font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+  h1 .grad {
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h2 { font-size: 1.05rem; font-weight: 700; margin: 40px 0 6px; }
+  h3 { font-size: 0.92rem; font-weight: 700; margin-bottom: 4px; }
+  p { margin: 0 0 10px; }
+  .sub { color: var(--text-2); max-width: 68ch; }
+  .muted { color: var(--text-2); font-size: 0.88rem; }
+  code {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 0.86em;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    padding: 1px 6px;
+    white-space: nowrap;
+  }
+  .num { font-variant-numeric: tabular-nums; }
+
+  .card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+
+  /* resumen */
+  .kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 12px; margin-top: 24px; }
+  .kpi .label { color: var(--text-2); font-size: 0.8rem; }
+  .kpi .value { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.7rem; line-height: 1.2; margin: 4px 0 2px; }
+  .kpi .value small { font-size: 0.9rem; font-weight: 600; color: var(--text-2); }
+
+  /* tablas */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; margin-top: 14px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 560px; }
+  th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--bg-2); font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.78rem; color: var(--text-2); }
+  td { background: var(--bg-1); }
+  tr:last-child td { border-bottom: none; }
+  td.r, th.r { text-align: right; }
+  tr.total td { background: var(--bg-2); font-weight: 700; }
+
+  .tag {
+    display: inline-block;
+    font-size: 0.7rem; font-weight: 700;
+    padding: 2px 8px; border-radius: 999px;
+    white-space: nowrap;
+  }
+  .tag.placa { background: rgba(47,230,166,0.10); color: var(--green-1); }
+  .tag.doc { background: rgba(240,168,60,0.10); color: var(--orange); }
+  .tag.vin { background: rgba(138,143,147,0.14); color: var(--text-2); }
+
+  /* escenarios */
+  .scenarios { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; margin-top: 14px; }
+  .scenario { display: flex; flex-direction: column; gap: 8px; }
+  .scenario .credits { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.5rem; }
+  .scenario .credits small { font-size: 0.85rem; color: var(--text-2); font-weight: 600; }
+  .scenario ul { margin: 0; padding-left: 18px; color: var(--text-2); font-size: 0.86rem; }
+  .scenario .needs { font-size: 0.8rem; color: var(--text-2); border-top: 1px solid var(--line); padding-top: 8px; margin-top: auto; }
+  .scenario.recommended { border-color: var(--green-2); }
+  .ribbon { font-size: 0.7rem; font-weight: 700; color: var(--green-1); letter-spacing: 0.06em; text-transform: uppercase; }
+
+  /* reglas */
+  .rules { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 14px; }
+  .rule { border-left: 3px solid var(--line); }
+  .rule.cobra { border-left-color: var(--orange); }
+  .rule.gratis { border-left-color: var(--green-1); }
+  .rule p { color: var(--text-2); font-size: 0.86rem; margin: 0; }
+  .rule .kind { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 4px; }
+  .rule.cobra .kind { color: var(--orange); }
+  .rule.gratis .kind { color: var(--green-1); }
+
+  /* calculadora */
+  .calc { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 14px; }
+  @media (max-width: 680px) { .calc { grid-template-columns: 1fr; } }
+  .field { margin-bottom: 16px; }
+  .field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; }
+  .field .hint { color: var(--text-2); font-size: 0.78rem; margin-top: 4px; }
+  input[type=number], select {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text-1);
+    font: inherit;
+    padding: 10px 12px;
+  }
+  input[type=range] { width: 100%; accent-color: var(--green-2); }
+  input:focus-visible, select:focus-visible { outline: 2px solid var(--green-2); outline-offset: 2px; }
+  .result-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 0.9rem; }
+  .result-row:last-of-type { border-bottom: none; }
+  .result-row span:first-child { color: var(--text-2); }
+  .result-big { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.6rem; margin: 6px 0 2px; }
+
+  ol.tips { margin: 14px 0 0; padding-left: 20px; }
+  ol.tips li { margin-bottom: 10px; }
+  ol.tips li strong { font-family: 'Sora', sans-serif; font-size: 0.92rem; }
+  ol.tips li span { color: var(--text-2); font-size: 0.88rem; display: block; }
+
+  .note {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--orange);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.86rem;
+    color: var(--text-2);
+    margin-top: 14px;
+  }
+  .note strong { color: var(--text-1); }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 0.8rem; }
+  footer a { color: var(--green-1); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Gasto de créditos en <span class="grad">PlacApi</span></h1>
+  <p class="sub">Cuánto cuesta generar un informe de Carro Sin Rollos con PlacApi, qué consultas se cobran y cuáles no, y cómo mantener bajo el costo por informe.</p>
+  <p class="muted">Precios y costos tomados de la documentación pública de PlacApi el 8 de octubre de 2026. Confirmar en placapi.com/comprar antes de fijar precios.</p>
+
+  <div class="kpis">
+    <div class="card kpi">
+      <div class="label">Informe completo recomendado</div>
+      <div class="value num">6 <small>créditos</small></div>
+      <div class="muted">consulta-full + hurto + pérdida total</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Costo por informe, precio base</div>
+      <div class="value num">2.094 <small>COP</small></div>
+      <div class="muted">6 × 349 COP (compras desde 30 créditos)</div>
+    </div>
+    <div class="card kpi">
+      <div class="label">Costo por informe, mayor volumen</div>
+      <div class="value num">594 <small>COP</small></div>
+      <div class="muted">6 × 99 COP (compras desde 50.000 créditos)</div>
+    </div>
+  </div>
+
+  <h2>Cómo funciona el cobro</h2>
+  <p class="sub">PlacApi cobra en créditos prepagados. Cada endpoint tiene un costo fijo en créditos y el precio del crédito baja según el volumen que se compre. Los créditos no vencen y no hay mensualidad. La compra mínima es de 30 créditos (10.470 COP).</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Compra desde</th><th class="r">Precio por crédito</th><th class="r">Informe básico (4 cr.)</th><th class="r">Informe por VIN (5 cr.)</th><th class="r">Informe completo (6 cr.)</th></tr>
+      </thead>
+      <tbody class="num">
+        <tr><td>30 créditos</td><td class="r">349 COP</td><td class="r">1.396</td><td class="r">1.745</td><td class="r">2.094</td></tr>
+        <tr><td>1.000 créditos</td><td class="r">249 COP</td><td class="r">996</td><td class="r">1.245</td><td class="r">1.494</td></tr>
+        <tr><td>5.000 créditos</td><td class="r">149 COP</td><td class="r">596</td><td class="r">745</td><td class="r">894</td></tr>
+        <tr><td>10.000 créditos</td><td class="r">139 COP</td><td class="r">556</td><td class="r">695</td><td class="r">834</td></tr>
+        <tr><td>20.000 créditos</td><td class="r">119 COP</td><td class="r">476</td><td class="r">595</td><td class="r">714</td></tr>
+        <tr><td>50.000 créditos</td><td class="r">99 COP</td><td class="r">396</td><td class="r">495</td><td class="r">594</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="margin-top:8px;">Valores en COP por informe. Se asume que el tramo de precio depende del tamaño de cada compra de créditos.</p>
+
+  <h2>Costo por endpoint</h2>
+  <p class="sub">Solo los endpoints relevantes para el informe de un vehículo. La columna "Pide" indica qué datos hay que enviar, porque eso define qué puede pedirle el producto al comprador.</p>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr><th>Endpoint</th><th>Qué trae</th><th>Pide</th><th class="r">Créditos</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><code>/consulta-full</code></td><td>RUNT con histórico de trámites, SOAT y RTM con todas sus vigencias, limitaciones, SIMIT, impuesto, avalúo FASECOLDA, pico y placa, licencia del propietario</td><td><span class="tag doc">Placa + cédula</span></td><td class="r num">3</td></tr>
+        <tr><td><code>/consulta</code></td><td>Ficha RUNT con SOAT, RTM, gravámenes, prendas y regrabados (sin trámites, SIMIT, impuesto ni avalúo)</td><td><span class="tag doc">Placa + cédula</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/consulta-por-vin</code></td><td>La misma ficha RUNT que <code>/consulta</code></td><td><span class="tag vin">VIN</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/multas</code></td><td>Comparendos SIMIT</td><td><span class="tag doc">Placa + cédula</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/impuestos</code></td><td>Impuesto vehicular (con monto en 22 departamentos)</td><td><span class="tag doc">Placa + cédula</span></td><td class="r num">2</td></tr>
+        <tr><td><code>/avaluo</code> · <code>/avaluo-por-vin</code></td><td>Valor comercial de referencia FASECOLDA</td><td><span class="tag doc">Placa + cédula</span> <span class="tag vin">VIN</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/reporte-hurto</code></td><td>Denuncias de hurto, incautación, extinción de dominio</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/perdida-total</code></td><td>Reclamaciones a aseguradoras desde 2008 (solo vehículos asegurados)</td><td><span class="tag placa">Solo placa</span></td><td class="r num">2</td></tr>
+        <tr><td><code>/garantias-rgm</code></td><td>Detalle de prendas en Confecámaras (acreedor, fechas)</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/accidentes-bogota</code></td><td>Accidentes con informe IPAT, solo Bogotá</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <p class="muted" style="margin-top:8px;">Por separado, las fuentes que reúne <code>/consulta-full</code> costarían unos 8 créditos; agrupadas cuestan 3.</p>
+
+  <h2>Escenarios de informe</h2>
+  <p class="sub">Tres combinaciones posibles según qué datos tengamos del vehículo. El costo es por informe generado.</p>
+
+  <div class="scenarios">
+    <div class="card scenario">
+      <h3>Básico, solo placa</h3>
+      <div class="credits num">4 <small>créditos</small></div>
+      <ul>
+        <li><code>/reporte-hurto</code> · 1</li>
+        <li><code>/perdida-total</code> · 2</li>
+        <li><code>/garantias-rgm</code> · 1</li>
+      </ul>
+      <p class="needs">Solo pide la placa. Trae hurto, reclamaciones y prendas. No trae marca, modelo, SOAT, RTM, multas ni avalúo.</p>
+    </div>
+    <div class="card scenario">
+      <h3>Por VIN, sin cédula</h3>
+      <div class="credits num">5 <small>créditos</small></div>
+      <ul>
+        <li><code>/consulta-por-vin</code> · 1</li>
+        <li><code>/avaluo-por-vin</code> · 1</li>
+        <li><code>/reporte-hurto</code> · 1</li>
+        <li><code>/perdida-total</code> · 2</li>
+      </ul>
+      <p class="needs">Pide placa y VIN. Trae RUNT, SOAT, RTM y embargos, pero no SIMIT ni impuestos, que exigen la cédula.</p>
+    </div>
+    <div class="card scenario recommended">
+      <div class="ribbon">Recomendado</div>
+      <h3>Completo, con cédula del propietario</h3>
+      <div class="credits num">6 <small>créditos</small></div>
+      <ul>
+        <li><code>/consulta-full</code> · 3</li>
+        <li><code>/reporte-hurto</code> · 1</li>
+        <li><code>/perdida-total</code> · 2</li>
+        <li><code>/garantias-rgm</code> · +1 solo si el RUNT marca prenda</li>
+      </ul>
+      <p class="needs">Pide placa y cédula del propietario activo. Si la cédula no coincide, la consulta falla sin cobrar, y eso ya es una alerta para el comprador.</p>
+    </div>
+  </div>
+
+  <h2>Qué se cobra y qué no</h2>
+  <div class="rules">
+    <div class="card rule cobra">
+      <div class="kind">Se cobra</div>
+      <h3>Consulta que devuelve datos</h3>
+      <p>Es el caso normal. Una placa "sin registros" en hurto, pérdida total o accidentes también cobra, porque es una respuesta definitiva.</p>
+    </div>
+    <div class="card rule cobra">
+      <div class="kind">Se cobra</div>
+      <h3>consulta-full con un bloque caído</h3>
+      <p>Si una de las fuentes no responde, ese bloque llega vacío y la llamada cobra los 3 créditos igual. En el informe ese bloque se muestra como NO DISPONIBLE.</p>
+    </div>
+    <div class="card rule cobra">
+      <div class="kind">Se cobra</div>
+      <h3>Consultas con <code>refresh: true</code></h3>
+      <p>Forzar una consulta nueva saltándose el caché siempre cobra si trae datos.</p>
+    </div>
+    <div class="card rule cobra">
+      <div class="kind">Se cobra, con cupo gratis</div>
+      <h3>Respuestas 404 sin resultado</h3>
+      <p>Por API, las primeras 10 al mes por cada tipo son gratis. Después cobran igual que una consulta con datos.</p>
+    </div>
+    <div class="card rule gratis">
+      <div class="kind">No se cobra</div>
+      <h3>Hit de caché de PlacApi</h3>
+      <p>Si el dato ya está en su caché, no cobra. Ficha RUNT y avalúo: 30 días. SOAT y RTM: hasta su vencimiento. Multas: 24 horas.</p>
+    </div>
+    <div class="card rule gratis">
+      <div class="kind">No se cobra</div>
+      <h3>Documento que no coincide</h3>
+      <p>Si la cédula no es la del propietario activo, la consulta falla y no cobra. También los errores de validación (400) y de autenticación.</p>
+    </div>
+  </div>
+
+  <h2>Calculadora de gasto mensual</h2>
+  <p class="sub">Estimación del gasto en créditos según el volumen de informes. Supone que se compran de una vez los créditos de un mes, y con eso define el tramo de precio.</p>
+
+  <div class="card">
+    <div class="calc">
+      <div>
+        <div class="field">
+          <label for="reports">Informes al mes</label>
+          <input id="reports" type="number" min="0" step="10" value="300" inputmode="numeric">
+        </div>
+        <div class="field">
+          <label for="scenario">Tipo de informe</label>
+          <select id="scenario">
+            <option value="4">Básico, solo placa (4 créditos)</option>
+            <option value="5">Por VIN, sin cédula (5 créditos)</option>
+            <option value="6" selected>Completo, con cédula (6 créditos)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="prenda">Vehículos con prenda: <span id="prenda-out" class="num">10</span>%</label>
+          <input id="prenda" type="range" min="0" max="100" step="5" value="10">
+          <p class="hint">Solo aplica al informe completo: suma 1 crédito por <code>/garantias-rgm</code>.</p>
+        </div>
+        <div class="field">
+          <label for="cache">Placas repetidas dentro del caché: <span id="cache-out" class="num">15</span>%</label>
+          <input id="cache" type="range" min="0" max="80" step="5" value="15">
+          <p class="hint">Cuando la misma placa se consulta otra vez, se sirve desde caché y no cobra.</p>
+        </div>
+      </div>
+      <div>
+        <div class="muted">Gasto mensual estimado</div>
+        <div class="result-big num" id="out-cop">—</div>
+        <div class="muted" id="out-tier">—</div>
+        <div style="margin-top:14px;">
+          <div class="result-row"><span>Informes que sí consultan PlacApi</span><span class="num" id="out-billed">—</span></div>
+          <div class="result-row"><span>Créditos al mes</span><span class="num" id="out-credits">—</span></div>
+          <div class="result-row"><span>Precio por crédito</span><span class="num" id="out-price">—</span></div>
+          <div class="result-row"><span>Costo promedio por informe entregado</span><span class="num" id="out-per">—</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>Cómo mantener bajo el costo</h2>
+  <ol class="tips">
+    <li><strong>Caché propio por placa en Supabase</strong><span>Guardar cada bloque con su fecha y respetar los mismos tiempos que PlacApi: 30 días para RUNT y avalúo, hasta el vencimiento para SOAT y RTM, 24 horas para multas. Así una placa que consultan varios compradores se paga una sola vez. Guardar solo datos del vehículo, nunca la cédula completa.</span></li>
+    <li><strong>Usar consulta-full en vez de llamadas sueltas</strong><span>Agrupa unas 8 fuentes por 3 créditos. Solo conviene llamar endpoints sueltos para actualizar un bloque vencido, por ejemplo <code>/multas</code> a 1 crédito.</span></li>
+    <li><strong>Llamar garantias-rgm solo cuando haga falta</strong><span>El RUNT ya dice si hay prenda (<code>prendas: "SI"</code>). Solo en ese caso vale la pena pagar 1 crédito por el detalle del acreedor.</span></li>
+    <li><strong>No usar refresh por defecto</strong><span>Forzar la consulta nueva siempre cobra. Reservarlo para cuando el usuario pida explícitamente actualizar un dato.</span></li>
+    <li><strong>Validar antes de llamar</strong><span>Revisar el formato de la placa (5 a 7 caracteres) y del documento en el frontend y el backend. Un error de formato no cobra, pero los 404 pasan del cupo gratis rápido si no se filtran.</span></li>
+    <li><strong>Llamar hurto y pérdida total en paralelo con consulta-full</strong><span>Solo piden la placa y no dependen del resultado RUNT. En paralelo no cuestan más y la espera total la marca consulta-full, que ya tarda decenas de segundos.</span></li>
+  </ol>
+
+  <div class="note">
+    <strong>Por confirmar con PlacApi.</strong> El README de su repositorio en GitHub dice que <code>/consulta-full</code> cuesta 2 créditos; la especificación y la página del producto dicen 3. Este documento usa 3. Tampoco está claro si el tramo de precio se define por cada compra o por el total acumulado.
+  </div>
+
+  <footer>
+    Fuentes: <a href="https://placapi.com/docs/consulta-full">documentación de consulta-full</a>, <a href="https://placapi.com/openapi.json">especificación OpenAPI</a> y <a href="https://placapi.com/comprar">precios de PlacApi</a>, consultados el 8 de octubre de 2026. Documento interno de Carro Sin Rollos.
+  </footer>
+</div>
+
+<script>
+  const tiers = [
+    { from: 50000, price: 99 },
+    { from: 20000, price: 119 },
+    { from: 10000, price: 139 },
+    { from: 5000, price: 149 },
+    { from: 1000, price: 249 },
+    { from: 0, price: 349 }
+  ];
+  const fmt = new Intl.NumberFormat('es-CO', { maximumFractionDigits: 0 });
+  const $ = (id) => document.getElementById(id);
+
+  function calc() {
+    const reports = Math.max(0, Number($('reports').value) || 0);
+    const base = Number($('scenario').value);
+    const prendaPct = Number($('prenda').value) / 100;
+    const cachePct = Number($('cache').value) / 100;
+    $('prenda-out').textContent = $('prenda').value;
+    $('cache-out').textContent = $('cache').value;
+
+    const perReport = base + (base === 6 ? prendaPct : 0);
+    const billed = Math.round(reports * (1 - cachePct));
+    // la compra mínima es de 30 créditos
+    const credits = Math.max(Math.ceil(billed * perReport), reports > 0 ? 30 : 0);
+    const tier = tiers.find((t) => credits >= t.from);
+    const cop = credits * tier.price;
+
+    $('out-cop').textContent = fmt.format(cop) + ' COP';
+    $('out-tier').textContent = 'Tramo de ' + fmt.format(tier.price) + ' COP por crédito' + (tier.from ? ' (desde ' + fmt.format(tier.from) + ' créditos)' : '');
+    $('out-billed').textContent = fmt.format(billed) + ' de ' + fmt.format(reports);
+    $('out-credits').textContent = fmt.format(credits);
+    $('out-price').textContent = fmt.format(tier.price) + ' COP';
+    $('out-per').textContent = reports ? fmt.format(cop / reports) + ' COP' : '—';
+  }
+
+  ['reports', 'scenario', 'prenda', 'cache'].forEach((id) => $(id).addEventListener('input', calc));
+  calc();
+</script>
+</body>
+</html>

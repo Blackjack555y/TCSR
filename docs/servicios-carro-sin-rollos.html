@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Servicios del proyecto</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #131516;
+    --bg-1: #1b1e20;
+    --bg-2: #23272a;
+    --line: #33383b;
+    --text-1: #f3f4f4;
+    --text-2: #a9afb2;
+    --green-1: #2fe6a6;
+    --green-2: #12a5a0;
+    --orange: #f0a83c;
+    --neutral: #8a8f93;
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 16px 56px;
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+  .wrap { max-width: 1040px; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Sora', sans-serif; margin: 0; }
+  h1 { font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+  h1 .grad {
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  h2 { font-size: 1.1rem; font-weight: 700; margin: 44px 0 6px; }
+  p { margin: 0 0 10px; }
+  .sub { color: var(--text-2); max-width: 70ch; }
+  .muted { color: var(--text-2); font-size: 0.86rem; }
+
+  /* ya tenemos */
+  .have { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 12px; margin-top: 16px; }
+  .card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px;
+  }
+  .card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .card h3 { font-size: 1.05rem; }
+  .card .what { font-size: 0.8rem; color: var(--text-2); margin-bottom: 8px; }
+  .card p { font-size: 0.9rem; color: var(--text-2); }
+  .card p strong { color: var(--text-1); font-weight: 600; }
+
+  .tag {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase;
+    padding: 3px 9px; border-radius: 999px; white-space: nowrap;
+    border: 1px solid transparent;
+  }
+  .tag::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+  .tag.activo { background: rgba(47,230,166,0.10); color: var(--green-1); }
+  .tag.lanzar { background: rgba(240,168,60,0.12); color: var(--orange); border-color: rgba(240,168,60,0.35); }
+  .tag.recomendado { background: rgba(18,165,160,0.12); color: #4fd1cb; }
+  .tag.contador { background: rgba(138,143,147,0.14); color: #b4b9bc; border-style: dashed; border-color: var(--neutral); }
+
+  /* tabla */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; margin-top: 16px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.88rem; min-width: 820px; }
+  th, td { text-align: left; padding: 13px 14px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th {
+    background: var(--bg-2); color: var(--text-2);
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.76rem;
+    position: sticky; top: 0;
+  }
+  td { background: var(--bg-1); color: var(--text-2); }
+  td:first-child { color: var(--text-1); }
+  td:first-child strong { font-family: 'Sora', sans-serif; font-size: 0.95rem; display: block; }
+  td:first-child span { font-size: 0.8rem; color: var(--text-2); }
+  tr:last-child td { border-bottom: none; }
+  tr.group td {
+    background: var(--bg-0); color: var(--text-1);
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.8rem;
+    letter-spacing: 0.04em; text-transform: uppercase; padding: 10px 14px;
+  }
+  td .sin { display: block; margin-top: 6px; font-size: 0.82rem; }
+  td .sin::before { content: "Sin esto: "; color: var(--text-1); font-weight: 600; }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 10px 18px; margin-top: 14px; font-size: 0.84rem; color: var(--text-2); align-items: center; }
+
+  ul.tramites { margin: 14px 0 0; padding-left: 20px; color: var(--text-2); }
+  ul.tramites li { margin-bottom: 8px; }
+  ul.tramites strong { color: var(--text-1); }
+
+  .note {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green-2);
+    border-radius: 10px;
+    padding: 14px 18px;
+    font-size: 0.88rem;
+    color: var(--text-2);
+    margin-top: 16px;
+  }
+  .note strong { color: var(--text-1); }
+  footer { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Servicios de <span class="grad">Carro Sin Rollos</span></h1>
+  <p class="sub">Las cuentas y servicios que necesita la plataforma para funcionar con usuarios, pagos y el informe en PDF: los que ya tenemos y los que faltan, con la razón de ser de cada uno.</p>
+  <p class="muted">Actualizado el 21 de octubre de 2026. Los costos son aproximados: hay que confirmarlos en la página de cada servicio antes de presupuestar.</p>
+
+  <!-- ============ YA TENEMOS ============ -->
+  <h2>Lo que ya tenemos</h2>
+  <p class="sub">Tres servicios activos.</p>
+
+  <div class="have">
+    <article class="card">
+      <div class="card-head"><h3>GoDaddy</h3><span class="tag activo">Activo</span></div>
+      <p class="what">Registro del dominio</p>
+      <p>Es donde está registrado el dominio de la página. Está configurado para que <strong>Cloudflare</strong> maneje el tráfico, así que en el día a día no se toca: solo hay que renovarlo a tiempo.</p>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>Cloudflare</h3><span class="tag activo">Activo</span></div>
+      <p class="what">Publicación de la página y DNS</p>
+      <p>Publica la landing (<strong>Cloudflare Pages</strong>) y maneja el DNS del dominio. Desde esta misma cuenta, sin costo, se activan dos servicios que faltan: <strong>Turnstile</strong> (anti-bots) y <strong>Email Routing</strong> (correos de contacto).</p>
+    </article>
+
+    <article class="card">
+      <div class="card-head"><h3>PlacApi</h3><span class="tag activo">Activo</span></div>
+      <p class="what">Datos de los vehículos</p>
+      <p>Es la fuente de toda la información del informe: RUNT, SOAT, revisión técnico-mecánica, multas del SIMIT, impuestos, avalúo y reportes de hurto. Los <strong>créditos se compran por adelantado y no vencen</strong>. Un informe completo gasta unos 6 créditos.</p>
+    </article>
+  </div>
+
+  <!-- ============ FALTAN ============ -->
+  <h2>Lo que nos falta</h2>
+  <p class="sub">Ordenados por importancia. Los marcados "Para lanzar" son indispensables para abrir la plataforma a clientes.</p>
+
+  <div class="legend">
+    <span class="tag lanzar">Para lanzar</span>
+    <span class="tag recomendado">Recomendado</span>
+    <span class="tag contador">Según el contador</span>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:18%">Servicio</th>
+          <th style="width:42%">Razón de ser</th>
+          <th style="width:14%">Prioridad</th>
+          <th style="width:26%">Costo aproximado</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="group"><td colspan="4">Plataforma</td></tr>
+        <tr>
+          <td><strong>GitHub</strong><span>Repositorio del código</span></td>
+          <td>Guarda el código con todo su historial de cambios y respaldo. Conectado a Cloudflare, cada cambio aprobado se publica solo.<span class="sin">el código vive solo en un computador; si se daña, se pierde.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Gratis</td>
+        </tr>
+        <tr>
+          <td><strong>Supabase</strong><span>Base de datos, usuarios y archivos</span></td>
+          <td>Guarda los usuarios, su saldo de consultas, las compras y las consultas. Maneja el registro y el inicio de sesión. Almacena los PDF durante sus 7 días.<span class="sin">no hay cuentas de usuario ni forma de saber cuántas consultas le quedan a cada uno.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Plan gratis para desarrollo. En producción, plan Pro: unos 25 USD al mes (el gratuito se pausa si no tiene uso).</td>
+        </tr>
+        <tr>
+          <td><strong>Render</strong><span>Servidor del backend</span></td>
+          <td>Es donde corre el "cerebro" de la plataforma: consulta PlacApi, aplica las reglas, arma el informe y genera el PDF.<span class="sin">la página no puede hacer consultas ni generar informes.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Entre 7 y 25 USD al mes, según la memoria. El PDF necesita alrededor de 1 GB.</td>
+        </tr>
+        <tr>
+          <td><strong>Cloudflare Turnstile</strong><span>Protección contra bots</span></td>
+          <td>Comprueba que quien usa la página es una persona, sin pedirle resolver acertijos.<span class="sin">un bot podría disparar consultas automáticas y gastar los créditos de PlacApi.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Gratis. Se activa en la cuenta de Cloudflare que ya tenemos.</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Pagos y facturación</td></tr>
+        <tr>
+          <td><strong>Wompi</strong><span>Pasarela de pagos</span></td>
+          <td>Cobra los paquetes de consultas con tarjeta, PSE, Nequi y otros medios. El usuario solo puede consultar si tiene saldo pagado.<span class="sin">no hay forma de cobrar.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Comisión por cada venta, según el medio de pago. Para abrir la cuenta piden RUT, datos del negocio y una cuenta bancaria.</td>
+        </tr>
+        <tr>
+          <td><strong>Facturación electrónica</strong><span>Alegra, Siigo u otro</span></td>
+          <td>Emite la factura electrónica de cada compra, validada por la DIAN, y se la envía al cliente. Wompi cobra pero no factura. Se conecta a la plataforma para que cada pago genere su factura sola.<span class="sin">si estamos obligados a facturar, habría que hacer cada factura a mano en la herramienta gratuita de la DIAN.</span></td>
+          <td><span class="tag contador">Según el contador</span></td>
+          <td>Plan mensual. El contador define si estamos obligados y qué software usar.</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Correo</td></tr>
+        <tr>
+          <td><strong>Resend</strong><span>Correos automáticos</span></td>
+          <td>Envía los correos que manda la plataforma sola: confirmar el registro, recuperar la contraseña, recibo de compra, "tu informe está listo". Salen desde nuestro dominio.<span class="sin">un usuario que olvide su contraseña no puede recuperarla, y los correos de Supabase terminan en spam.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Gratis para volúmenes bajos.</td>
+        </tr>
+        <tr>
+          <td><strong>Correos de contacto</strong><span>Cloudflare Email Routing</span></td>
+          <td>Direcciones como <code>contacto@</code> y <code>datos@</code> que reenvían a una bandeja que ya tengamos. La <strong>Ley 1581</strong> exige un canal para que las personas pidan consultar, corregir o borrar sus datos, con plazos de respuesta.<span class="sin">incumplimos la ley de protección de datos y los clientes no tienen a dónde escribir.</span></td>
+          <td><span class="tag lanzar">Para lanzar</span></td>
+          <td>Gratis. Si después se quiere responder desde esas direcciones: Google Workspace o Zoho, pago mensual por usuario.</td>
+        </tr>
+
+        <tr class="group"><td colspan="4">Operación</td></tr>
+        <tr>
+          <td><strong>Sentry</strong><span>Registro de errores</span></td>
+          <td>Avisa cuando algo falla en producción y muestra el detalle del error.<span class="sin">nos enteramos de los errores cuando un cliente se queja.</span></td>
+          <td><span class="tag recomendado">Recomendado</span></td>
+          <td>Gratis en el plan inicial.</td>
+        </tr>
+        <tr>
+          <td><strong>UptimeRobot</strong><span>Monitoreo de disponibilidad</span></td>
+          <td>Revisa cada pocos minutos que la página y el backend respondan, y avisa si se caen.<span class="sin">una caída puede pasar horas sin que nadie lo note.</span></td>
+          <td><span class="tag recomendado">Recomendado</span></td>
+          <td>Gratis en el plan inicial.</td>
+        </tr>
+        <tr>
+          <td><strong>Cloudflare Web Analytics</strong><span>Estadísticas de visitas</span></td>
+          <td>Cuántas personas visitan la página y de dónde llegan. No usa cookies, así que no exige otro aviso de consentimiento (Google Analytics sí).<span class="sin">no sabemos si la publicidad o la landing están funcionando.</span></td>
+          <td><span class="tag recomendado">Recomendado</span></td>
+          <td>Gratis. Se activa en la cuenta de Cloudflare.</td>
+        </tr>
+        <tr>
+          <td><strong>Bitwarden</strong><span>Gestor de contraseñas</span></td>
+          <td>Guarda y comparte de forma segura las contraseñas de todas estas cuentas dentro del equipo.<span class="sin">las contraseñas terminan en chats o documentos sueltos.</span></td>
+          <td><span class="tag recomendado">Recomendado</span></td>
+          <td>Gratis para uso básico; plan de equipos con costo bajo por usuario.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ============ TRÁMITES ============ -->
+  <h2>Trámites relacionados</h2>
+  <p class="sub">No son cuentas, pero algunos servicios los piden para abrirse.</p>
+  <ul class="tramites">
+    <li><strong>RUT y Cámara de Comercio</strong> (si es empresa): los pide Wompi.</li>
+    <li><strong>Cuenta bancaria del negocio</strong>: donde Wompi deposita lo que se cobra.</li>
+    <li><strong>Abogado</strong>: aviso de privacidad, política de tratamiento de datos, términos y condiciones de compra, y si se puede consultar la cédula de un tercero.</li>
+    <li><strong>Contador</strong>: si estamos obligados a facturar electrónicamente, si las ventas llevan IVA y qué software de facturación usar.</li>
+    <li><strong>Registro Nacional de Bases de Datos (SIC)</strong>: solo obligatorio para ciertas empresas según su tamaño. El abogado confirma si aplica.</li>
+  </ul>
+
+  <div class="note">
+    <strong>Al abrir las cuentas:</strong> créenlas con un correo del negocio (no uno personal), para que sigan siendo de la empresa aunque alguien salga del proyecto, y activen la verificación en dos pasos en todas, sobre todo en Wompi, PlacApi, Supabase y GitHub.
+  </div>
+
+  <footer>Documento interno de Carro Sin Rollos · 21 de octubre de 2026.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Carro Sin Rollos — Paleta de color</title>
+<style>
+  :root {
+    --bg-0: #131516;
+    --bg-1: #1b1e20;
+    --bg-2: #23272a;
+    --line: #33383b;
+    --text-1: #f3f4f4;
+    --text-2: #a9afb2;
+    --green-1: #2fe6a6;
+    --green-2: #12a5a0;
+    --orange: #f0a83c;
+    --red: #ef5350;
+    --neutral: #8f8a7d;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 48px 24px;
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+  .wrap { max-width: 980px; width: 100%; }
+  h1 { font-size: 22px; font-weight: 700; margin: 0 0 4px 0; }
+  p.subtitle { color: var(--text-2); margin: 0 0 32px 0; font-size: 14px; }
+  h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 36px 0 14px 0;
+    color: var(--text-1);
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 8px;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 14px;
+  }
+  .swatch {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+  }
+  .fill {
+    height: 72px;
+    width: 100%;
+  }
+  .info {
+    padding: 12px 14px;
+  }
+  .info .name {
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 2px;
+  }
+  .info .hex {
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 12.5px;
+    color: var(--text-2);
+    margin-bottom: 6px;
+  }
+  .info .role {
+    font-size: 12px;
+    color: var(--text-2);
+    line-height: 1.5;
+  }
+  .contrast {
+    display: inline-block;
+    margin-top: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .ct-pass { background: rgba(47,230,166,0.12); color: var(--green-1); }
+  .ct-na { background: rgba(169,175,178,0.12); color: var(--text-2); }
+
+  .state-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 12px 16px;
+    margin-bottom: 8px;
+  }
+  .dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .state-text { flex: 1; }
+  .state-text .label { font-weight: 700; font-size: 13.5px; }
+  .state-text .desc { font-size: 12.5px; color: var(--text-2); margin-top: 2px; }
+  .state-hex {
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+    color: var(--text-2);
+  }
+
+  .note {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--green-2);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--text-1);
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+  footer { margin-top: 28px; font-size: 12px; color: var(--text-2); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Paleta de color — Carro Sin Rollos</h1>
+  <p class="subtitle">Extraída del styles.css actual de la landing, más la propuesta de extensión para los estados del informe.</p>
+
+  <h2>Paleta actual (ya definida en el código)</h2>
+  <div class="grid">
+    <div class="swatch">
+      <div class="fill" style="background:var(--bg-0);"></div>
+      <div class="info">
+        <div class="name">bg-0 · Fondo base</div>
+        <div class="hex">#131516</div>
+        <div class="role">Fondo de toda la página. El más oscuro de los tres niveles de superficie.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--bg-1);"></div>
+      <div class="info">
+        <div class="name">bg-1 · Tarjetas</div>
+        <div class="hex">#1b1e20</div>
+        <div class="role">Fondo de tarjetas y del modal de privacidad. Un nivel por encima del fondo base.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--bg-2);"></div>
+      <div class="info">
+        <div class="name">bg-2 · Superficie elevada</div>
+        <div class="hex">#23272a</div>
+        <div class="role">Elementos pequeños dentro de una tarjeta, como el círculo numerado de los pasos.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--line);"></div>
+      <div class="info">
+        <div class="name">line · Bordes</div>
+        <div class="hex">#33383b</div>
+        <div class="role">Bordes de tarjetas, divisores y el footer.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--text-1);"></div>
+      <div class="info">
+        <div class="name">text-1 · Texto principal</div>
+        <div class="hex">#f3f4f4</div>
+        <div class="role">Títulos y texto de alto énfasis.</div>
+        <span class="contrast ct-pass">16:1 sobre bg-0</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--text-2);"></div>
+      <div class="info">
+        <div class="name">text-2 · Texto secundario</div>
+        <div class="hex">#a9afb2</div>
+        <div class="role">Texto de apoyo, descripciones, footer.</div>
+        <span class="contrast ct-pass">8.3:1 sobre bg-0</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:linear-gradient(100deg, var(--green-1), var(--green-2));"></div>
+      <div class="info">
+        <div class="name">Degradado de marca</div>
+        <div class="hex">green-1 #2fe6a6 → green-2 #12a5a0</div>
+        <div class="role">Logo, título principal, botón primario. Es el elemento más reconocible de la marca.</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--green-1);"></div>
+      <div class="info">
+        <div class="name">green-1 · Verde brillante</div>
+        <div class="hex">#2fe6a6</div>
+        <div class="role">Enlaces y acentos puntuales sobre fondo oscuro.</div>
+        <span class="contrast ct-pass">11.5:1 sobre bg-0</span>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--green-2);"></div>
+      <div class="info">
+        <div class="name">green-2 · Turquesa</div>
+        <div class="hex">#12a5a0</div>
+        <div class="role">Extremo oscuro del degradado, color de acento en inputs (accent-color).</div>
+      </div>
+    </div>
+    <div class="swatch">
+      <div class="fill" style="background:var(--orange);"></div>
+      <div class="info">
+        <div class="name">orange · Acento</div>
+        <div class="hex">#f0a83c</div>
+        <div class="role">Único color fuera de la familia verde/turquesa. Reservado para llamar la atención (mensajes de estado, la "O" del nombre).</div>
+        <span class="contrast ct-pass">9.1:1 sobre bg-0</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>Qué tan bien funciona esta paleta</h2>
+  <div class="note">
+    Los contrastes de texto sobre el fondo oscuro están todos por encima de 8:1, muy por arriba del mínimo de accesibilidad (4.5:1 para texto normal). El botón primario, con texto oscuro (#0d1210) sobre el degradado verde/turquesa, también pasa el mínimo en ambos extremos del degradado (6.2:1 a 11.7:1). No hay nada que corregir en la paleta actual, está bien construida para fondo oscuro.
+  </div>
+
+  <h2>Propuesta de extensión para los estados del informe</h2>
+  <p class="subtitle" style="margin-bottom:14px;">Para no inventar colores nuevos sueltos, esto reutiliza la paleta existente y agrega solo dos tonos (rojo y un neutro cálido) que faltan para cubrir los estados que diseñamos.</p>
+
+  <div class="state-row">
+    <span class="dot" style="background:var(--green-1);"></span>
+    <div class="state-text">
+      <div class="label">Verificado / Sin hallazgos</div>
+      <div class="desc">Usa el verde de marca tal cual. Es el estado más frecuente y el que refuerza la identidad.</div>
+    </div>
+    <span class="state-hex">#2fe6a6</span>
+  </div>
+  <div class="state-row">
+    <span class="dot" style="background:var(--orange);"></span>
+    <div class="state-text">
+      <div class="label">Requiere revisión</div>
+      <div class="desc">El naranja de marca, reservado solo para esto: algo accionable que el usuario debe resolver.</div>
+    </div>
+    <span class="state-hex">#f0a83c</span>
+  </div>
+  <div class="state-row">
+    <span class="dot" style="background:var(--neutral);"></span>
+    <div class="state-text">
+      <div class="label">No disponible / No consultado</div>
+      <div class="desc">Nuevo tono neutro cálido, deliberadamente apagado para no competir con el naranja. Comunica "no es tu culpa, no es un hallazgo", no "atención aquí".</div>
+    </div>
+    <span class="state-hex">#8f8a7d</span>
+  </div>
+  <div class="state-row">
+    <span class="dot" style="background:var(--red);"></span>
+    <div class="state-text">
+      <div class="label">Alerta</div>
+      <div class="desc">Único color nuevo y fuera de la paleta de marca, a propósito: así una alerta real nunca se confunde con el naranja de "revisar" ni con el verde de marca.</div>
+    </div>
+    <span class="state-hex">#ef5350</span>
+  </div>
+
+  <div class="note">
+    Con esto, la paleta de marca (verde, turquesa, naranja) sigue intacta para todo lo decorativo y de navegación, y el informe solo le suma dos colores funcionales (gris cálido y rojo) exclusivos para estados, que nunca aparecen fuera de las tarjetas de verificación.
+  </div>
+
+  <footer>Paleta extraída de styles.css de la landing actual de Carro Sin Rollos, con extensión propuesta para el informe de vehículo.</footer>
+</div>
+</body>
+</html>
