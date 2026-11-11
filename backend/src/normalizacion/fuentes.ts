@@ -55,7 +55,7 @@ export function normalizarGarantias(d: RawGarantias): Prenda[] {
 export function normalizarAvaluo(d: RawAvaluo): Avaluo {
   const min = d.rangoMercado?.min;
   const max = d.rangoMercado?.max;
-  return { valorComercial: d.valorComercial ?? 0, rango: min != null && max != null ? { min, max } : null };
+  return { aproximado: d.aproximado === true, valorComercial: d.valorComercial ?? 0, rango: min != null && max != null ? { min, max } : null };
 }
 
 const textoNum = (v: unknown) => (typeof v === 'number' ? String(v) : texto(v));

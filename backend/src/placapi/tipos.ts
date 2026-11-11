@@ -48,6 +48,10 @@ export interface RawConsultaRunt {
 }
 
 interface RawBloque<T> {
+  /** Créditos cobrados por la llamada, cuando PlacApi lo informa. */
+  cost?: number;
+  /** La respuesta salió del caché de PlacApi: no se cobra. */
+  fromCache?: boolean;
   source?: string;
   /** ok, warn, danger, info, empty o error, según la fuente. */
   status?: string;
@@ -76,6 +80,8 @@ export interface RawGarantias {
 }
 
 export interface RawAvaluo {
+  /** El valor sale de una versión parecida, no del código exacto del vehículo. */
+  aproximado?: boolean;
   valorComercial?: number | null;
   rangoMercado?: { min?: number; max?: number } | null;
 }

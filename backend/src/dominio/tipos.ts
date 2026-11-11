@@ -151,6 +151,7 @@ export interface Historial {
 }
 
 export interface Avaluo {
+  aproximado: boolean;
   valorComercial: number;
   rango: { min: number; max: number } | null;
 }

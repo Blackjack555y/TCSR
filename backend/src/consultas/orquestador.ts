@@ -23,8 +23,11 @@ function conConteo(fuente: FuenteVehicular) {
       const original = (obj as unknown as Record<string, unknown>)[clave];
       if (typeof original !== 'function' || !(clave in COSTO_CREDITOS)) return original;
       return async (...args: unknown[]) => {
-        const r = await (original as (...a: unknown[]) => Promise<unknown>).apply(obj, args);
-        cuenta.creditos += COSTO_CREDITOS[clave as keyof typeof COSTO_CREDITOS];
+        const r = (await (original as (...a: unknown[]) => Promise<unknown>).apply(obj, args)) as { cost?: unknown; fromCache?: unknown } | null;
+        // PlacApi informa lo que cobró: un acierto de caché no cuesta. Si no lo dice, se usa la tarifa.
+        cuenta.creditos += r?.fromCache === true ? 0
+          : typeof r?.cost === 'number' ? r.cost
+          : COSTO_CREDITOS[clave as keyof typeof COSTO_CREDITOS];
         return r;
       };
     }

@@ -158,5 +158,5 @@ export function reglaHistorial(d: Historial, b: Base, hoy: string): Resultado {
 }
 
 export function reglaAvaluo(d: Avaluo, b: Base): Resultado {
-  return { verificacion: verif(b, 'sin_hallazgos', pesos(d.valorComercial)), hallazgos: [] };
+  return { verificacion: verif(b, 'sin_hallazgos', `${pesos(d.valorComercial)}${d.aproximado ? ' (aproximado)' : ''}`), hallazgos: [] };
 }
