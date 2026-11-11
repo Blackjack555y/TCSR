@@ -4,7 +4,10 @@ import { $, iniciarPagina, requerirSesion, volverSeguro } from './ui.js';
 await requerirSesion();
 await iniciarPagina();
 
-const id = new URLSearchParams(location.search).get('compra');
+const params = new URLSearchParams(location.search);
+const id = params.get('compra');
+// El widget nos pasa la transacción; si el usuario vuelve por la redirección de Wompi, llega como ?id=.
+const transaccion = params.get('transaccion') ?? params.get('id');
 const INTENTOS = 40;
 const ESPERA_MS = 3000;
 
@@ -18,8 +21,9 @@ function terminar(titulo, texto, acciones) {
 
 for (let i = 0; i < INTENTOS; i++) {
   try {
-    const { compras } = await api.compras();
-    const c = compras.find((x) => x.id === id);
+    const c = transaccion
+      ? (await api.verificarCompra(id, transaccion)).compra
+      : (await api.compras()).compras.find((x) => x.id === id);
     if (!c) {
       terminar('No encontramos esa compra', 'Revisa tus compras en tu cuenta.', '<a class="btn-secondary" href="cuenta.html">Ver mis compras</a>');
       break;
@@ -33,7 +37,11 @@ for (let i = 0; i < INTENTOS; i++) {
       terminar('El pago no se aprobó', 'No se hizo ningún cargo. Puedes intentarlo otra vez.', `<a class="btn-cta" href="comprar.html?tipo=${c.tipo}"><span>Intentar de nuevo</span></a>`);
       break;
     }
-  } catch {
+  } catch (err) {
+    if (err.status === 404) {
+      terminar('No encontramos esa compra', 'Revisa tus compras en tu cuenta.', '<a class="btn-secondary" href="cuenta.html">Ver mis compras</a>');
+      break;
+    }
     // un fallo de red no cambia el estado del pago: se sigue intentando
   }
   if (i === INTENTOS - 1) {

@@ -5,8 +5,10 @@ import { cargarConfig } from './config.js';
 import { RepositorioMemoria } from './consultas/repositorio.js';
 import { ServicioConsultas } from './consultas/servicio.js';
 import { CuentasMemoria } from './cuentas/repositorio.js';
-import { sesionDesarrollo, sesionSupabase } from './cuentas/sesion.js';
+import { correoSupabase, sesionDesarrollo, sesionSupabase } from './cuentas/sesion.js';
 import { logger } from './logger.js';
+import { EnviadorRegistro, EnviadorResend, Notificador } from './notificaciones/correo.js';
+import { ApiWompi } from './pagos/wompi-api.js';
 import { ServicioPagos } from './pagos/servicio.js';
 import { RenderizadorPdf } from './pdf/render.js';
 import { crearFuente } from './placapi/index.js';
@@ -26,6 +28,13 @@ const repo = db ? new ConsultasSupabase(db) : new RepositorioMemoria();
 const cuentas = db ? new CuentasSupabase(db) : new CuentasMemoria();
 const almacenamiento = db ? new AlmacenamientoSupabase(db) : new AlmacenamientoLocal(config.ALMACENAMIENTO_DIR);
 
+if (!config.RESEND_LLAVE) logger.warn('sin RESEND_LLAVE: los correos de compra e informe no se envían');
+const notificador = new Notificador(
+  config.RESEND_LLAVE ? new EnviadorResend(config.RESEND_LLAVE, config.CORREO_REMITENTE) : new EnviadorRegistro(),
+  db ? correoSupabase(db) : async (id) => `${id}@dev.local`,
+  config.SITIO_URL.replace(/\/$/, '')
+);
+
 const servicio = new ServicioConsultas({
   repo,
   cuentas,
@@ -33,7 +42,10 @@ const servicio = new ServicioConsultas({
   pdf,
   almacenamiento,
   hash: crearHasher(config.DOC_HASH_SECRETO),
-  diasVigencia: config.PDF_DIAS_VIGENCIA
+  diasVigencia: config.PDF_DIAS_VIGENCIA,
+  notificador,
+  limiteFallidasDia: config.LIMITE_FALLIDAS_DIA,
+  alertaCreditosDia: config.ALERTA_CREDITOS_DIA
 });
 
 const pagos = new ServicioPagos(cuentas, {
@@ -41,7 +53,7 @@ const pagos = new ServicioPagos(cuentas, {
   secretoIntegridad: config.WOMPI_SECRETO_INTEGRIDAD,
   secretoEventos: config.WOMPI_SECRETO_EVENTOS,
   redirectUrl: config.WOMPI_URL_REDIRECCION
-});
+}, config.WOMPI_LLAVE_PRIVADA ? new ApiWompi(config.WOMPI_LLAVE_PRIVADA) : null, notificador);
 
 const app = crearApp({
   servicio,
@@ -59,8 +71,9 @@ const servidor = app.listen(config.PORT, () => {
   logger.info('API lista', { puerto: config.PORT, placapi: config.PLACAPI_MODO, datos: db ? 'supabase' : 'memoria' });
 });
 
-// Mantenimiento: devuelve el saldo de consultas colgadas y borra los PDF vencidos.
+// Mantenimiento: devuelve el saldo de consultas colgadas, concilia pagos con Wompi y borra los PDF vencidos.
 const mantenimiento = setInterval(() => {
+  pagos.conciliarPendientes().catch((e) => logger.error('conciliación fallida', { causa: String(e) }));
   servicio.recuperarColgadas().catch((e) => logger.error('recuperación fallida', { causa: String(e) }));
   servicio.limpiarVencidas().catch((e) => logger.error('limpieza fallida', { causa: String(e) }));
 }, 10 * 60_000);

@@ -103,9 +103,10 @@ $('#pagar').addEventListener('click', async () => {
       signature: { integrity: widget.signatureIntegrity },
       redirectUrl: new URL(destinoResultado(compra.id), location.href).href,
       customerData: { email: u.email }
-    }).open(() => {
-      // El saldo lo acredita el webhook: esta página solo espera la confirmación.
-      location.href = destinoResultado(compra.id);
+    }).open((resultado) => {
+      // El servidor confirma el pago con Wompi; esta página solo le pasa el id de la transacción.
+      const tx = resultado?.transaction?.id;
+      location.href = destinoResultado(compra.id) + (tx ? `&transaccion=${encodeURIComponent(tx)}` : '');
     });
     ocupado(boton, false);
   } catch (err) {

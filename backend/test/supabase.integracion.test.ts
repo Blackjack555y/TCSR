@@ -19,8 +19,11 @@ const URL_DB = process.env.SUPABASE_PRUEBAS_URL;
 const LLAVE = process.env.SUPABASE_PRUEBAS_LLAVE;
 const ANON = process.env.SUPABASE_PRUEBAS_ANON;
 
-describe.skipIf(!URL_DB || !LLAVE || !ANON)('integración con Supabase', () => {
-  const db = crearClienteServidor(URL_DB!, LLAVE!);
+const HAY_SUPABASE = !!(URL_DB && LLAVE && ANON);
+
+describe.skipIf(!HAY_SUPABASE)('integración con Supabase', () => {
+  // Sin Supabase el bloque se omite, pero su cuerpo igual se evalúa: el cliente no debe fallar.
+  const db = crearClienteServidor(URL_DB ?? 'http://127.0.0.1:1', LLAVE ?? 'sin-llave');
   const cuentas = new CuentasSupabase(db);
   const repo = new ConsultasSupabase(db);
   const almacenamiento = new AlmacenamientoSupabase(db);
@@ -146,6 +149,39 @@ describe.skipIf(!URL_DB || !LLAVE || !ANON)('integración con Supabase', () => {
     const resultados = await Promise.all(intentos);
     expect(resultados.filter(Boolean)).toHaveLength(3);
     expect((await cuentas.saldos(c.id)).vin).toBe(0);
+  });
+
+  it('cuenta las fallidas por datos, guarda los créditos y resume el día', async () => {
+    const c = await crearUsuario();
+    const compra = await request(app).post('/api/compras').set(auth(c.token)).send({ tipo: 'full', cantidad: 3 });
+    await request(app).post(`/api/dev/compras/${compra.body.compra.id}/aprobar`).set(auth(c.token));
+    const comun = { tipo: 'full', placa: 'ABC123', docType: 'CC', consentimiento: { aceptado: true, version: '2026-11' } };
+    await request(app).post('/api/consultas').set(auth(c.token)).send({ ...comun, docNumber: '0000000409' });
+    await request(app).post('/api/consultas').set(auth(c.token)).send({ ...comun, docNumber: '0000000502' });
+    const ok = await request(app).post('/api/consultas').set(auth(c.token)).send({ ...comun, docNumber: '1020304050' });
+    await servicio.esperarProcesos();
+
+    const hace1h = new Date(Date.now() - 3_600_000).toISOString();
+    expect(await repo.contarFallidas(c.id, hace1h, ['documento_no_coincide', 'sin_resultados'])).toBe(1);
+    expect((await repo.obtener(ok.body.id))?.creditosEstimados).toBe(6);
+
+    const { data: resumen, error } = await db.from('resumen_diario').select('*').limit(5);
+    expect(error).toBeNull();
+    expect(resumen!.some((r) => r.creditos_placapi >= 6 && r.ingresos_cop >= 105_000)).toBe(true);
+    expect((await c.cliente.from('resumen_diario').select('*')).data ?? []).toEqual([]);
+  });
+
+  it('conciliación: registra la transacción y lista las pendientes', async () => {
+    const c = await crearUsuario();
+    const r = await request(app).post('/api/compras').set(auth(c.token)).send({ tipo: 'basico', cantidad: 1 });
+    const id = r.body.compra.id;
+    await cuentas.registrarTransaccion(id, `TX-${id}`);
+    expect((await cuentas.obtenerCompraPorReferencia(r.body.widget.reference))?.transaccionId).toBe(`TX-${id}`);
+    const pendientes = await cuentas.listarPendientesConTransaccion(new Date(Date.now() - 60_000).toISOString(), new Date().toISOString());
+    expect(pendientes.map((p) => p.id)).toContain(id);
+    await cuentas.aprobarCompra(r.body.widget.reference, `TX-${id}`, r.body.widget.amountInCents, 'PSE');
+    const despues = await cuentas.listarPendientesConTransaccion(new Date(Date.now() - 60_000).toISOString(), new Date().toISOString());
+    expect(despues.map((p) => p.id)).not.toContain(id);
   });
 
   it('dos aprobaciones simultáneas de la misma compra acreditan una vez', async () => {

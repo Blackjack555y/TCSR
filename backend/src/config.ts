@@ -30,6 +30,19 @@ const esquema = z.object({
   WOMPI_SECRETO_EVENTOS: z.string().default('solo-para-desarrollo-eventos'),
   /** A dónde vuelve el usuario después de pagar. */
   WOMPI_URL_REDIRECCION: z.url().optional(),
+  /** Llave privada (prv_): permite confirmar pagos consultando a Wompi si el webhook no llega. */
+  WOMPI_LLAVE_PRIVADA: z.string().optional(),
+
+  /** Resend para los correos de compra aprobada e informe listo. Sin llave, solo se registran en el log. */
+  RESEND_LLAVE: z.string().optional(),
+  CORREO_REMITENTE: z.string().default('Carro Sin Rollos <no-responder@carrosinrollos.com>'),
+  /** URL pública del sitio, para los enlaces de los correos. */
+  SITIO_URL: z.url().default('http://localhost:5173'),
+
+  /** Consultas fallidas por datos (cédula que no coincide, sin resultados) permitidas por usuario en 24 h. 0 = sin límite. */
+  LIMITE_FALLIDAS_DIA: z.coerce.number().int().min(0).default(5),
+  /** Créditos de PlacApi por día a partir de los cuales se registra una alerta. 0 = sin alerta. */
+  ALERTA_CREDITOS_DIA: z.coerce.number().int().min(0).default(0),
 
   /** Días que el PDF se puede ver y descargar. */
   PDF_DIAS_VIGENCIA: z.coerce.number().int().positive().default(7),
@@ -48,7 +61,7 @@ const esquema = z.object({
     if (c.DOC_HASH_SECRETO === 'solo-para-desarrollo-cambiar') {
       ctx.addIssue({ code: 'custom', path: ['DOC_HASH_SECRETO'], message: 'Define un secreto propio en producción' });
     }
-    const requeridas = ['TURNSTILE_SECRETO', 'SUPABASE_URL', 'SUPABASE_LLAVE_SECRETA'] as const;
+    const requeridas = ['TURNSTILE_SECRETO', 'SUPABASE_URL', 'SUPABASE_LLAVE_SECRETA', 'WOMPI_LLAVE_PRIVADA'] as const;
     for (const k of requeridas) {
       if (!c[k]) ctx.addIssue({ code: 'custom', path: [k], message: 'Se requiere en producción' });
     }

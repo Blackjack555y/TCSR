@@ -24,6 +24,9 @@ Para el PDF hace falta un Chromium: pon `CHROME_PATH=/usr/bin/google-chrome-stab
 | `npm run typecheck` | Revisión de tipos |
 | `npm run demo:pdf` | Genera un PDF de ejemplo de cada tipo en `out/` |
 | `npm run e2e:web` | Recorre el sitio en un navegador real, contra el backend corriendo |
+| `npm run e2e:web:supabase` | Lo mismo con Supabase y pagos de Wompi simulados (ver el encabezado del script) |
+| `npm run postman` | Regenera la colección de Postman de `postman/` |
+| `npm run contenido:extraer` / `contenido:aplicar` | Textos editables de la landing (ver abajo) |
 | `npm run build && npm start` | Compila y arranca como en producción |
 
 ## Informes y precios
@@ -46,9 +49,10 @@ Todas las rutas, salvo precios, salud y el webhook, exigen `Authorization: Beare
 | `GET /api/precios/cotizar?tipo=full&cantidad=5` | Total, y `mejorOpcion` si comprar más sale más barato |
 | `GET /api/saldo` | Informes disponibles por tipo |
 | `POST /api/compras` | Crea la compra y devuelve los datos para abrir el widget de Wompi |
+| `POST /api/compras/:id/verificar` | El frontend envía el id de transacción que devolvió Wompi; el servidor lo confirma con Wompi |
 | `GET /api/compras` | Historial de compras |
 | `POST /api/webhooks/wompi` | Eventos de Wompi. Valida la firma y acredita una sola vez |
-| `POST /api/consultas` | `202` con el `id`. `402` si no hay saldo. `200` si la misma consulta se hizo en las últimas 24 h (no se cobra otra vez) |
+| `POST /api/consultas` | `202` con el `id`. `402` si no hay saldo. `429` después de 5 consultas fallidas por datos en 24 h. `200` si la misma consulta se hizo en las últimas 24 h (no se cobra otra vez) |
 | `GET /api/consultas` | Historial del usuario |
 | `GET /api/consultas/:id` | Estado. Cuando está `completada`, trae la conclusión y los enlaces del PDF |
 | `GET /api/consultas/:id/pdf` | PDF para la vista previa. Con `?descargar=1`, como archivo |
@@ -71,6 +75,23 @@ El frontend debe consultar `GET /api/consultas/:id` cada 2–3 segundos hasta qu
 1. El saldo se descuenta al crear la consulta.
 2. Si la consulta falla, se devuelve una sola vez. También si el servidor se reinicia a mitad: una tarea cada 10 minutos cierra las consultas colgadas.
 3. Si solo falla una fuente complementaria, el informe se entrega como `parcial`, consume saldo y esa verificación aparece como "No disponible".
+
+### Límites y costos
+
+- **Intentos fallidos:** si la cédula no coincide o no hay resultados, el saldo se devuelve, pero PlacApi puede cobrarnos. Por eso, después de `LIMITE_FALLIDAS_DIA` (5) fallidas de ese tipo en 24 h, el usuario no puede consultar hasta el día siguiente. Una fuente caída no cuenta.
+- **Créditos:** cada consulta guarda los créditos de PlacApi que realmente gastó, según las llamadas que respondieron. La vista `resumen_diario` de Supabase da, por día, consultas, fallidas, créditos e ingresos. Con `ALERTA_CREDITOS_DIA` se registra una alerta en el log cuando el gasto del día pasa ese número.
+
+### Pagos que no se confirman
+
+1. **Webhook:** es la vía principal. Wompi avisa al servidor.
+2. **Verificación desde el navegador:** el widget y la redirección devuelven el id de la transacción. La página de resultado lo envía a `POST /api/compras/:id/verificar`, y el servidor lo consulta en Wompi con la llave privada. Solo lo aplica si la transacción es de esa compra y el monto coincide.
+3. **Conciliación:** cada 10 minutos, el servidor revisa en Wompi las compras pendientes que ya tienen transacción (entre 5 minutos y 3 días de antigüedad).
+
+Wompi solo documenta la consulta por id de transacción, no por referencia. Si el usuario cerró la ventana antes de que el widget devolviera el id y el webhook no llega, la compra queda pendiente y se revisa a mano.
+
+### Correos
+
+Con `RESEND_LLAVE`, el servidor envía "Tu compra fue aprobada" e "Tu informe está listo" (con el enlace y la fecha de vencimiento). Un correo que falla nunca frena la compra ni la consulta. Sin llave, solo quedan en el log.
 
 ### Modo simulado
 
@@ -116,6 +137,18 @@ Se usa el widget: `POST /api/compras` entrega monto, referencia y firma de integ
 - Cada consulta registra la versión del aviso aceptado, la fecha y un hash de la IP.
 - Pendiente de validación legal: plazos de retención y consulta del documento de un tercero.
 
+## Colección de Postman
+
+`postman/` tiene la colección y un entorno local. Corriéndola completa contra el backend en desarrollo recorre precios, compra, webhook firmado, saldo, consulta, PDF y los errores esperados. También corre por línea de comandos:
+
+```bash
+npx newman run postman/carro-sin-rollos.postman_collection.json -e postman/local.postman_environment.json
+```
+
+## Textos de la landing
+
+Los textos editables de `frontend/index.html` llevan `data-cms="clave"` y viven en `frontend/contenido/landing.json`. Para cambiar un texto: edita el JSON y corre `npm run contenido:aplicar`. Ese comando también llena los precios de la landing (`data-precio`) desde `src/precios/catalogo.ts`, así que los precios tienen una sola fuente. Solo acepta formato en línea (`strong`, `em`, `br`, `span class="grad"`, enlaces): rechaza scripts y atributos peligrosos. Es la base del panel para editar la landing.
+
 ## Despliegue
 
 `Dockerfile` usa la imagen oficial de Playwright (trae Chromium). La versión de la imagen debe coincidir con `playwright` en `package.json`.
@@ -125,7 +158,6 @@ En producción el servidor no arranca sin `DOC_HASH_SECRETO`, `TURNSTILE_SECRETO
 ## Pendiente
 
 - Validar con respuestas reales de PlacApi: solo `/consulta` se probó con datos reales. Lo demás usa los ejemplos de su especificación.
-- Si un webhook de Wompi se pierde después de sus 3 reintentos, hoy no hay conciliación automática.
+- Confirmar con la cuenta de Wompi la URL del entorno de pruebas (`sandbox.wompi.co`) usada en `src/pagos/wompi-api.ts`.
 - Caché por fuente entre usuarios y registro de créditos reales gastados.
-- Correos propios (recibo de compra, informe listo) y facturación electrónica. Los de registro y recuperación están en `supabase/templates/`.
-- Confirmar el plazo de la primera revisión técnico-mecánica (`src/reglas/runt.ts`).
+- Facturación electrónica. Los correos de registro y recuperación están en `supabase/templates/`.

@@ -12,6 +12,7 @@ interface FilaCompra {
   referencia: string;
   estado: EstadoCompra;
   creada_en: string;
+  wompi_transaccion_id: string | null;
 }
 
 const aCompra = (f: FilaCompra): Compra => ({
@@ -23,7 +24,8 @@ const aCompra = (f: FilaCompra): Compra => ({
   total: f.total,
   referencia: f.referencia,
   estado: f.estado,
-  creadaEn: f.creada_en
+  creadaEn: f.creada_en,
+  transaccionId: f.wompi_transaccion_id
 });
 
 export class CuentasSupabase implements RepositorioCuentas {
@@ -58,6 +60,12 @@ export class CuentasSupabase implements RepositorioCuentas {
     return data ? aCompra(data) : null;
   }
 
+  async obtenerCompraPorReferencia(referencia: string) {
+    const { data, error } = await this.db.from('compras').select('*').eq('referencia', referencia).maybeSingle<FilaCompra>();
+    if (error) throw new Error(`buscar compra: ${error.message}`);
+    return data ? aCompra(data) : null;
+  }
+
   async listarCompras(usuarioId: string, limite: number) {
     const { data, error } = await this.db.from('compras').select('*')
       .eq('usuario_id', usuarioId).order('creada_en', { ascending: false }).limit(limite).returns<FilaCompra[]>();
@@ -78,6 +86,21 @@ export class CuentasSupabase implements RepositorioCuentas {
       .update({ estado: 'rechazada', wompi_transaccion_id: transaccionId, resuelta_en: new Date().toISOString() })
       .eq('referencia', referencia).eq('estado', 'pendiente');
     if (error) throw new Error(`rechazar compra: ${error.message}`);
+  }
+
+  async registrarTransaccion(compraId: string, transaccionId: string) {
+    const { error } = await this.db.from('compras')
+      .update({ wompi_transaccion_id: transaccionId })
+      .eq('id', compraId).eq('estado', 'pendiente');
+    if (error) throw new Error(`registrar transacción: ${error.message}`);
+  }
+
+  async listarPendientesConTransaccion(desde: string, hasta: string) {
+    const { data, error } = await this.db.from('compras').select('*')
+      .eq('estado', 'pendiente').not('wompi_transaccion_id', 'is', null)
+      .gte('creada_en', desde).lte('creada_en', hasta).returns<FilaCompra[]>();
+    if (error) throw new Error(`listar pendientes: ${error.message}`);
+    return (data ?? []).map(aCompra);
   }
 
   async consumirSaldo(usuarioId: string, tipo: TipoInforme, consultaId: string) {

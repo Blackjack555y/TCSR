@@ -12,6 +12,8 @@ export interface RepositorioConsultas {
   listarVencidas(ahora: string): Promise<Consulta[]>;
   /** Consultas que quedaron a medias, por ejemplo por un reinicio del servidor. */
   listarColgadas(antesDe: string): Promise<Consulta[]>;
+  /** Consultas del usuario que fallaron con alguno de esos códigos desde `desde`. */
+  contarFallidas(usuarioId: string, desde: string, codigos: string[]): Promise<number>;
 }
 
 /** Repositorio en memoria para desarrollo y pruebas. Se pierde al reiniciar. */
@@ -52,6 +54,12 @@ export class RepositorioMemoria implements RepositorioConsultas {
 
   async listarVencidas(ahora: string) {
     return [...this.datos.values()].filter((c) => c.pdfClave && c.venceEn && c.venceEn < ahora).map((c) => structuredClone(c));
+  }
+
+  async contarFallidas(usuarioId: string, desde: string, codigos: string[]) {
+    return [...this.datos.values()].filter((c) =>
+      c.usuarioId === usuarioId && c.estado === 'error' && c.creadaEn >= desde && !!c.error && codigos.includes(c.error.codigo)
+    ).length;
   }
 
   async listarColgadas(antesDe: string) {

@@ -114,9 +114,10 @@ export function reglaSoat(v: VehiculoRunt, ctx: Contexto): Resultado {
 }
 
 /**
- * Plazo para la primera revisión técnico-mecánica desde la matrícula:
+ * Plazo para la primera revisión técnico-mecánica, con los años cumplidos desde la matrícula:
  * particulares 5 años; motos y servicio público 2 años.
- * TODO: confirmar con la normativa vigente (art. 52 Ley 769 de 2002, modificado por el Decreto 019 de 2012).
+ * Art. 52 de la Ley 769 de 2002, modificado por el art. 179 de la Ley 2294 de 2023
+ * (antes 6 años, por el Decreto Ley 19 de 2012). Circular MinTransporte 20234000000637.
  */
 function inicioObligacionRtm(v: VehiculoRunt): string | null {
   if (!v.fechaMatricula) return null;

@@ -33,3 +33,17 @@ services:
         sync: false
       - key: WOMPI_SECRETO_EVENTOS
         sync: false
+      - key: WOMPI_LLAVE_PRIVADA
+        sync: false
+      - key: WOMPI_URL_REDIRECCION
+        sync: false
+      - key: RESEND_LLAVE
+        sync: false
+      - key: CORREO_REMITENTE
+        sync: false
+      - key: SITIO_URL
+        sync: false
+      - key: LIMITE_FALLIDAS_DIA
+        value: 5
+      - key: ALERTA_CREDITOS_DIA
+        value: 0

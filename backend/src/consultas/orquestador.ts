@@ -10,6 +10,28 @@ export type EntradaInforme =
 
 const NO_CONSULTADA = { estado: 'no_consultada' } as const;
 
+/** Créditos que cobra PlacApi por cada llamada que responde (consulta con datos). */
+export const COSTO_CREDITOS = {
+  consultaFull: 3, consultaPorVin: 1, avaluoPorVin: 1, reporteHurto: 1, perdidaTotal: 2, garantiasRgm: 1
+} as const;
+
+/** Envuelve la fuente para contar los créditos de las llamadas que respondieron. */
+function conConteo(fuente: FuenteVehicular) {
+  const cuenta = { creditos: 0 };
+  const envuelta = new Proxy(fuente, {
+    get(obj, clave: string) {
+      const original = (obj as unknown as Record<string, unknown>)[clave];
+      if (typeof original !== 'function' || !(clave in COSTO_CREDITOS)) return original;
+      return async (...args: unknown[]) => {
+        const r = await (original as (...a: unknown[]) => Promise<unknown>).apply(obj, args);
+        cuenta.creditos += COSTO_CREDITOS[clave as keyof typeof COSTO_CREDITOS];
+        return r;
+      };
+    }
+  });
+  return { envuelta, cuenta };
+}
+
 /** Si el problema es nuestro (sin créditos, API key), no se entrega un informe parcial. */
 function esProblemaPropio(e: unknown): e is ErrorFuente {
   return e instanceof ErrorFuente && (e.codigo === 'sin_creditos' || e.codigo === 'no_autorizado' || e.codigo === 'datos_invalidos');
@@ -94,6 +116,16 @@ export function obtenerDatos(fuente: FuenteVehicular, e: EntradaInforme): Promis
     case 'full': return full(fuente, e);
     case 'vin': return porVin(fuente, e.vin);
     case 'basico': return basico(fuente, e.placa);
+  }
+}
+
+/** Igual que obtenerDatos, y además informa los créditos gastados (también si falla). */
+export async function obtenerDatosConCreditos(fuente: FuenteVehicular, e: EntradaInforme) {
+  const { envuelta, cuenta } = conConteo(fuente);
+  try {
+    return { datos: await obtenerDatos(envuelta, e), creditos: cuenta.creditos };
+  } catch (err) {
+    throw Object.assign(err instanceof Error ? err : new Error(String(err)), { creditos: cuenta.creditos });
   }
 }
 

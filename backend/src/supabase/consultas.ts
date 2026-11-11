@@ -63,6 +63,7 @@ function aColumnas(c: Partial<Consulta>): Record<string, unknown> {
   const f: Record<string, unknown> = {};
   if ('estado' in c) f.estado = c.estado;
   if ('placa' in c) f.placa = c.placa;
+  if ('creditosEstimados' in c) f.creditos_estimados = c.creditosEstimados ?? null;
   if ('parcial' in c) f.parcial = c.parcial;
   if ('saldoDevuelto' in c) f.saldo_devuelto = c.saldoDevuelto;
   if ('pdfClave' in c) f.pdf_clave = c.pdfClave ?? null;
@@ -144,6 +145,13 @@ export class ConsultasSupabase implements RepositorioConsultas {
       .not('pdf_clave', 'is', null).lt('vence_en', ahora).returns<Fila[]>();
     if (error) throw new Error(`listar vencidas: ${error.message}`);
     return (data ?? []).map(aConsulta);
+  }
+
+  async contarFallidas(usuarioId: string, desde: string, codigos: string[]) {
+    const { count, error } = await this.db.from('consultas').select('id', { count: 'exact', head: true })
+      .eq('usuario_id', usuarioId).eq('estado', 'error').in('error_codigo', codigos).gte('creada_en', desde);
+    if (error) throw new Error(`contar fallidas: ${error.message}`);
+    return count ?? 0;
   }
 
   async listarColgadas(antesDe: string) {

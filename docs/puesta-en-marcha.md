@@ -48,9 +48,9 @@ Crear un widget para el dominio. Guarda la llave del sitio (pública) y la llave
 ## 6. Wompi
 
 1. Abrir la cuenta de comercio (RUT, datos del negocio, cuenta bancaria).
-2. En Desarrolladores, tomar las llaves de prueba (`pub_test_`), el secreto de integridad y el secreto de eventos.
+2. En Desarrolladores, tomar las llaves de prueba (`pub_test_` y `prv_test_`), el secreto de integridad y el secreto de eventos.
 3. Registrar la URL de eventos: `https://<backend>/api/webhooks/wompi`.
-4. Hacer una compra completa con las tarjetas de prueba. Después cambiar a llaves de producción.
+4. Hacer una compra completa con las tarjetas de prueba. Probar también cerrar el widget a mitad del pago: la compra debe confirmarse sola. Después cambiar a llaves de producción.
 
 ## 7. Render (backend)
 
@@ -67,7 +67,13 @@ Crear un widget para el dominio. Guarda la llave del sitio (pública) y la llave
 | `WOMPI_LLAVE_PUBLICA` | `pub_test_...` o `pub_prod_...` |
 | `WOMPI_SECRETO_INTEGRIDAD` | Secreto de integridad |
 | `WOMPI_SECRETO_EVENTOS` | Secreto de eventos |
+| `WOMPI_LLAVE_PRIVADA` | `prv_test_...` o `prv_prod_...`: confirma pagos si el webhook no llega |
 | `WOMPI_URL_REDIRECCION` | `https://sudominio.com/compra-resultado.html` |
+| `RESEND_LLAVE` | Llave de Resend, para los correos de compra e informe |
+| `CORREO_REMITENTE` | `Carro Sin Rollos <no-responder@sudominio.com>` |
+| `SITIO_URL` | `https://sudominio.com` |
+| `LIMITE_FALLIDAS_DIA` | `5` (consultas fallidas por datos por usuario al día) |
+| `ALERTA_CREDITOS_DIA` | Créditos de PlacApi por día que disparan una alerta. Ponlo cerca del doble de lo esperado |
 
 `DOC_HASH_SECRETO` lo genera Render. **No lo cambies después:** dejaría de reconocer consultas repetidas.
 
@@ -89,6 +95,5 @@ El servidor no arranca si falta alguna variable obligatoria: el error dice cuál
 
 - [ ] Compra real de bajo valor, con factura si aplica.
 - [ ] Probar en un celular real: compra, consulta, vista previa y descarga.
-- [ ] Confirmar el plazo de la primera revisión técnico-mecánica (`backend/src/reglas/runt.ts`).
 - [ ] Reemplazar los recortes del logo por los SVG del diseñador.
 - [ ] Sentry y UptimeRobot.

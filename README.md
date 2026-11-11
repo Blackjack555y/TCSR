@@ -24,6 +24,8 @@ HTML, CSS y JavaScript plano, sin build.
 | `consultar`, `informe` | Consulta, vista previa y descarga del PDF |
 | `privacidad`, `terminos`, `404` | Textos legales (borradores) y error |
 
+Los textos de la landing están en `contenido/landing.json`: se editan ahí y se aplican con `npm run contenido:aplicar` desde `backend/`, que además llena los precios desde el catálogo.
+
 `js/config.js` tiene la configuración pública. Sin Supabase configurado, el sitio funciona en modo de desarrollo, con cuentas de prueba y pagos simulados.
 
 ## Probarlo en local

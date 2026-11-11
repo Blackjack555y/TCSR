@@ -2,7 +2,7 @@ import cors from 'cors';
 import express, { type NextFunction, type Request, type Response } from 'express';
 import { rateLimit } from 'express-rate-limit';
 import { MENSAJES_ERROR, type Consulta } from '../consultas/modelo.js';
-import { ServicioConsultas, SinSaldoError } from '../consultas/servicio.js';
+import { LimiteIntentosError, ServicioConsultas, SinSaldoError } from '../consultas/servicio.js';
 import type { Compra, RepositorioCuentas } from '../cuentas/repositorio.js';
 import type { Usuario, VerificadorSesion } from '../cuentas/sesion.js';
 import { logger } from '../logger.js';
@@ -101,6 +101,22 @@ export function crearApp(op: OpcionesApp) {
     res.status(201).json({ compra: vistaCompra(compra), widget });
   });
 
+  // El navegador informa la transacción que le dio Wompi; el servidor la confirma con Wompi.
+  app.post('/api/compras/:id/verificar', limiteLectura, conSesion, async (req, res) => {
+    const id = esquemaId.safeParse(req.params.id);
+    const transaccion = typeof req.body?.transaccionId === 'string' && /^[\w-]{1,80}$/.test(req.body.transaccionId) ? req.body.transaccionId : null;
+    if (!id.success || !transaccion) {
+      fallo(res, 400, 'datos_invalidos', 'Faltan los datos de la transacción.');
+      return;
+    }
+    const compra = await pagos.verificarCompra(usuarioDe(req).id, id.data, transaccion);
+    if (!compra) {
+      fallo(res, 404, 'no_existe', 'No encontramos esa compra.');
+      return;
+    }
+    res.set('Cache-Control', 'no-store').json({ compra: vistaCompra(compra) });
+  });
+
   // Solo una respuesta distinta de 200 hace que Wompi reintente.
   app.post('/api/webhooks/wompi', async (req, res) => {
     const r = await pagos.procesarEvento(req.body as EventoWompi);
@@ -134,6 +150,10 @@ export function crearApp(op: OpcionesApp) {
       const { consulta, reutilizada } = await servicio.crear({ usuarioId: usuarioDe(req).id, entrada: datos, consentimiento, ip });
       res.status(reutilizada ? 200 : 202).location(`/api/consultas/${consulta.id}`).json(vistaPublica(consulta));
     } catch (err) {
+      if (err instanceof LimiteIntentosError) {
+        fallo(res, 429, 'demasiados_intentos', `Tuviste ${err.limite} consultas fallidas en las últimas 24 horas. Confirma los datos con el vendedor e inténtalo mañana. Tu saldo no se ha descontado.`);
+        return;
+      }
       if (err instanceof SinSaldoError) {
         fallo(res, 402, 'sin_saldo', 'No tienes saldo para este tipo de informe. Compra informes para continuar.', { tipo: err.tipo });
         return;

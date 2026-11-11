@@ -43,6 +43,8 @@ export const api = {
   compras: () => json('/api/compras'),
   crearCompra: (tipo, cantidad) => post('/api/compras', { tipo, cantidad }),
   aprobarCompraDesarrollo: (id) => post(`/api/dev/compras/${id}/aprobar`),
+  /** El servidor confirma con Wompi la transacción que devolvió el pago. */
+  verificarCompra: (id, transaccionId) => post(`/api/compras/${id}/verificar`, { transaccionId }),
   consultas: () => json('/api/consultas'),
   consulta: (id) => json(`/api/consultas/${id}`),
   crearConsulta: (datos) => post('/api/consultas', datos),

@@ -16,6 +16,14 @@ export const sesionDesarrollo: VerificadorSesion = async (token) => {
   return UUID.test(id) ? { id, email: `${id}@dev.local` } : null;
 };
 
+/** Correo de un usuario, para los avisos. */
+export function correoSupabase(cliente: SupabaseClient) {
+  return async (usuarioId: string): Promise<string | null> => {
+    const { data, error } = await cliente.auth.admin.getUserById(usuarioId);
+    return error ? null : data.user?.email ?? null;
+  };
+}
+
 export function sesionSupabase(cliente: SupabaseClient): VerificadorSesion {
   return async (token) => {
     const { data, error } = await cliente.auth.getUser(token);

@@ -13,6 +13,8 @@ export interface Compra {
   referencia: string;
   estado: EstadoCompra;
   creadaEn: string;
+  /** Id de la transacción en Wompi, cuando ya se conoce. */
+  transaccionId?: string | null;
 }
 
 export type ResultadoAprobacion = 'aprobada' | 'ya_aprobada' | 'no_existe' | 'monto_no_coincide';
@@ -24,9 +26,14 @@ export interface RepositorioCuentas {
   saldos(usuarioId: string): Promise<Saldos>;
   crearCompra(c: Compra): Promise<void>;
   obtenerCompra(id: string): Promise<Compra | null>;
+  obtenerCompraPorReferencia(referencia: string): Promise<Compra | null>;
   listarCompras(usuarioId: string, limite: number): Promise<Compra[]>;
   aprobarCompra(referencia: string, transaccionId: string, montoCentavos: number, medioPago: string | null): Promise<ResultadoAprobacion>;
   rechazarCompra(referencia: string, transaccionId: string): Promise<void>;
+  /** Asocia la transacción de Wompi a una compra pendiente (ya verificada contra Wompi). */
+  registrarTransaccion(compraId: string, transaccionId: string): Promise<void>;
+  /** Compras pendientes con transacción conocida, creadas entre `desde` y `hasta`. */
+  listarPendientesConTransaccion(desde: string, hasta: string): Promise<Compra[]>;
   /** Descuenta un informe. Devuelve false si no hay saldo. */
   consumirSaldo(usuarioId: string, tipo: TipoInforme, consultaId: string): Promise<boolean>;
   /** Devuelve el informe de una consulta fallida, una sola vez. */
@@ -58,6 +65,11 @@ export class CuentasMemoria implements RepositorioCuentas {
     return c ? { ...c } : null;
   }
 
+  async obtenerCompraPorReferencia(referencia: string) {
+    const c = [...this.compras.values()].find((x) => x.referencia === referencia);
+    return c ? { ...c } : null;
+  }
+
   async listarCompras(usuarioId: string, limite: number) {
     return [...this.compras.values()]
       .filter((c) => c.usuarioId === usuarioId)
@@ -65,12 +77,13 @@ export class CuentasMemoria implements RepositorioCuentas {
       .slice(0, limite);
   }
 
-  async aprobarCompra(referencia: string, _transaccionId: string, montoCentavos: number): Promise<ResultadoAprobacion> {
+  async aprobarCompra(referencia: string, transaccionId: string, montoCentavos: number, _medioPago: string | null = null): Promise<ResultadoAprobacion> {
     const c = [...this.compras.values()].find((x) => x.referencia === referencia);
     if (!c) return 'no_existe';
     if (c.estado === 'aprobada') return 'ya_aprobada';
     if (montoCentavos !== c.total * 100) return 'monto_no_coincide';
     c.estado = 'aprobada';
+    c.transaccionId = transaccionId;
     const k = this.clave(c.usuarioId, c.tipo);
     this.saldo.set(k, (this.saldo.get(k) ?? 0) + c.cantidad);
     return 'aprobada';
@@ -79,6 +92,17 @@ export class CuentasMemoria implements RepositorioCuentas {
   async rechazarCompra(referencia: string) {
     const c = [...this.compras.values()].find((x) => x.referencia === referencia);
     if (c?.estado === 'pendiente') c.estado = 'rechazada';
+  }
+
+  async registrarTransaccion(compraId: string, transaccionId: string) {
+    const c = this.compras.get(compraId);
+    if (c?.estado === 'pendiente') c.transaccionId = transaccionId;
+  }
+
+  async listarPendientesConTransaccion(desde: string, hasta: string) {
+    return [...this.compras.values()]
+      .filter((c) => c.estado === 'pendiente' && c.transaccionId && c.creadaEn >= desde && c.creadaEn <= hasta)
+      .map((c) => ({ ...c }));
   }
 
   async consumirSaldo(usuarioId: string, tipo: TipoInforme, consultaId: string) {

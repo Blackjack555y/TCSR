@@ -6,10 +6,11 @@ import { logger } from '../logger.js';
 import type { RenderizadorPdf } from '../pdf/render.js';
 import { ErrorFuente, type FuenteVehicular } from '../placapi/index.js';
 import { renderInformeHtml } from '../plantilla/informe-html.js';
-import { CREDITOS_POR_INFORME } from '../precios/catalogo.js';
 import type { Hasher } from '../privacidad/hash.js';
 import type { CodigoErrorSistema, Consulta } from './modelo.js';
-import { obtenerDatos, type EntradaInforme } from './orquestador.js';
+import type { Notificador } from '../notificaciones/correo.js';
+import { hoyColombia } from '../reglas/fechas.js';
+import { obtenerDatosConCreditos, type EntradaInforme } from './orquestador.js';
 import type { RepositorioConsultas } from './repositorio.js';
 
 export interface Dependencias {
@@ -21,6 +22,11 @@ export interface Dependencias {
   hash: Hasher;
   diasVigencia: number;
   ahora?: () => Date;
+  notificador?: Notificador | null;
+  /** Consultas fallidas por datos (cédula que no coincide, sin resultados) que se permiten por usuario en 24 h. 0 = sin límite. */
+  limiteFallidasDia?: number;
+  /** Créditos de PlacApi por día a partir de los cuales se registra una alerta. 0 = sin alerta. */
+  alertaCreditosDia?: number;
 }
 
 export interface NuevaConsulta {
@@ -34,6 +40,16 @@ export interface NuevaConsulta {
 const VENTANA_REUSO_MS = 24 * 3_600_000;
 /** Una consulta sin terminar después de este tiempo se da por perdida y se devuelve el saldo. */
 const LIMITE_COLGADA_MS = 15 * 60_000;
+
+/** Errores atribuibles a los datos que envió el usuario: cuentan para el límite diario. */
+const CODIGOS_FALLIDA_POR_DATOS = ['documento_no_coincide', 'sin_resultados'] as const;
+
+export class LimiteIntentosError extends Error {
+  constructor(readonly limite: number) {
+    super(`Límite de ${limite} consultas fallidas en 24 horas`);
+    this.name = 'LimiteIntentosError';
+  }
+}
 
 export class SinSaldoError extends Error {
   constructor(readonly tipo: string) {
@@ -49,6 +65,7 @@ export type ResultadoPdf =
 export class ServicioConsultas {
   /** Procesos en curso, para poder esperarlos en pruebas y al apagar. */
   private readonly enCurso = new Map<string, Promise<void>>();
+  private creditosHoy = { dia: '', total: 0, alertado: false };
 
   constructor(private readonly d: Dependencias) {}
 
@@ -71,6 +88,13 @@ export class ServicioConsultas {
       return { consulta: previa, reutilizada: true };
     }
 
+    // Cada fallida por datos nos puede costar créditos aunque al usuario se le devuelva el saldo.
+    const limite = this.d.limiteFallidasDia ?? 0;
+    if (limite > 0) {
+      const fallidas = await this.d.repo.contarFallidas(usuarioId, new Date(ahora.getTime() - VENTANA_REUSO_MS).toISOString(), [...CODIGOS_FALLIDA_POR_DATOS]);
+      if (fallidas >= limite) throw new LimiteIntentosError(limite);
+    }
+
     // El saldo se descuenta antes de consultar; si algo falla, se devuelve.
     const id = randomUUID();
     if (!(await this.d.cuentas.consumirSaldo(usuarioId, e.tipo, id))) throw new SinSaldoError(e.tipo);
@@ -88,7 +112,7 @@ export class ServicioConsultas {
       creadaEn: ahora.toISOString(),
       actualizadaEn: ahora.toISOString(),
       consentimiento: { version: n.consentimiento.version, aceptadoEn: ahora.toISOString(), ipHash: this.d.hash(n.ip) },
-      creditosEstimados: CREDITOS_POR_INFORME[e.tipo]
+      creditosEstimados: 0
     };
 
     try {
@@ -99,29 +123,48 @@ export class ServicioConsultas {
     }
 
     // El documento en claro solo vive en memoria durante el proceso.
-    const proceso = this.procesar(id, e).finally(() => this.enCurso.delete(id));
+    const proceso = this.procesar(id, usuarioId, e).finally(() => this.enCurso.delete(id));
     this.enCurso.set(id, proceso);
     return { consulta, reutilizada: false };
   }
 
-  private async procesar(id: string, entrada: EntradaInforme): Promise<void> {
+  private async procesar(id: string, usuarioId: string, entrada: EntradaInforme): Promise<void> {
     const inicio = performance.now();
     try {
-      const datos = await obtenerDatos(this.d.fuente, entrada);
+      const { datos, creditos } = await obtenerDatosConCreditos(this.d.fuente, entrada);
+      this.sumarCreditos(creditos);
       const informe = armarInforme(datos, { ahora: this.ahora(), diasVigencia: this.d.diasVigencia });
-      await this.d.repo.actualizar(id, { estado: 'generando_pdf', informe, placa: datos.placa, parcial: informe.parcial });
+      await this.d.repo.actualizar(id, { estado: 'generando_pdf', informe, placa: datos.placa, parcial: informe.parcial, creditosEstimados: creditos });
 
       const pdf = await this.d.pdf.renderizar(renderInformeHtml(informe));
       const pdfClave = `${id}.pdf`;
       await this.d.almacenamiento.guardar(pdfClave, pdf);
       await this.d.repo.actualizar(id, { estado: 'completada', pdfClave, venceEn: informe.venceEn });
 
-      logger.info('consulta completada', { id, tipo: entrada.tipo, conclusion: informe.conclusion.nivel, parcial: informe.parcial, ms: Math.round(performance.now() - inicio) });
+      logger.info('consulta completada', { id, tipo: entrada.tipo, conclusion: informe.conclusion.nivel, parcial: informe.parcial, creditos, ms: Math.round(performance.now() - inicio) });
+      if (this.d.notificador) void this.d.notificador.informeListo(usuarioId, id, datos.placa, informe.venceEn);
     } catch (err) {
+      const creditos = (err as { creditos?: number }).creditos ?? 0;
+      if (creditos > 0) {
+        this.sumarCreditos(creditos);
+        await this.d.repo.actualizar(id, { creditosEstimados: creditos }).catch(() => null);
+      }
       const { codigo, reintentable } = clasificarError(err);
       const log = codigo === 'servicio_no_disponible' || codigo === 'error_interno' ? logger.error : logger.warn;
       log('consulta fallida', { id, codigo, causa: err instanceof Error ? err.message : String(err) });
       await this.fallar(id, codigo, reintentable);
+    }
+  }
+
+  /** Lleva el gasto del día y alerta una vez si pasa el umbral. */
+  private sumarCreditos(n: number) {
+    const dia = hoyColombia(this.ahora());
+    if (this.creditosHoy.dia !== dia) this.creditosHoy = { dia, total: 0, alertado: false };
+    this.creditosHoy.total += n;
+    const umbral = this.d.alertaCreditosDia ?? 0;
+    if (umbral > 0 && !this.creditosHoy.alertado && this.creditosHoy.total >= umbral) {
+      this.creditosHoy.alertado = true;
+      logger.error('gasto de créditos de PlacApi por encima del umbral diario', { dia, creditos: this.creditosHoy.total, umbral });
     }
   }
 
