@@ -58,6 +58,10 @@ p { margin: 0; }
 }
 .vehicle-desc { color: var(--text-2); font-size: 10pt; }
 
+.partial { display: flex; gap: 6px; align-items: flex-start; background: var(--na-bg); border: 1px dashed var(--na); border-radius: 10px; color: var(--text-2); font-size: 8.5pt; padding: 8px 10px; margin-bottom: 10px; }
+.partial .ico { color: var(--na-text); margin-top: 1px; }
+.partial strong { color: var(--text-1); }
+
 /* conclusión */
 .conclusion {
   background: var(--bg-1); border: 1px solid var(--line); border-left: 5px solid var(--c);

@@ -1,6 +1,6 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
-import type { VehiculoRunt } from '../src/dominio/tipos.js';
+import type { DatosConsulta, VehiculoRunt } from '../src/dominio/tipos.js';
 import { armarInforme, concluir } from '../src/informe/armar.js';
 import { normalizarRunt } from '../src/normalizacion/runt.js';
 import { fecha, siNo, texto } from '../src/normalizacion/valores.js';
@@ -11,8 +11,19 @@ const raw = JSON.parse(readFileSync(new URL('../fixtures/runt-consulta-abc12d.js
 // 8 de octubre de 2026, 10:00 en Colombia: el día de la consulta real.
 const AHORA = new Date('2026-10-08T15:00:00Z');
 
-const informeDe = (v: VehiculoRunt, ahora = AHORA) =>
-  armarInforme(v, { ahora, consultadoEn: '2026-10-08T13:00:55.106Z', diasVigencia: 7 });
+const NC = { estado: 'no_consultada' } as const;
+
+const datosDe = (v: VehiculoRunt): DatosConsulta => ({
+  tipo: 'vin',
+  placa: v.placa,
+  vehiculo: { estado: 'ok', datos: v, consultadoEn: '2026-10-08T13:00:55.106Z' },
+  soatDisponible: true,
+  rtmDisponible: true,
+  legalDisponible: true,
+  prendas: NC, hurto: NC, siniestros: NC, multas: NC, impuestos: NC, historial: NC, avaluo: NC
+});
+
+const informeDe = (v: VehiculoRunt, ahora = AHORA) => armarInforme(datosDe(v), { ahora, diasVigencia: 7 });
 
 describe('normalización', () => {
   it('convierte formatos mezclados', () => {
@@ -75,13 +86,13 @@ describe('informe de la moto de ejemplo', () => {
   });
 
   it('lo no integrado aparece como no disponible, nunca omitido', () => {
-    for (const id of ['multas', 'impuestos', 'hurto', 'siniestros', 'propietarios', 'antecedentes_propietario']) {
+    for (const id of ['multas', 'impuestos', 'hurto', 'siniestros', 'propietarios', 'avaluo', 'antecedentes_propietario']) {
       expect(ver(id)).toMatchObject({ nivel: 'no_disponible', consulta: 'no_consultada' });
     }
   });
 
   it('concluye "Revisión recomendada" con 2 aspectos', () => {
-    expect(informe.conclusion).toMatchObject({ nivel: 'revision_recomendada', aspectosAtencion: 2, noDisponibles: 6 });
+    expect(informe.conclusion).toMatchObject({ nivel: 'revision_recomendada', aspectosAtencion: 2, noDisponibles: 7 });
   });
 
   it('vence a los 7 días y lleva código de verificación', () => {

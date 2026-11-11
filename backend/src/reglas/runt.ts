@@ -135,7 +135,10 @@ export function reglaRtm(v: VehiculoRunt, ctx: Contexto): Resultado {
   let nivel: Nivel;
   let valor: string;
 
-  if (!a.actual && obligacion && ctx.hoy < obligacion) {
+  if (!a.actual && v.rtmExento) {
+    nivel = 'sin_hallazgos';
+    valor = 'Aún no es obligatoria';
+  } else if (!a.actual && obligacion && ctx.hoy < obligacion) {
     nivel = 'sin_hallazgos';
     valor = `Aún no es obligatoria (primera revisión antes del ${fechaCorta(obligacion)})`;
   } else if (a.registros.length === 0) {
@@ -249,6 +252,7 @@ export function reglaRegrabados(v: VehiculoRunt, ctx: Contexto): Resultado {
 export function reglaDesintegracion(v: VehiculoRunt, ctx: Contexto): Resultado {
   const id = 'desintegracion';
   const nombre = 'Desintegración';
+  if (v.desintegrado === null) return { verificacion: verificacion(ctx, id, nombre, 'no_disponible', null), hallazgos: [] };
   if (!v.desintegrado) return { verificacion: verificacion(ctx, id, nombre, 'sin_hallazgos', 'Sin registro'), hallazgos: [] };
   return {
     verificacion: verificacion(ctx, id, nombre, 'alerta', 'Registra desintegración'),

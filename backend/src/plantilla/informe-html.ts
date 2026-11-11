@@ -1,4 +1,4 @@
-import type { EstadoConsulta, Hallazgo, Informe, Nivel, NivelGeneral, Verificacion, Vigencia } from '../dominio/tipos.js';
+import type { EstadoConsulta, Hallazgo, Informe, Nivel, NivelGeneral, TipoInforme, Verificacion, Vigencia } from '../dominio/tipos.js';
 import { fechaCorta, hoyColombia } from '../reglas/fechas.js';
 import { cssFuentes, logosDataUri } from './assets.js';
 import { estilos } from './estilos.js';
@@ -36,9 +36,11 @@ const GENERAL: Record<NivelGeneral, { clase: string; icono: keyof typeof ICONOS 
 const MOTIVO_NO_DISPONIBLE: Record<EstadoConsulta, string> = {
   ok: '',
   error: 'La fuente no respondió',
-  no_consultada: 'No incluido en este informe',
+  no_consultada: 'No incluido en este tipo de informe',
   no_cubierta: 'La fuente no publica este dato'
 };
+
+const NOMBRE_INFORME: Record<TipoInforme, string> = { basico: 'Informe Básico', vin: 'Informe por VIN', full: 'Informe Full' };
 
 const estado = (n: Nivel) => {
   const e = ESTADO[n];
@@ -90,6 +92,14 @@ function tablaVigencias(titulo: string, filas: Vigencia[], hoy: string, columnaE
   </table>`;
 }
 
+function tabla(titulo: string, columnas: string[], filas: string[][]): string {
+  return `<h3 class="ev-title">${esc(titulo)}</h3>
+  <table>
+    <thead><tr>${columnas.map((c) => `<th>${esc(c)}</th>`).join('')}</tr></thead>
+    <tbody>${filas.map((f) => `<tr>${f.map((c) => `<td>${esc(c)}</td>`).join('')}</tr>`).join('')}</tbody>
+  </table>`;
+}
+
 // ---------------------------------------------------------------------------
 
 export function renderInformeHtml(inf: Informe): string {
@@ -111,7 +121,7 @@ export function renderInformeHtml(inf: Informe): string {
 <title>Informe ${esc(inf.vehiculo.placa)} · Carro Sin Rollos</title>
 <style>
 ${cssFuentes()}
-${estilos({ placa: inf.vehiculo.placa, codigo: inf.codigoVerificacion, fecha: fechaLarga(inf.generadoEn) })}
+${estilos({ placa: inf.vehiculo.placa || NOMBRE_INFORME[inf.tipo], codigo: inf.codigoVerificacion, fecha: fechaLarga(inf.generadoEn) })}
 </style>
 </head>
 <body>
@@ -119,15 +129,17 @@ ${estilos({ placa: inf.vehiculo.placa, codigo: inf.codigoVerificacion, fecha: fe
 <header class="top">
   <div class="brand"><img class="brand-icon" src="${logos.icono}" alt=""><img class="brand-name" src="${logos.nombre}" alt="Carro Sin Rollos"></div>
   <div class="top-meta">
-    <span class="doc-type">Informe de revisión vehicular</span>
+    <span class="doc-type">${NOMBRE_INFORME[inf.tipo]}</span>
     <span>${esc(consultaFecha)}</span>
   </div>
 </header>
 
 <section class="vehicle">
-  <span class="plate">${esc(inf.vehiculo.placa)}</span>
+  ${inf.vehiculo.placa ? `<span class="plate">${esc(inf.vehiculo.placa)}</span>` : ''}
   <span class="vehicle-desc">${esc(inf.vehiculo.descripcion)}</span>
 </section>
+
+${inf.parcial ? `<p class="partial">${icono('na')}<span><strong>Informe parcial.</strong> Una o más fuentes no respondieron: esas verificaciones aparecen como "No disponible".</span></p>` : ''}
 
 <section class="conclusion ${g.clase}">
   <p class="kicker">Resultado de la revisión</p>
@@ -161,8 +173,11 @@ ${inf.hallazgos.length > 0 ? `<section class="block">
   <h2>Evidencia y datos consultados</h2>
   <h3 class="ev-title">Ficha del vehículo (RUNT)</h3>
   <table class="ficha"><tbody>${inf.vehiculo.ficha.map((f) => `<tr><th>${esc(f.etiqueta)}</th><td>${esc(f.valor)}</td></tr>`).join('')}</tbody></table>
-  ${tablaVigencias('Historial de SOAT', inf.evidencia.soat, hoy, 'Aseguradora')}
-  ${tablaVigencias('Historial de revisión técnico-mecánica', inf.evidencia.rtm, hoy, 'CDA')}
+  ${inf.tipo === 'basico' ? '' : tablaVigencias('Historial de SOAT', inf.evidencia.soat, hoy, 'Aseguradora')}
+  ${inf.tipo === 'basico' ? '' : tablaVigencias('Historial de revisión técnico-mecánica', inf.evidencia.rtm, hoy, 'CDA')}
+  ${inf.evidencia.traspasos.length > 0 ? `<h3 class="ev-title">Traspasos registrados</h3><p class="muted">${inf.evidencia.traspasos.map(fechaCorta).join(' · ')}</p>` : ''}
+  ${inf.evidencia.siniestros.length > 0 ? tabla('Reclamaciones a aseguradoras', ['Fecha', 'Amparo', 'Severidad'], inf.evidencia.siniestros.map((r) => [fechaCorta(r.fecha), r.amparo ?? '—', r.severidad ?? '—'])) : ''}
+  ${inf.evidencia.hurto.length > 0 ? tabla('Registros judiciales de la placa', ['Fecha', 'Categoría', 'Estado'], inf.evidencia.hurto.map((r) => [fechaCorta(r.fecha), r.categoria ?? '—', r.estado ?? '—'])) : ''}
 </section>
 
 <footer class="end">

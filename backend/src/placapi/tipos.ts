@@ -47,9 +47,59 @@ export interface RawConsultaRunt {
   fetchedAt?: string;
 }
 
+interface RawBloque<T> {
+  source?: string;
+  /** ok, warn, danger, info, empty o error, según la fuente. */
+  status?: string;
+  fetchedAt?: string;
+  data?: T | null;
+}
+
+export interface RawHurto {
+  reportadoHurto?: boolean;
+  denunciaHurtoActiva?: boolean;
+  totalRegistros?: number;
+  registros?: { categoria?: Txt; fechaVinculacion?: Txt; estadoCaso?: Txt }[] | null;
+  extincionDominio?: unknown[] | null;
+}
+
+export interface RawSiniestros {
+  perdidaTotal?: boolean;
+  totalSiniestros?: number;
+  siniestros?: { fecha?: Txt; amparo?: Txt; severidad?: Txt }[] | null;
+}
+
+export interface RawGarantias {
+  tienePrenda?: boolean;
+  /** Trae deudor y documento del deudor: nunca salen de la normalización. */
+  garantias?: { acreedores?: string[] | null; fechaInscripcion?: Txt }[] | null;
+}
+
+export interface RawAvaluo {
+  valorComercial?: number | null;
+  rangoMercado?: { min?: number; max?: number } | null;
+}
+
+export interface RawFull {
+  generatedAt?: string;
+  vehicle?: RawBloque<Record<string, unknown>>;
+  soat?: RawBloque<{ historico?: { aseguradora?: Txt; fechaInicioVigencia?: Txt; fechaExpedicion?: Txt; fechaVencimiento?: Txt; estado?: Txt }[] | null }>;
+  rtm?: RawBloque<{ exento?: boolean; historico?: { cda?: Txt; fechaExpedicion?: Txt; fechaVencimiento?: Txt; estado?: Txt }[] | null }>;
+  antecedentes?: RawBloque<{
+    prendas?: { acreedor?: Txt; tipoDocAcreedor?: Txt; fechaInscripcion?: Txt }[] | null;
+    embargos?: Record<string, unknown>[] | null;
+    historicoPropietarios?: number | null;
+  }>;
+  simit?: RawBloque<{ totalDeuda?: number; totalMultas?: number; acuerdosPago?: number }>;
+  impuestos?: RawBloque<{ departamento?: Txt; anios?: { anio?: number; pagado?: boolean }[] | null; totalPendiente?: number | null; deudaSinMonto?: unknown }>;
+  fasecolda?: RawBloque<RawAvaluo>;
+}
+
+export type RespuestaBloque<T> = RawBloque<T>;
+
 export type TipoDocumento = 'CC' | 'CE' | 'NIT' | 'PA' | 'PPT';
 
-export interface ParametrosConsulta {
+export interface ParametrosFull {
   placa: string;
   docType: TipoDocumento;
   docNumber: string;
@@ -57,5 +107,10 @@ export interface ParametrosConsulta {
 
 /** Puerto hacia el proveedor de datos. La implementación real y la simulada lo cumplen. */
 export interface FuenteVehicular {
-  consultarRunt(p: ParametrosConsulta): Promise<RawConsultaRunt>;
+  consultaFull(p: ParametrosFull): Promise<RawFull>;
+  consultaPorVin(vin: string): Promise<RawConsultaRunt>;
+  avaluoPorVin(vin: string): Promise<RawBloque<RawAvaluo>>;
+  reporteHurto(placa: string): Promise<RawBloque<RawHurto>>;
+  perdidaTotal(placa: string): Promise<RawBloque<RawSiniestros>>;
+  garantiasRgm(placa: string): Promise<RawBloque<RawGarantias>>;
 }

@@ -1,0 +1,67 @@
+{
+  "source": "avaluo",
+  "status": "info",
+  "data": {
+    "codigo": "05636023",
+    "marca": "MAZDA",
+    "linea": "CX30 GRAND TOURING LX TP 2500CC 7AB R18 TC CT AWD",
+    "modelo": 2023,
+    "valorComercial": 109100000,
+    "rangoMercado": {
+      "min": 109100000,
+      "max": 109100000
+    },
+    "clase": "CAMIONETA PASAJ.",
+    "codigoHomologado": "05606096",
+    "codigoFoto": [
+      {
+        "id": 49202000,
+        "nombre": "1618155-259.jpg"
+      }
+    ],
+    "fichaTecnica": {
+      "cilindraje": 2488,
+      "potencia": 186,
+      "combustible": "GASOLINA",
+      "sistemaAlimentacion": null,
+      "transmision": "4X4",
+      "tipoCaja": "TIPTRONICA",
+      "traccion": "DOBLE",
+      "peso": 1520,
+      "largo": 4395,
+      "ejes": 2,
+      "puertas": 5,
+      "capacidadPasajeros": 5,
+      "capacidadCarga": null,
+      "airbags": 7,
+      "abs": true,
+      "frenos": "DISCO/DISCO",
+      "tipoDireccion": "ELÉCTRICA",
+      "tipoFaros": "LED",
+      "suspensionTrasera": null,
+      "aireAcondicionado": true,
+      "tipoAireAcondicionado": "AUTOMATICO",
+      "sunroof": true,
+      "camaraReversa": true,
+      "sensoresParqueo": true,
+      "exploradoras": true,
+      "tapiceriaCuero": true,
+      "tacometro": null,
+      "vidriosElectricos": 4,
+      "espejosElectricos": 2,
+      "sillasElectricas": 1,
+      "clase": "CAMIONETA PASAJ.",
+      "categoria": "LIVIANO PASAJEROS",
+      "tipologia": "UTILITARIO DEPORTIVO 4X4",
+      "servicio": "PARTICULAR",
+      "nacionalidad": "MEX",
+      "importado": true,
+      "segmentoTamano": "C",
+      "segmentoCilindraje": "Y"
+    },
+    "origen": "vin"
+  },
+  "mode": "live",
+  "fetchedAt": "2026-07-24T15:04:05.000Z",
+  "_nota": "Ejemplo de la especificación pública de PlacApi (datos ficticios). No es una respuesta real."
+}

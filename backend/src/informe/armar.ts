@@ -1,14 +1,12 @@
 import { randomBytes, randomUUID } from 'node:crypto';
-import type { Conclusion, FilaEvidencia, Hallazgo, Informe, Verificacion, VehiculoRunt } from '../dominio/tipos.js';
+import type { Conclusion, DatosConsulta, FilaEvidencia, Hallazgo, Informe, TipoInforme, Verificacion, VehiculoRunt } from '../dominio/tipos.js';
 import { evaluar, VERSION_REGLAS } from '../reglas/index.js';
 import { fechaCorta, hoyColombia, sumarDias } from '../reglas/fechas.js';
 
-export const VERSION_PLANTILLA = '2026.10.1';
+export const VERSION_PLANTILLA = '2026.11.1';
 
 export interface OpcionesInforme {
   ahora?: Date;
-  /** Momento ISO en que la fuente entregó los datos. */
-  consultadoEn: string | null;
   diasVigencia: number;
 }
 
@@ -20,34 +18,41 @@ export function codigoVerificacion(): string {
   return `CSR-${c.slice(0, 4)}-${c.slice(4)}`;
 }
 
-export function armarInforme(vehiculo: VehiculoRunt, op: OpcionesInforme): Informe {
+export function armarInforme(datos: DatosConsulta, op: OpcionesInforme): Informe {
   const ahora = op.ahora ?? new Date();
   const hoy = hoyColombia(ahora);
-  const { verificaciones, hallazgos } = evaluar(vehiculo, { hoy, consultadoEn: op.consultadoEn });
+  const { verificaciones, hallazgos } = evaluar(datos, hoy);
+  const vehiculo = datos.vehiculo.estado === 'ok' ? datos.vehiculo.datos : null;
 
   // Alertas primero, después lo que requiere revisión.
   const ordenados = [...hallazgos].sort((a, b) => (a.nivel === b.nivel ? 0 : a.nivel === 'alerta' ? -1 : 1));
+  const porFecha = <T extends { desde: string | null }>(l: T[]) => [...l].sort((a, b) => (b.desde ?? '').localeCompare(a.desde ?? ''));
 
   return {
     id: randomUUID(),
     codigoVerificacion: codigoVerificacion(),
+    tipo: datos.tipo,
+    parcial: verificaciones.some((v) => v.consulta === 'error'),
     versiones: { reglas: VERSION_REGLAS, plantilla: VERSION_PLANTILLA },
     generadoEn: ahora.toISOString(),
     // Fin del día N en Colombia, guardado en UTC para poder comparar fechas.
     venceEn: new Date(`${sumarDias(hoy, op.diasVigencia)}T23:59:59-05:00`).toISOString(),
     vehiculo: {
-      placa: vehiculo.placa,
-      descripcion: describir(vehiculo),
-      ficha: ficha(vehiculo)
+      placa: datos.placa ?? '',
+      descripcion: vehiculo ? describir(vehiculo) : 'Informe por placa: no incluye la ficha del vehículo',
+      ficha: vehiculo ? ficha(vehiculo) : [{ etiqueta: 'Placa', valor: datos.placa ?? '—' }]
     },
     conclusion: concluir(verificaciones),
     verificaciones,
     hallazgos: ordenados,
     proximosPasos: proximosPasos(ordenados, verificaciones),
-    metodologia: metodologia(op.consultadoEn),
+    metodologia: metodologia(hoy, datos.tipo),
     evidencia: {
-      soat: [...vehiculo.soat].sort((a, b) => (b.desde ?? '').localeCompare(a.desde ?? '')),
-      rtm: [...vehiculo.rtm].sort((a, b) => (b.desde ?? '').localeCompare(a.desde ?? ''))
+      soat: porFecha(vehiculo?.soat ?? []),
+      rtm: porFecha(vehiculo?.rtm ?? []),
+      traspasos: datos.historial.estado === 'ok' ? datos.historial.datos.traspasos : [],
+      siniestros: datos.siniestros.estado === 'ok' ? datos.siniestros.datos.registros : [],
+      hurto: datos.hurto.estado === 'ok' ? datos.hurto.datos.registros : []
     }
   };
 }
@@ -98,20 +103,25 @@ function proximosPasos(hallazgos: Hallazgo[], verificaciones: Verificacion[]): s
   if (noDisponible('multas')) {
     pasos.add('Consulta en el SIMIT las multas del vehículo y del vendedor: para el traspaso, ambos deben estar a paz y salvo.');
   }
-  pasos.add('Compara los números de motor, chasis y VIN del vehículo con los de este informe y los de la licencia de tránsito.');
+  pasos.add(noDisponible('estado_matricula')
+    ? 'Confirma que estos resultados correspondan al vehículo: compara la placa con la licencia de tránsito.'
+    : 'Compara los números de motor, chasis y VIN del vehículo con los de este informe y los de la licencia de tránsito.');
   pasos.add('Revisa el vehículo con un mecánico de confianza o un peritaje: este informe no evalúa su estado mecánico.');
   return [...pasos];
 }
 
-function metodologia(consultadoEn: string | null): string[] {
-  const fecha = consultadoEn ? fechaCorta(consultadoEn.slice(0, 10)) : 'la fecha indicada';
-  return [
-    `Este informe reúne la información de las fuentes consultadas el ${fecha}. Los registros pueden cambiar después de esa fecha.`,
+function metodologia(hoy: string, tipo: TipoInforme): string[] {
+  const lineas = [
+    `Este informe reúne la información de las fuentes consultadas el ${fechaCorta(hoy)}. Los registros pueden cambiar después de esa fecha.`,
     '"Sin hallazgos" significa que la fuente respondió y no encontramos información adversa. No es una certificación oficial ni garantiza que el traspaso se pueda realizar.',
-    '"No disponible" significa que no tuvimos acceso a ese dato: la fuente no está integrada, no respondió o no publica esa información para este vehículo. No significa que no exista un problema.',
+    '"No disponible" significa que no tuvimos acceso a ese dato: no está incluido en este tipo de informe, la fuente no respondió o no publica esa información para este vehículo. No significa que no exista un problema.',
     'Carro Sin Rollos no es el RUNT ni una entidad del Estado. Consultamos registros públicos a través de proveedores de datos y organizamos la información para ayudarte a decidir.',
     'Este informe no evalúa el estado mecánico, la carrocería ni el kilometraje del vehículo.'
   ];
+  if (tipo === 'basico') {
+    lineas.push('El informe Básico se consulta solo con la placa: no identifica el vehículo ni confirma que la placa esté registrada. Verifica que estos resultados correspondan al vehículo que vas a comprar.');
+  }
+  return lineas;
 }
 
 function describir(v: VehiculoRunt): string {

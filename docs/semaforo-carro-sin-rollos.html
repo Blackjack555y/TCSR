@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semáforo del informe</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #131516; --bg-1: #1b1e20; --bg-2: #23272a; --line: #33383b;
+    --text-1: #f3f4f4; --text-2: #a9afb2;
+    --green-1: #2fe6a6; --green-2: #12a5a0; --orange: #f0a83c;
+    --ok: #2fe6a6; --ok-bg: rgba(47,230,166,.10);
+    --pending: #f0a83c; --pending-bg: rgba(240,168,60,.12);
+    --na: #8a8f93; --na-text: #b4b9bc; --na-bg: rgba(138,143,147,.14);
+    --alert: #e5484d; --alert-text: #ff6b6f; --alert-bg: rgba(229,72,77,.12);
+    --radius: 18px;
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 40px 16px 56px; background: var(--bg-0); color: var(--text-1); font-family: 'Inter', -apple-system, sans-serif; font-size: 15px; line-height: 1.55; }
+  .wrap { max-width: 1120px; margin: 0 auto; }
+  h1, h2, h3 { font-family: 'Sora', sans-serif; margin: 0; }
+  h1 { font-size: clamp(1.4rem, 4vw, 1.9rem); font-weight: 800; line-height: 1.2; margin-bottom: 8px; }
+  h1 .grad { background: linear-gradient(100deg, var(--green-1), var(--green-2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  h2 { font-size: 1.1rem; font-weight: 700; margin: 40px 0 8px; }
+  p { margin: 0 0 10px; }
+  .sub { color: var(--text-2); max-width: 72ch; }
+  .muted { color: var(--text-2); font-size: 0.86rem; }
+  .card { background: var(--bg-1); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px; }
+  code { font-family: ui-monospace, monospace; font-size: 0.85em; background: var(--bg-2); border: 1px solid var(--line); border-radius: 6px; padding: 1px 5px; }
+
+  .icon { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.3; stroke-linecap: round; stroke-linejoin: round; flex-shrink: 0; }
+  .state { display: inline-flex; align-items: center; gap: 5px; padding: 3px 9px; border-radius: 999px; border: 1px solid transparent; font-size: 0.7rem; font-weight: 700; letter-spacing: .02em; text-transform: uppercase; white-space: nowrap; }
+  .s-ok { background: var(--ok-bg); color: var(--ok); }
+  .s-revision { background: var(--pending-bg); color: var(--pending); border-color: rgba(240,168,60,.35); }
+  .s-na { background: var(--na-bg); color: var(--na-text); border-style: dashed; border-color: var(--na); }
+  .s-alerta { background: var(--alert-bg); color: var(--alert-text); border-color: rgba(229,72,77,.45); }
+
+  /* barra de control */
+  .controles { display: flex; flex-wrap: wrap; gap: 14px 24px; align-items: flex-end; margin: 22px 0 16px; }
+  .grupo label.titulo { display: block; font-size: 0.8rem; font-weight: 600; color: var(--text-2); margin-bottom: 6px; }
+  .segmentos { display: inline-flex; background: var(--bg-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
+  .segmentos input { position: absolute; opacity: 0; pointer-events: none; }
+  .segmentos label { padding: 7px 14px; border-radius: 999px; font-size: 0.86rem; font-weight: 600; color: var(--text-2); cursor: pointer; }
+  .segmentos input:checked + label { background: var(--green-2); color: #06201e; }
+  .segmentos input:focus-visible + label { outline: 2px solid var(--green-1); outline-offset: 2px; }
+  .grupo { min-width: 0; max-width: 100%; }
+  select { max-width: 100%; background: var(--bg-2); color: var(--text-1); border: 1px solid var(--line); border-radius: 10px; font: inherit; padding: 8px 12px; min-height: 40px; }
+
+  /* tablero */
+  .tablero { display: grid; gap: 16px; }
+  @media (min-width: 960px) { .tablero { grid-template-columns: minmax(0, 1fr) 360px; align-items: start; } .resultado { position: sticky; top: 16px; } }
+
+  .fila { display: grid; gap: 10px; padding: 14px 0; border-bottom: 1px solid var(--line); }
+  .fila:last-child { border-bottom: none; }
+  .fila-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+  .fila h3 { font-size: 0.95rem; }
+  .fila .fuente { color: var(--text-2); font-size: 0.75rem; }
+  .opciones { display: grid; gap: 6px; border: none; margin: 0; padding: 0; }
+  @media (min-width: 640px) { .opciones { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+  .opcion { display: flex; gap: 10px; align-items: flex-start; padding: 9px 11px; border: 1px solid var(--line); border-radius: 10px; background: var(--bg-2); cursor: pointer; }
+  .opcion input { accent-color: var(--green-2); margin: 3px 0 0; flex-shrink: 0; }
+  .opcion:has(input:checked) { border-color: var(--green-2); background: rgba(18,165,160,.08); }
+  .opcion:has(input:focus-visible) { outline: 2px solid var(--green-1); outline-offset: 1px; }
+  .opcion span.cond { display: block; color: var(--text-2); font-size: 0.8rem; margin-top: 3px; }
+  .fila.excluida .opciones { display: none; }
+  .fila.excluida .nota-excluida { display: block; }
+  .nota-excluida { display: none; color: var(--text-2); font-size: 0.84rem; }
+
+  /* resultado */
+  .conclusion { border-left: 5px solid var(--c); --c: var(--na); }
+  .conclusion.ok { --c: var(--ok); } .conclusion.revision { --c: var(--pending); } .conclusion.alerta { --c: var(--alert); }
+  .kicker { color: var(--text-2); font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: .07em; }
+  .titulo-res { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.35rem; line-height: 1.2; color: var(--c); margin: 6px 0 4px; display: flex; gap: 8px; align-items: center; }
+  .conclusion.alerta .titulo-res { color: var(--alert-text); } .conclusion.na .titulo-res { color: var(--na-text); }
+  .titulo-res .icon { width: 22px; height: 22px; }
+  .conteos { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 14px; }
+  .conteo { background: var(--bg-2); border-radius: 10px; padding: 8px 10px; }
+  .conteo b { display: block; font-family: 'Sora', sans-serif; font-size: 1.3rem; }
+  .conteo span { font-size: 0.74rem; color: var(--text-2); }
+  .cuenta { margin: 14px 0 0; padding: 12px 14px; background: var(--bg-0); border: 1px dashed var(--line); border-radius: 10px; font-size: 0.84rem; color: var(--text-2); }
+  .cuenta ol { margin: 6px 0 0; padding-left: 18px; }
+  .cuenta li.activa { color: var(--text-1); font-weight: 600; }
+  .parcial { display: none; margin-top: 12px; font-size: 0.82rem; color: var(--text-2); border: 1px dashed var(--na); background: var(--na-bg); border-radius: 10px; padding: 8px 10px; }
+  .parcial.visible { display: block; }
+  .parcial strong { color: var(--text-1); }
+
+  /* tablas de referencia */
+  .tabla-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 14px; margin-top: 12px; }
+  table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 640px; }
+  th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  th { background: var(--bg-2); color: var(--text-2); font-family: 'Sora', sans-serif; font-size: 0.74rem; }
+  td { background: var(--bg-1); color: var(--text-2); }
+  td:first-child { color: var(--text-1); font-weight: 600; }
+  tr:last-child td { border-bottom: none; }
+  .si { color: var(--ok); font-weight: 700; } .no { color: var(--na-text); }
+  .nota { background: var(--bg-1); border: 1px solid var(--line); border-left: 3px solid var(--orange); border-radius: 10px; padding: 12px 16px; font-size: 0.86rem; color: var(--text-2); margin-top: 14px; }
+  .nota strong { color: var(--text-1); }
+  .sin-js { display: block; margin: 0 0 16px; padding: 10px 14px; border: 1px dashed var(--na); background: var(--na-bg); border-radius: 10px; color: var(--text-2); font-size: 0.86rem; }
+  .con-js .sin-js { display: none; }
+  footer { margin-top: 40px; padding-top: 14px; border-top: 1px solid var(--line); color: var(--text-2); font-size: 0.8rem; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Semáforo del <span class="grad">informe</span></h1>
+  <p class="sub">Prototipo para hacer la cuenta: elige el tipo de informe y el resultado de cada verificación, y el documento calcula la conclusión con las mismas reglas que usa el backend. Sirve para revisar las reglas, preparar casos de prueba y explicarle a cualquiera cómo se llega a cada resultado.</p>
+  <p class="muted">Reglas versión 2026.11.1 · Fuente: <code>backend/src/reglas/</code> e <code>informe/armar.ts</code></p>
+
+  <p class="sin-js"><strong style="color:var(--text-1)">Vista de solo lectura.</strong> Tu visor no está ejecutando JavaScript, así que no se puede calcular. Ábrelo en Chrome, Firefox o Edge para usar el prototipo.</p>
+
+  <div class="controles">
+    <div class="grupo">
+      <label class="titulo">Tipo de informe</label>
+      <div class="segmentos" role="radiogroup" aria-label="Tipo de informe">
+        <input type="radio" name="tipo" id="t-basico" value="basico"><label for="t-basico">Básico</label>
+        <input type="radio" name="tipo" id="t-vin" value="vin"><label for="t-vin">Por VIN</label>
+        <input type="radio" name="tipo" id="t-full" value="full" checked><label for="t-full">Full</label>
+      </div>
+    </div>
+    <div class="grupo">
+      <label class="titulo" for="escenario">Cargar un escenario</label>
+      <select id="escenario">
+        <option value="">—</option>
+        <option value="limpio">Todo limpio</option>
+        <option value="moto">SOAT y RTM por vencer</option>
+        <option value="alertas">Con alertas (prenda, hurto, pérdida total)</option>
+        <option value="caida">Una fuente no respondió (informe parcial)</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="tablero">
+    <section class="card" aria-label="Verificaciones">
+      <div id="filas">
+      <div class="fila" data-id="matricula">
+        <div class="fila-head"><h3>Estado de la matrícula</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Estado de la matrícula</legend>
+          
+            <label class="opcion"><input type="radio" name="v-matricula" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Matrícula ACTIVA</span></span></label>
+            <label class="opcion"><input type="radio" name="v-matricula" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Cualquier otro estado (cancelada, suspendida…)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-matricula" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no trae el estado</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-matricula"></span></p>
+      </div>
+      <div class="fila" data-id="soat">
+        <div class="fila-head"><h3>SOAT</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">SOAT</legend>
+          
+            <label class="opcion"><input type="radio" name="v-soat" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Vigente y vence en más de 30 días, sin huecos</span></span></label>
+            <label class="opcion"><input type="radio" name="v-soat" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Vence en 30 días o menos, o hay huecos de más de 30 días en el historial</span></span></label>
+            <label class="opcion"><input type="radio" name="v-soat" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Vencido o sin ninguna póliza registrada</span></span></label>
+            <label class="opcion"><input type="radio" name="v-soat" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El bloque de SOAT no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-soat"></span></p>
+      </div>
+      <div class="fila" data-id="rtm">
+        <div class="fila-head"><h3>Revisión técnico-mecánica</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Revisión técnico-mecánica</legend>
+          
+            <label class="opcion"><input type="radio" name="v-rtm" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Vigente, o aún no le toca (exento o antes de la primera revisión)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-rtm" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Vence en 30 días o menos, o hay huecos de más de 30 días después de la primera obligación</span></span></label>
+            <label class="opcion"><input type="radio" name="v-rtm" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Vencida, o sin certificados cuando ya era obligatoria</span></span></label>
+            <label class="opcion"><input type="radio" name="v-rtm" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El bloque de RTM no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-rtm"></span></p>
+      </div>
+      <div class="fila" data-id="gravamenes">
+        <div class="fila-head"><h3>Embargos y limitaciones</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Embargos y limitaciones</legend>
+          
+            <label class="opcion"><input type="radio" name="v-gravamenes" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin gravámenes ni limitaciones</span></span></label>
+            <label class="opcion"><input type="radio" name="v-gravamenes" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Tiene gravamen, embargo o limitación a la propiedad</span></span></label>
+            <label class="opcion"><input type="radio" name="v-gravamenes" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se pudo consultar</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-gravamenes"></span></p>
+      </div>
+      <div class="fila" data-id="prendas">
+        <div class="fila-head"><h3>Prendas</h3><span class="fuente">RUNT / Confecámaras</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Prendas</legend>
+          
+            <label class="opcion"><input type="radio" name="v-prendas" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin prendas</span></span></label>
+            <label class="opcion"><input type="radio" name="v-prendas" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Tiene una o más prendas</span></span></label>
+            <label class="opcion"><input type="radio" name="v-prendas" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se pudo consultar</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-prendas"></span></p>
+      </div>
+      <div class="fila" data-id="regrabados">
+        <div class="fila-head"><h3>Regrabado de motor, chasis o VIN</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Regrabado de motor, chasis o VIN</legend>
+          
+            <label class="opcion"><input type="radio" name="v-regrabados" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin regrabados</span></span></label>
+            <label class="opcion"><input type="radio" name="v-regrabados" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Regrabado de motor, chasis, serie o VIN</span></span></label>
+            <label class="opcion"><input type="radio" name="v-regrabados" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no informa regrabados</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-regrabados"></span></p>
+      </div>
+      <div class="fila" data-id="desintegracion">
+        <div class="fila-head"><h3>Desintegración</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Desintegración</legend>
+          
+            <label class="opcion"><input type="radio" name="v-desintegracion" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin registro</span></span></label>
+            <label class="opcion"><input type="radio" name="v-desintegracion" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Registra desintegración (chatarrización)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-desintegracion" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se puede determinar</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-desintegracion"></span></p>
+      </div>
+      <div class="fila" data-id="multas">
+        <div class="fila-head"><h3>Multas y comparendos</h3><span class="fuente">SIMIT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Multas y comparendos</legend>
+          
+            <label class="opcion"><input type="radio" name="v-multas" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin deuda</span></span></label>
+            <label class="opcion"><input type="radio" name="v-multas" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Tiene acuerdo de pago, sin deuda vencida</span></span></label>
+            <label class="opcion"><input type="radio" name="v-multas" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Deuda pendiente en el SIMIT</span></span></label>
+            <label class="opcion"><input type="radio" name="v-multas" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El SIMIT no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-multas"></span></p>
+      </div>
+      <div class="fila" data-id="impuestos">
+        <div class="fila-head"><h3>Impuesto vehicular</h3><span class="fuente">Secretarías de Hacienda</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Impuesto vehicular</legend>
+          
+            <label class="opcion"><input type="radio" name="v-impuestos" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin deuda pendiente</span></span></label>
+            <label class="opcion"><input type="radio" name="v-impuestos" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Saldo pendiente, o deuda sin monto publicado</span></span></label>
+            <label class="opcion"><input type="radio" name="v-impuestos" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El departamento no publica el dato (22 lo publican)</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-impuestos"></span></p>
+      </div>
+      <div class="fila" data-id="propietarios">
+        <div class="fila-head"><h3>Historial de propietarios</h3><span class="fuente">RUNT</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Historial de propietarios</legend>
+          
+            <label class="opcion"><input type="radio" name="v-propietarios" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Menos de 3 traspasos en los últimos 2 años</span></span></label>
+            <label class="opcion"><input type="radio" name="v-propietarios" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">3 o más traspasos en los últimos 2 años</span></span></label>
+            <label class="opcion"><input type="radio" name="v-propietarios" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se pudo consultar</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-propietarios"></span></p>
+      </div>
+      <div class="fila" data-id="hurto">
+        <div class="fila-head"><h3>Reportes de hurto</h3><span class="fuente">Registros judiciales</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Reportes de hurto</legend>
+          
+            <label class="opcion"><input type="radio" name="v-hurto" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin registros</span></span></label>
+            <label class="opcion"><input type="radio" name="v-hurto" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Aparece en procesos penales, sin denuncia de hurto activa</span></span></label>
+            <label class="opcion"><input type="radio" name="v-hurto" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Denuncia de hurto activa o extinción de dominio</span></span></label>
+            <label class="opcion"><input type="radio" name="v-hurto" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-hurto"></span></p>
+      </div>
+      <div class="fila" data-id="siniestros">
+        <div class="fila-head"><h3>Reclamaciones a aseguradoras</h3><span class="fuente">FASECOLDA</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Reclamaciones a aseguradoras</legend>
+          
+            <label class="opcion"><input type="radio" name="v-siniestros" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin reclamaciones (solo cubre vehículos asegurados)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-siniestros" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Reclamaciones menores</span></span></label>
+            <label class="opcion"><input type="radio" name="v-siniestros" value="alerta">
+              <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Pérdida total</span></span></label>
+            <label class="opcion"><input type="radio" name="v-siniestros" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-siniestros"></span></p>
+      </div>
+      <div class="fila" data-id="avaluo">
+        <div class="fila-head"><h3>Valor de referencia</h3><span class="fuente">FASECOLDA</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Valor de referencia</legend>
+          
+            <label class="opcion"><input type="radio" name="v-avaluo" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Muestra el valor comercial (es informativo: nunca genera alerta)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-avaluo" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-avaluo"></span></p>
+      </div>
+      <div class="fila excluida" data-id="antecedentes">
+        <div class="fila-head"><h3>Antecedentes del propietario</h3><span class="fuente">—</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Antecedentes del propietario</legend>
+          
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-antecedentes">No se consulta en ningún informe hasta tener la validación legal.</span></p>
+      </div></div>
+    </section>
+
+    <aside class="resultado" aria-live="polite">
+      <section class="card conclusion na" id="conclusion">
+        <p class="kicker">Resultado de la revisión</p>
+        <p class="titulo-res" id="titulo"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>Revisión completada con observaciones</p>
+        <p class="muted" id="descripcion">No encontramos alertas, pero hay verificaciones que no pudimos hacer.</p>
+        <div class="conteos">
+          <div class="conteo"><b id="n-alerta">0</b><span>Alertas</span></div>
+          <div class="conteo"><b id="n-revision">0</b><span>Requieren revisión</span></div>
+          <div class="conteo"><b id="n-na">1</b><span>No disponibles</span></div>
+          <div class="conteo"><b id="n-ok">13</b><span>Sin hallazgos</span></div>
+        </div>
+        <p class="muted" style="margin-top:12px" id="linea">Así se ve en el informe: 1 verificación no disponible.</p>
+        <p class="parcial" id="parcial"><strong>Informe parcial:</strong> una fuente no respondió. El informe se entrega igual, con esa verificación como "No disponible".</p>
+        <div class="cuenta">
+          <strong style="color:var(--text-1)">Cómo se hace la cuenta</strong>
+          <ol id="pasos">
+            <li data-paso="alerta">¿Hay al menos una <b>alerta</b>? → Atención prioritaria</li>
+            <li data-paso="revision">Si no: ¿hay algo que <b>requiere revisión</b>? → Revisión recomendada</li>
+            <li data-paso="na" class="activa">Si no: ¿hay algo <b>no disponible</b>? → Revisión completada con observaciones</li>
+            <li data-paso="ok">Si no: → Sin alertas relevantes</li>
+          </ol>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+  <h2>Por qué no es un puntaje</h2>
+  <div class="nota">
+    <strong>El semáforo no suma puntos: manda el peor resultado.</strong> Una sola alerta (por ejemplo, un embargo) basta para "Atención prioritaria", aunque todo lo demás esté limpio, porque un puntaje promedio podría esconderla. Los conteos solo sirven para decir cuántos aspectos requieren atención. Y como "No disponible" significa que no tuvimos el dato, nunca deja concluir "Sin alertas relevantes". El sistema tampoco concluye nunca "listo para traspaso" ni "compra recomendada".
+  </div>
+
+  <h2>Qué verificaciones incluye cada informe</h2>
+  <p class="sub">Lo que un informe no incluye aparece como "No disponible", nunca se omite. Por eso el Básico y el Por VIN nunca pueden llegar a "Sin alertas relevantes".</p>
+  <div class="tabla-wrap"><table id="tabla-incluye"><thead><tr><th>Verificación</th><th>Fuente</th><th>Básico</th><th>Por VIN</th><th>Full</th></tr></thead>
+      <tbody><tr><td>Estado de la matrícula</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>SOAT</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Revisión técnico-mecánica</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Embargos y limitaciones</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Prendas</td><td>RUNT / Confecámaras</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Regrabado de motor, chasis o VIN</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Desintegración</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Multas y comparendos</td><td>SIMIT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Impuesto vehicular</td><td>Secretarías de Hacienda</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Historial de propietarios</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reportes de hurto</td><td>Registros judiciales</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reclamaciones a aseguradoras</td><td>FASECOLDA</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Valor de referencia</td><td>FASECOLDA</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Antecedentes del propietario</td><td>—</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td></tr></tbody></table></div>
+
+  <h2>Umbrales usados por las reglas</h2>
+  <div class="tabla-wrap">
+    <table>
+      <thead><tr><th>Regla</th><th>Valor</th><th>Dónde está</th><th>Estado</th></tr></thead>
+      <tbody>
+        <tr><td>SOAT o RTM "por vencer"</td><td>Vence en 30 días o menos → requiere revisión</td><td><code>reglas/vigencias.ts</code></td><td>Definido por desarrollo</td></tr>
+        <tr><td>Hueco en el historial de SOAT o RTM</td><td>Más de 30 días sin cobertura entre dos pólizas o certificados</td><td><code>reglas/vigencias.ts</code></td><td>Definido por desarrollo</td></tr>
+        <tr><td>Primera revisión técnico-mecánica</td><td>5 años desde la matrícula para particulares; 2 años para motos y servicio público</td><td><code>reglas/runt.ts</code></td><td>Por confirmar con la norma</td></tr>
+        <tr><td>Muchos cambios de dueño</td><td>3 o más traspasos en los últimos 2 años → requiere revisión</td><td><code>reglas/complementarias.ts</code></td><td>Por confirmar</td></tr>
+        <tr><td>Validación DIAN</td><td>Solo se evalúa si el RUNT la muestra; si no, no aparece en el informe</td><td><code>reglas/runt.ts</code></td><td>Definido por desarrollo</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <footer>Documento interno de Carro Sin Rollos · 9 de noviembre de 2026. Si una regla cambia en el código, este documento debe actualizarse con ella.</footer>
+</div>
+
+<script>
+  const ICONOS = {
+    ok: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+    revision: '<circle cx="12" cy="12" r="10"/><path d="M12 7v6"/><path d="M12 17h.01"/>',
+    na: '<circle cx="12" cy="12" r="10"/><path d="M8 12h8"/>',
+    alerta: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/>'
+  };
+  const icono = (k) => `<svg class="icon" viewBox="0 0 24 24" aria-hidden="true">${ICONOS[k]}</svg>`;
+  const ETIQUETA = { ok: 'Sin hallazgos', revision: 'Requiere revisión', na: 'No disponible', alerta: 'Alerta' };
+  const estado = (k) => `<span class="state s-${k}">${icono(k)}${ETIQUETA[k]}</span>`;
+
+  // Cada verificación: en qué informes está y qué condición produce cada nivel.
+  // "na" = la fuente no respondió o no publica el dato.
+  const VERIFICACIONES = [
+    { id: 'matricula', nombre: 'Estado de la matrícula', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
+      ok: 'Matrícula ACTIVA', alerta: 'Cualquier otro estado (cancelada, suspendida…)', na: 'La fuente no trae el estado' } },
+    { id: 'soat', nombre: 'SOAT', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
+      ok: 'Vigente y vence en más de 30 días, sin huecos', revision: 'Vence en 30 días o menos, o hay huecos de más de 30 días en el historial',
+      alerta: 'Vencido o sin ninguna póliza registrada', na: 'El bloque de SOAT no respondió' } },
+    { id: 'rtm', nombre: 'Revisión técnico-mecánica', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
+      ok: 'Vigente, o aún no le toca (exento o antes de la primera revisión)', revision: 'Vence en 30 días o menos, o hay huecos de más de 30 días después de la primera obligación',
+      alerta: 'Vencida, o sin certificados cuando ya era obligatoria', na: 'El bloque de RTM no respondió' } },
+    { id: 'gravamenes', nombre: 'Embargos y limitaciones', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
+      ok: 'Sin gravámenes ni limitaciones', alerta: 'Tiene gravamen, embargo o limitación a la propiedad', na: 'No se pudo consultar' } },
+    { id: 'prendas', nombre: 'Prendas', fuente: 'RUNT / Confecámaras', en: ['basico', 'vin', 'full'], opciones: {
+      ok: 'Sin prendas', alerta: 'Tiene una o más prendas', na: 'No se pudo consultar' } },
+    { id: 'regrabados', nombre: 'Regrabado de motor, chasis o VIN', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
+      ok: 'Sin regrabados', revision: 'Regrabado de motor, chasis, serie o VIN', na: 'La fuente no informa regrabados' } },
+    { id: 'desintegracion', nombre: 'Desintegración', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
+      ok: 'Sin registro', alerta: 'Registra desintegración (chatarrización)', na: 'No se puede determinar' } },
+    { id: 'multas', nombre: 'Multas y comparendos', fuente: 'SIMIT', en: ['full'], opciones: {
+      ok: 'Sin deuda', revision: 'Tiene acuerdo de pago, sin deuda vencida', alerta: 'Deuda pendiente en el SIMIT', na: 'El SIMIT no respondió' } },
+    { id: 'impuestos', nombre: 'Impuesto vehicular', fuente: 'Secretarías de Hacienda', en: ['full'], opciones: {
+      ok: 'Sin deuda pendiente', revision: 'Saldo pendiente, o deuda sin monto publicado', na: 'El departamento no publica el dato (22 lo publican)' } },
+    { id: 'propietarios', nombre: 'Historial de propietarios', fuente: 'RUNT', en: ['full'], opciones: {
+      ok: 'Menos de 3 traspasos en los últimos 2 años', revision: '3 o más traspasos en los últimos 2 años', na: 'No se pudo consultar' } },
+    { id: 'hurto', nombre: 'Reportes de hurto', fuente: 'Registros judiciales', en: ['basico', 'vin', 'full'], opciones: {
+      ok: 'Sin registros', revision: 'Aparece en procesos penales, sin denuncia de hurto activa', alerta: 'Denuncia de hurto activa o extinción de dominio', na: 'La fuente no respondió' } },
+    { id: 'siniestros', nombre: 'Reclamaciones a aseguradoras', fuente: 'FASECOLDA', en: ['basico', 'vin', 'full'], opciones: {
+      ok: 'Sin reclamaciones (solo cubre vehículos asegurados)', revision: 'Reclamaciones menores', alerta: 'Pérdida total', na: 'La fuente no respondió' } },
+    { id: 'avaluo', nombre: 'Valor de referencia', fuente: 'FASECOLDA', en: ['vin', 'full'], opciones: {
+      ok: 'Muestra el valor comercial (es informativo: nunca genera alerta)', na: 'La fuente no respondió' } },
+    { id: 'antecedentes', nombre: 'Antecedentes del propietario', fuente: '—', en: [], opciones: {} }
+  ];
+
+  const ESCENARIOS = {
+    limpio: {},
+    moto: { soat: 'revision', rtm: 'revision' },
+    alertas: { prendas: 'alerta', hurto: 'alerta', siniestros: 'alerta', impuestos: 'revision', soat: 'alerta' },
+    caida: { hurto: 'na' }
+  };
+
+  const NOMBRES_TIPO = { basico: 'Básico', vin: 'Por VIN', full: 'Full' };
+  const $ = (s) => document.querySelector(s);
+  const tipoActual = () => document.querySelector('input[name=tipo]:checked').value;
+  const incluida = (v, tipo) => v.en.includes(tipo);
+
+  function pintarFilas() {
+    $('#filas').innerHTML = VERIFICACIONES.map((v) => `
+      <div class="fila" data-id="${v.id}">
+        <div class="fila-head"><h3>${v.nombre}</h3><span class="fuente">${v.fuente}</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">${v.nombre}</legend>
+          ${Object.entries(v.opciones).map(([k, cond], i) => `
+            <label class="opcion"><input type="radio" name="v-${v.id}" value="${k}" ${i === 0 ? 'checked' : ''}>
+              <span>${estado(k)}<span class="cond">${cond}</span></span></label>`).join('')}
+        </fieldset>
+        <p class="nota-excluida">${estado('na')} <span id="motivo-${v.id}"></span></p>
+      </div>`).join('');
+    document.querySelectorAll('.opciones input').forEach((r) => r.addEventListener('change', () => { $('#escenario').value = ''; calcular(); }));
+  }
+
+  function nivelDe(v, tipo) {
+    if (!incluida(v, tipo)) return { nivel: 'na', error: false };
+    const n = document.querySelector(`input[name="v-${v.id}"]:checked`).value;
+    return { nivel: n, error: n === 'na' };
+  }
+
+  function calcular() {
+    const tipo = tipoActual();
+    const conteo = { alerta: 0, revision: 0, na: 0, ok: 0 };
+    let parcial = false;
+
+    for (const v of VERIFICACIONES) {
+      const fila = document.querySelector(`.fila[data-id="${v.id}"]`);
+      const fuera = !incluida(v, tipo);
+      fila.classList.toggle('excluida', fuera);
+      if (fuera) {
+        document.getElementById(`motivo-${v.id}`).textContent = v.id === 'antecedentes'
+          ? 'No se consulta en ningún informe hasta tener la validación legal.'
+          : `No incluido en el informe ${NOMBRES_TIPO[tipo]}.`;
+      }
+      const r = nivelDe(v, tipo);
+      conteo[r.nivel]++;
+      if (r.error) parcial = true;
+    }
+
+    let res;
+    if (conteo.alerta > 0) res = ['alerta', 'alerta', 'Atención prioritaria', 'Encontramos alertas que debes resolver antes de continuar con la compra.'];
+    else if (conteo.revision > 0) res = ['revision', 'revision', 'Revisión recomendada', conteo.na > 0
+      ? 'No encontramos alertas críticas, pero hay puntos que debes revisar y verificaciones no disponibles.'
+      : 'No encontramos alertas críticas, pero hay puntos que debes revisar antes de continuar.'];
+    else if (conteo.na > 0) res = ['na', 'na', 'Revisión completada con observaciones', 'No encontramos alertas, pero hay verificaciones que no pudimos hacer.'];
+    else res = ['ok', 'ok', 'Sin alertas relevantes', 'No encontramos alertas en las verificaciones realizadas. No es una certificación oficial.'];
+
+    const [clase, ic, titulo, desc] = res;
+    $('#conclusion').className = `card conclusion ${clase}`;
+    $('#titulo').innerHTML = `${icono(ic)}${titulo}`;
+    $('#descripcion').textContent = desc;
+    for (const k of Object.keys(conteo)) $(`#n-${k}`).textContent = conteo[k];
+
+    const atencion = conteo.alerta + conteo.revision;
+    const partes = [];
+    if (atencion) partes.push(`${atencion} ${atencion === 1 ? 'aspecto requiere' : 'aspectos requieren'} atención`);
+    if (conteo.na) partes.push(`${conteo.na} ${conteo.na === 1 ? 'verificación no disponible' : 'verificaciones no disponibles'}`);
+    $('#linea').textContent = `Así se ve en el informe: ${partes.join(' · ') || 'Ningún aspecto requiere atención'}.`;
+    $('#parcial').classList.toggle('visible', parcial);
+    document.querySelectorAll('#pasos li').forEach((li) => li.classList.toggle('activa', li.dataset.paso === clase));
+  }
+
+  function cargarEscenario(nombre) {
+    const e = ESCENARIOS[nombre];
+    if (!e) return;
+    for (const v of VERIFICACIONES) {
+      const valor = e[v.id] && v.opciones[e[v.id]] ? e[v.id] : 'ok';
+      const r = document.querySelector(`input[name="v-${v.id}"][value="${valor}"]`);
+      if (r) r.checked = true;
+    }
+    calcular();
+  }
+
+  function pintarTablaIncluye() {
+    const tipos = ['basico', 'vin', 'full'];
+    $('#tabla-incluye').innerHTML = `<thead><tr><th>Verificación</th><th>Fuente</th>${tipos.map((t) => `<th>${NOMBRES_TIPO[t]}</th>`).join('')}</tr></thead>
+      <tbody>${VERIFICACIONES.map((v) => `<tr><td>${v.nombre}</td><td>${v.fuente}</td>${tipos.map((t) => `<td>${incluida(v, t) ? '<span class="si">Incluida</span>' : '<span class="no">No disponible</span>'}</td>`).join('')}</tr>`).join('')}</tbody>`;
+  }
+
+  document.querySelectorAll('input[name=tipo]').forEach((r) => r.addEventListener('change', calcular));
+  $('#escenario').addEventListener('change', (e) => cargarEscenario(e.target.value));
+
+  // El HTML ya trae el estado inicial escrito: si este script no corre, el documento igual se lee.
+  pintarFilas();
+  pintarTablaIncluye();
+  calcular();
+  document.documentElement.classList.add('con-js');
+</script>
+</body>
+</html>

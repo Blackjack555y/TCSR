@@ -1,0 +1,244 @@
+{
+  "mode": "live",
+  "generatedAt": "2026-07-24T15:04:05.000Z",
+  "vehicle": {
+    "source": "vehiculo",
+    "status": "ok",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "placa": "ABC123",
+      "marca": "MAZDA",
+      "linea": "CX-30",
+      "modelo": 2023,
+      "cilindraje": 2000,
+      "combustible": "GASOLINA",
+      "servicio": "Particular",
+      "carroceria": "CAMIONETA",
+      "color": "ROJO",
+      "motor": "MTR0000001",
+      "chasis": "9GAJC6915FB040270",
+      "vin": "9GAJC6915FB040270",
+      "fechaMatricula": "15/03/2023",
+      "organismoTransito": "SECRETARIA DISTRITAL DE MOVILIDAD DE BOGOTA",
+      "estado": "activo",
+      "clase": "CAMIONETA",
+      "capacidadCarga": null,
+      "pesoBruto": 1830,
+      "ejes": 2,
+      "llantas": null,
+      "pasajerosSentados": 5,
+      "pasajerosTotal": null,
+      "puertas": 5,
+      "clasificacion": "CAMIONETA",
+      "numeroSerie": "9GAJC6915FB040270",
+      "licenciaTransito": "10035451456",
+      "regrabados": [],
+      "repotenciado": false,
+      "importado": false,
+      "vehiculoEnsenanza": false,
+      "antiguoClasico": false,
+      "seguridadEstado": false,
+      "tarjetaOperacion": null,
+      "polizasRc": [],
+      "tramites": [
+        {
+          "id": "267205667",
+          "fecha": "2023-03-15",
+          "estado": "AUTORIZADA",
+          "tramite": "TRÁMITE MATRÍCULA INICIAL",
+          "entidad": "SECRETARIA DISTRITAL DE MOVILIDAD DE BOGOTA",
+          "registro": "RNA"
+        }
+      ],
+      "normalizacion": null
+    }
+  },
+  "soat": {
+    "source": "soat",
+    "status": "ok",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "vigente": true,
+      "aseguradora": "SBS SEGUROS",
+      "poliza": "1508006948335000",
+      "fechaExpedicion": "20/09/2025",
+      "fechaVencimiento": "19/09/2026",
+      "diasParaVencer": 69,
+      "historico": [
+        {
+          "poliza": "1508006948335000",
+          "aseguradora": "SBS SEGUROS",
+          "fechaExpedicion": "2025-09-20",
+          "fechaInicioVigencia": "2025-09-20",
+          "fechaVencimiento": "2026-09-19",
+          "estado": "VIGENTE",
+          "estadoSoat": "EMITIDA",
+          "tipoTarifa": "120",
+          "origen": "NACIONAL"
+        }
+      ]
+    }
+  },
+  "rtm": {
+    "source": "rtm",
+    "status": "ok",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "vigente": true,
+      "exento": false,
+      "fechaPrimeraRevision": null,
+      "cda": "CDA FONTIBON S.A.S",
+      "fechaExpedicion": "22/09/2025",
+      "fechaVencimiento": "22/09/2026",
+      "diasParaVencer": 72,
+      "certificadoNumero": "189733821",
+      "historico": [
+        {
+          "certificadoNumero": "189733821",
+          "cda": "CDA FONTIBON S.A.S",
+          "fechaExpedicion": "2025-09-22",
+          "fechaVencimiento": "2026-09-22",
+          "estado": "APROBADA",
+          "tipoRevision": "REVISION TECNICO-MECANICO",
+          "vigente": true,
+          "informacionConsistente": true
+        }
+      ]
+    }
+  },
+  "antecedentes": {
+    "source": "antecedentes",
+    "status": "ok",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "prendas": [
+        {
+          "acreedor": "RCI COLOMBIA S.A. COMPAÑIA DE FINANCIAMIENTO",
+          "docAcreedor": "900977629",
+          "tipoDocAcreedor": "NIT",
+          "fechaInscripcion": "2021-09-30",
+          "confecamaras": true
+        }
+      ],
+      "embargos": [],
+      "historicoPropietarios": 1
+    }
+  },
+  "simit": {
+    "source": "multas",
+    "status": "ok",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "totalDeuda": 0,
+      "totalMultas": 0,
+      "multas": [],
+      "acuerdosPago": 0,
+      "acuerdos": [],
+      "pazSalvo": true,
+      "suspendida": false,
+      "cancelada": false,
+      "cursos": 0
+    }
+  },
+  "impuestos": {
+    "source": "Bogotá D.C.",
+    "status": "warn",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "departamento": "Bogotá D.C.",
+      "anios": [
+        {
+          "anio": 2024,
+          "valor": 412000,
+          "pagado": true
+        },
+        {
+          "anio": 2025,
+          "valor": 438000,
+          "pagado": true
+        },
+        {
+          "anio": 2026,
+          "valor": 465000,
+          "pagado": false
+        }
+      ],
+      "totalPendiente": 465000
+    },
+    "portalUrl": "https://www.haciendabogota.gov.co/es/sdh/pagos-impuesto-vehiculos"
+  },
+  "fasecolda": {
+    "source": "avaluo",
+    "status": "info",
+    "fetchedAt": "2026-07-24T15:04:05.000Z",
+    "mode": "live",
+    "data": {
+      "codigo": "05636023",
+      "marca": "MAZDA",
+      "linea": "CX30 GRAND TOURING LX TP 2500CC 7AB R18 TC CT AWD",
+      "modelo": 2023,
+      "valorComercial": 109100000,
+      "rangoMercado": {
+        "min": 109100000,
+        "max": 109100000
+      },
+      "clase": "CAMIONETA PASAJ.",
+      "codigoHomologado": "05606096",
+      "codigoFoto": [
+        {
+          "id": 49202000,
+          "nombre": "1618155-259.jpg"
+        }
+      ],
+      "fichaTecnica": {
+        "cilindraje": 2488,
+        "potencia": 186,
+        "combustible": "GASOLINA",
+        "sistemaAlimentacion": null,
+        "transmision": "4X4",
+        "tipoCaja": "TIPTRONICA",
+        "traccion": "DOBLE",
+        "peso": 1520,
+        "largo": 4395,
+        "ejes": 2,
+        "puertas": 5,
+        "capacidadPasajeros": 5,
+        "capacidadCarga": null,
+        "airbags": 7,
+        "abs": true,
+        "frenos": "DISCO/DISCO",
+        "tipoDireccion": "ELÉCTRICA",
+        "tipoFaros": "LED",
+        "suspensionTrasera": null,
+        "aireAcondicionado": true,
+        "tipoAireAcondicionado": "AUTOMATICO",
+        "sunroof": true,
+        "camaraReversa": true,
+        "sensoresParqueo": true,
+        "exploradoras": true,
+        "tapiceriaCuero": true,
+        "tacometro": null,
+        "vidriosElectricos": 4,
+        "espejosElectricos": 2,
+        "sillasElectricas": 1,
+        "clase": "CAMIONETA PASAJ.",
+        "categoria": "LIVIANO PASAJEROS",
+        "tipologia": "UTILITARIO DEPORTIVO 4X4",
+        "servicio": "PARTICULAR",
+        "nacionalidad": "MEX",
+        "importado": true,
+        "segmentoTamano": "C",
+        "segmentoCilindraje": "Y"
+      },
+      "origen": "vin"
+    }
+  },
+  "cost": 3,
+  "_nota": "Ejemplo de la especificación pública de PlacApi (datos ficticios). No es una respuesta real."
+}

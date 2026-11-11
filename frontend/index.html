@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="css/main_stylesheet.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/supabase.js"></script>
 </head>
 <body>
 
@@ -66,8 +68,10 @@
     <nav class="site-nav" aria-label="Principal">
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#que-revisamos">Qué revisamos</a>
+      <a href="#precios">Precios</a>
       <a href="#preguntas">Preguntas</a>
     </nav>
+    <div class="app-nav" id="nav-sesion"></div>
   </div>
 </header>
 
@@ -77,7 +81,7 @@
   <section class="hero container" id="inicio" aria-labelledby="hero-title">
     <div class="hero-copy">
       <p class="eyebrow">Asistente de compra de vehículos usados</p>
-      <h1 id="hero-title">Compra tu próximo vehiculo usado <span class="grad">sin rollos.</span></h1>
+      <h1 id="hero-title">Compra tu próximo vehículo usado <span class="grad">sin rollos.</span></h1>
       <p class="lead">Antes de pagar, revisa lo que no se ve a simple vista. Te mostramos alertas por embargos, multas o reportes de hurto, y <strong>qué deberías revisar antes de decidir</strong>.</p>
     </div>
 
@@ -96,10 +100,10 @@
         <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
       </button>
 
-      <p class="search-support">Consultamos y cruzamos registros públicos y bases de datos vehiculares de Colombia para entregarte un informe claro.</p>
+      <p class="search-support">Consultamos y cruzamos registros públicos y bases de datos vehiculares de Colombia para entregarte un informe claro. Para consultar, crea tu cuenta y compra tu informe.</p>
     </form>
 
-    <ul class="trust-list" aria-label="Lo que incluye el informe">
+    <ul class="trust-list" aria-label="Lo que puedes revisar">
       <li><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>Historial de propietarios</li>
       <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>Embargos y prendas</li>
       <li><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg>Multas y comparendos</li>
@@ -134,7 +138,7 @@
       <article class="card problem">
         <svg class="icon icon-lg" aria-hidden="true"><use href="#i-user-x"/></svg>
         <h3>Quien vende no es el dueño</h3>
-        <p>Si el documento no coincide con el propietario registrado, te lo decimos antes de que entregues un peso.</p>
+        <p>En el informe Full, si el documento no coincide con el propietario registrado, te lo decimos antes de que entregues un peso.</p>
       </article>
     </div>
   </section>
@@ -143,7 +147,7 @@
   <section class="section container" id="como-funciona" aria-labelledby="como-title">
     <div class="section-head">
       <h2 id="como-title">Cómo funciona</h2>
-      <p>Cuatro pasos, de la placa a una decisión informada.</p>
+      <p>Crea tu cuenta, compra tu informe y consulta con la placa, el VIN o la cédula del propietario, según el informe. Esto es lo que hacemos con cada consulta.</p>
     </div>
     <ol class="stages">
       <li class="card stage">
@@ -219,36 +223,49 @@
     </div>
   </section>
 
-  <!-- ============ PREGUNTAS ============ -->
-  <section class="section container narrow" id="preguntas" aria-labelledby="faq-title">
+  <!-- ============ PRECIOS ============ -->
+  <section class="section container" id="precios" aria-labelledby="precios-title">
     <div class="section-head">
-      <h2 id="faq-title">Preguntas frecuentes</h2>
+      <h2 id="precios-title">Elige tu informe</h2>
+      <p>Pagas solo por los informes que compras. Tu saldo no vence y, si una consulta falla, se devuelve.</p>
     </div>
-    <div class="faq">
-      <details>
-        <summary>¿Por qué me piden la cédula del propietario?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-        <p>El RUNT solo entrega la información completa del vehículo cuando la consulta incluye el documento del propietario actual. Pídesela al vendedor: si no coincide con el propietario registrado, el informe te lo indica. En el informe el documento nunca se muestra completo.</p>
-      </details>
-      <details>
-        <summary>¿Es un certificado oficial?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-        <p>No. Carro Sin Rollos no es el RUNT ni una entidad del Estado. Consultamos registros públicos a través de proveedores de datos y organizamos la información para que sepas qué revisar. Un resultado "sin hallazgos" no es una certificación ni garantiza el traspaso.</p>
-      </details>
-      <details>
-        <summary>¿Qué significa "No disponible"?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-        <p>Que no tuvimos acceso a ese dato: la fuente no está integrada, no respondió o no publica esa información para el vehículo. No significa que no exista un problema. Por eso nunca lo mostramos como "sin hallazgos".</p>
-      </details>
-      <details>
-        <summary>¿Reemplaza la revisión de un mecánico?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-        <p>No. Revisamos la situación legal, administrativa e histórica del vehículo. El estado mecánico, la carrocería y el kilometraje se revisan en persona, con un mecánico de confianza o un peritaje.</p>
-      </details>
-      <details>
-        <summary>¿Cuánto tarda la consulta?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-        <p>Normalmente menos de un minuto. Consultamos varias fuentes a la vez y esperamos a que respondan para armar el informe.</p>
-      </details>
-      <details>
-        <summary>¿Qué hacen con mis datos?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
-        <p>Los usamos solo para hacer la consulta y generar tu informe, conforme a la Ley 1581 de 2012. <button type="button" class="link-btn" data-open-privacy>Lee el aviso de privacidad</button>.</p>
-      </details>
+    <div class="check-grid">
+      <article class="card check">
+        <h3>Básico</h3>
+        <p class="saldo-num">$ 22.500</p>
+        <p><strong>Pide:</strong> solo la placa.</p>
+        <p>Reportes de hurto, reclamaciones a aseguradoras y prendas. No identifica el vehículo ni incluye SOAT, tecnomecánica, embargos ni multas.</p>
+        <a class="btn-secondary mt" href="comprar.html?tipo=basico">Comprar Básico</a>
+      </article>
+      <article class="card check">
+        <h3>Por VIN</h3>
+        <p class="saldo-num">$ 37.000</p>
+        <p><strong>Pide:</strong> solo el VIN.</p>
+        <p>Ficha del vehículo, SOAT, tecnomecánica, embargos, regrabados, avalúo, hurto y reclamaciones. No incluye multas, impuestos ni propietarios.</p>
+        <a class="btn-secondary mt" href="comprar.html?tipo=vin">Comprar Por VIN</a>
+      </article>
+      <article class="card check stage-key">
+        <h3>Full</h3>
+        <p class="saldo-num">$ 45.000</p>
+        <p><strong>Pide:</strong> placa y cédula del propietario.</p>
+        <p>Todo lo anterior, más multas del SIMIT, impuestos e historial de propietarios. El análisis más completo.</p>
+        <a class="btn-cta mt" href="comprar.html?tipo=full"><span>Comprar Full</span></a>
+      </article>
+    </div>
+    <div class="card mt">
+      <h3 class="card-title">Precio por informe según la cantidad de cada compra</h3>
+      <div class="tabla-wrap">
+        <table class="precios">
+          <thead><tr><th>Plan</th><th>Informes</th><th class="n">Básico</th><th class="n">Por VIN</th><th class="n">Full</th></tr></thead>
+          <tbody>
+            <tr><td>Comprador / Vendedor</td><td>1 a 5</td><td class="n">$ 22.500</td><td class="n">$ 37.000</td><td class="n">$ 45.000</td></tr>
+            <tr><td>Dealer / Revendedor</td><td>6 a 50</td><td class="n">$ 17.500</td><td class="n">$ 29.000</td><td class="n">$ 35.000</td></tr>
+            <tr><td>Mayorista</td><td>51 a 200</td><td class="n">$ 11.000</td><td class="n">$ 18.500</td><td class="n">$ 22.000</td></tr>
+            <tr><td>Flotas</td><td>201 o más</td><td class="n">$ 10.000</td><td class="n">$ 16.500</td><td class="n">$ 20.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="field-hint">Precios finales con IVA.</p>
     </div>
   </section>
 
@@ -264,6 +281,55 @@
     </div>
   </section>
 
+  <!-- ============ PREGUNTAS ============ -->
+  <section class="section container narrow" id="preguntas" aria-labelledby="faq-title">
+    <div class="section-head">
+      <h2 id="faq-title">Preguntas frecuentes</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>¿Qué informe me conviene?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>Si vas en serio con un vehículo, el Full: es el único que incluye multas, impuestos e historial de propietarios. Si aún no tienes la cédula del propietario, el Por VIN revisa casi todo lo demás. El Básico sirve como primer filtro: solo necesita la placa, pero no identifica el vehículo.</p>
+      </details>
+      <details>
+        <summary>¿Por qué el informe Full pide la cédula del propietario?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>El RUNT solo entrega la información completa cuando la consulta incluye el documento del propietario actual. Pídesela al vendedor: si no coincide con el propietario registrado, te lo decimos y no se descuenta de tu saldo. En el informe el documento nunca aparece.</p>
+      </details>
+      <details>
+        <summary>¿Mi saldo vence?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>No. Los informes que compras quedan en tu saldo hasta que los uses. Cada compra sirve para un solo tipo de informe.</p>
+      </details>
+      <details>
+        <summary>¿Qué pasa si la consulta falla?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>Si no se puede completar, el informe vuelve a tu saldo. Si solo falla una fuente, recibes un informe parcial en el que esa verificación aparece como "No disponible".</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tiempo tengo mi informe?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>Lo puedes ver y descargar en PDF durante 7 días desde que se genera. Después se elimina.</p>
+      </details>
+      <details>
+        <summary>¿Es un certificado oficial?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>No. Carro Sin Rollos no es el RUNT ni una entidad del Estado. Consultamos registros públicos a través de proveedores de datos y organizamos la información para que sepas qué revisar. Un resultado "sin hallazgos" no es una certificación ni garantiza el traspaso.</p>
+      </details>
+      <details>
+        <summary>¿Qué significa "No disponible"?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>Que no tuvimos acceso a ese dato: no está incluido en tu tipo de informe, la fuente no respondió o no publica esa información para el vehículo. No significa que no exista un problema. Por eso nunca lo mostramos como "sin hallazgos".</p>
+      </details>
+      <details>
+        <summary>¿Reemplaza la revisión de un mecánico?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>No. Revisamos la situación legal, administrativa e histórica del vehículo. El estado mecánico, la carrocería y el kilometraje se revisan en persona, con un mecánico de confianza o un peritaje.</p>
+      </details>
+      <details>
+        <summary>¿Cuánto tarda la consulta?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>Normalmente menos de un minuto. Consultamos varias fuentes y esperamos a que respondan para armar el informe.</p>
+      </details>
+      <details>
+        <summary>¿Qué hacen con mis datos?<svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p>Los usamos solo para hacer la consulta y generar tu informe, conforme a la Ley 1581 de 2012. <a href="privacidad.html">Lee el aviso de privacidad</a>.</p>
+      </details>
+    </div>
+  </section>
+
 </main>
 
 <footer class="site-footer">
@@ -274,107 +340,13 @@
     </div>
     <p class="footer-legal">Carro Sin Rollos no es el RUNT ni una entidad oficial. La información de cada informe proviene de registros públicos consultados en la fecha indicada.</p>
     <div class="footer-links">
-      <button type="button" class="link-btn" data-open-privacy>Aviso de privacidad</button>
-      <a href="#" id="policy-link">Política de tratamiento de datos</a>
+      <a href="privacidad.html">Aviso de privacidad</a>
+      <a href="terminos.html">Términos y condiciones</a>
       <span>© 2026 Carro Sin Rollos</span>
     </div>
   </div>
 </footer>
 
-<!-- ============ DIÁLOGO DE CONSULTA ============ -->
-<dialog class="modal" id="query-dialog" aria-labelledby="query-title">
-  <button type="button" class="modal-close" data-close aria-label="Cerrar"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
-
-  <!-- Paso: datos del propietario + autorización -->
-  <form class="modal-step" data-step="form" id="owner-form" novalidate>
-    <p class="eyebrow">Placa <span class="report-plate" data-plate-out>—</span></p>
-    <h2 id="query-title">Un paso más para analizarla</h2>
-    <p class="modal-text">El RUNT exige el documento del <strong>propietario actual</strong>. Pídeselo al vendedor: si no coincide con el registrado, te lo diremos.</p>
-
-    <div class="doc-row">
-      <div class="field">
-        <label for="doc-type">Tipo</label>
-        <select id="doc-type" name="docType">
-          <option value="CC">C.C.</option>
-          <option value="CE">C.E.</option>
-          <option value="NIT">NIT</option>
-          <option value="PA">Pasaporte</option>
-          <option value="PPT">PPT</option>
-        </select>
-      </div>
-      <div class="field">
-        <label for="doc-number">Número de documento del propietario</label>
-        <input id="doc-number" name="docNumber" type="text" inputmode="numeric" autocomplete="off" maxlength="15"
-               aria-describedby="doc-error" required>
-      </div>
-    </div>
-    <p class="field-error" id="doc-error" role="alert" hidden></p>
-
-    <!-- PENDIENTE DE VALIDACIÓN LEGAL: finalidad, consulta de datos de un tercero (el propietario) y retención. -->
-    <fieldset class="consent">
-      <legend>Aviso de privacidad y tratamiento de datos</legend>
-      <p>Usaremos la placa y el documento solo para consultar la información del vehículo y generar tu informe, conforme a la Ley 1581 de 2012 y el Capítulo 25 del Decreto 1074 de 2015.</p>
-      <details>
-        <summary>Leer el aviso completo</summary>
-        <div data-privacy-text></div>
-      </details>
-      <div class="choices">
-        <label class="choice"><input type="radio" name="consent" value="si"> Sí acepto</label>
-        <label class="choice"><input type="radio" name="consent" value="no"> No acepto</label>
-      </div>
-      <p class="consent-msg" id="consent-msg" hidden>Sin tu autorización no podemos hacer la consulta. Puedes cambiar tu respuesta cuando quieras.</p>
-    </fieldset>
-
-    <button type="submit" class="btn-cta btn-block" id="analyze-btn" disabled aria-describedby="analyze-hint">
-      <span>Analizar vehículo</span>
-      <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-    </button>
-    <p class="field-hint center" id="analyze-hint">Completa el documento y acepta el aviso para continuar.</p>
-  </form>
-
-  <!-- Paso: consultando -->
-  <div class="modal-step" data-step="loading" role="status" aria-live="polite" hidden>
-    <div class="loader" aria-hidden="true">
-      <svg class="loader-ring" viewBox="0 0 100 100">
-        <defs>
-          <linearGradient id="hex-grad" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0%" stop-color="#2fe6a6"/><stop offset="100%" stop-color="#12a5a0"/>
-          </linearGradient>
-        </defs>
-        <polygon class="loader-track" points="50,4 90,27 90,73 50,96 10,73 10,27"/>
-        <polygon class="loader-trace" points="50,4 90,27 90,73 50,96 10,73 10,27" pathLength="100"/>
-      </svg>
-      <img src="img/logo-icono.png" alt="" width="34" height="46">
-    </div>
-    <h2>Consultando registros</h2>
-    <p class="modal-text">Estamos revisando <span class="report-plate" data-plate-out>—</span> en varias fuentes a la vez. Puede tardar hasta un minuto.</p>
-    <ul class="source-list">
-      <li>RUNT</li><li>SIMIT</li><li>Impuestos</li><li>FASECOLDA</li><li>Reportes de hurto</li>
-    </ul>
-  </div>
-
-  <!-- Paso: resultado del sistema (error, sin datos, demo...) -->
-  <div class="modal-step" data-step="system" role="alert" hidden>
-    <span class="system-icon" aria-hidden="true"><svg class="icon icon-lg"><use href="#i-review"/></svg></span>
-    <h2 data-system-title>—</h2>
-    <p class="modal-text" data-system-text>—</p>
-    <div class="modal-actions">
-      <button type="button" class="btn-secondary" data-retry>Intentar de nuevo</button>
-      <button type="button" class="btn-cta" data-close>Entendido</button>
-    </div>
-  </div>
-</dialog>
-
-<!-- Aviso de privacidad completo (también se abre desde el footer y las preguntas) -->
-<dialog class="modal" id="privacy-dialog" aria-labelledby="privacy-title">
-  <button type="button" class="modal-close" data-close aria-label="Cerrar"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
-  <h2 id="privacy-title">Aviso de privacidad y tratamiento de datos</h2>
-  <div class="privacy-text" id="privacy-text">
-    <p>En cumplimiento de la Ley 1581 de 2012, "Por la cual se dictan disposiciones generales para la protección de datos personales", y del Capítulo 25 del Decreto 1074 de 2015, Carro Sin Rollos, como responsable del tratamiento, informa que la placa y el número de documento que ingreses se usarán únicamente para consultar la información del vehículo en registros públicos, a través de proveedores de datos, y para generar tu informe.</p>
-    <p>Los datos personales de terceros que aparezcan en el informe se muestran enmascarados. Carro Sin Rollos garantizará la confidencialidad, seguridad y circulación restringida de los datos. Puedes conocer, actualizar, rectificar y suprimir tus datos, y revocar esta autorización, conforme a la <a href="#" class="policy-link">Política de Tratamiento de Datos Personales</a>.</p>
-  </div>
-</dialog>
-
-<script src="js/landing.js"></script>
+<script type="module" src="js/landing.js"></script>
 </body>
 </html>

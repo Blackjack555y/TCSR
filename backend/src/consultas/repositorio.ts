@@ -1,14 +1,17 @@
 import type { Consulta } from './modelo.js';
 
-/** Persistencia de consultas. En producción irá Supabase (ver db/migraciones). */
+/** Persistencia de consultas. */
 export interface RepositorioConsultas {
   crear(c: Consulta): Promise<void>;
   obtener(id: string): Promise<Consulta | null>;
   actualizar(id: string, cambios: Partial<Consulta>): Promise<Consulta | null>;
-  /** Consulta más reciente de la misma placa y documento, creada después de `desde`. */
-  buscarReciente(placa: string, docHash: string, desde: string): Promise<Consulta | null>;
+  listarDeUsuario(usuarioId: string, limite: number): Promise<Consulta[]>;
+  /** Consulta más reciente del usuario con esa huella, creada después de `desde`. */
+  buscarReciente(usuarioId: string, huella: string, desde: string): Promise<Consulta | null>;
   /** Consultas con PDF cuya vigencia terminó antes de `ahora`. */
   listarVencidas(ahora: string): Promise<Consulta[]>;
+  /** Consultas que quedaron a medias, por ejemplo por un reinicio del servidor. */
+  listarColgadas(antesDe: string): Promise<Consulta[]>;
 }
 
 /** Repositorio en memoria para desarrollo y pruebas. Se pierde al reiniciar. */
@@ -32,17 +35,28 @@ export class RepositorioMemoria implements RepositorioConsultas {
     return structuredClone(nueva);
   }
 
-  async buscarReciente(placa: string, docHash: string, desde: string) {
-    let mejor: Consulta | null = null;
-    for (const c of this.datos.values()) {
-      if (c.placa === placa && c.docHash === docHash && c.creadaEn >= desde && (!mejor || c.creadaEn > mejor.creadaEn)) {
-        mejor = c;
-      }
-    }
-    return mejor ? structuredClone(mejor) : null;
+  async listarDeUsuario(usuarioId: string, limite: number) {
+    return [...this.datos.values()]
+      .filter((c) => c.usuarioId === usuarioId)
+      .sort((a, b) => b.creadaEn.localeCompare(a.creadaEn))
+      .slice(0, limite)
+      .map((c) => structuredClone(c));
+  }
+
+  async buscarReciente(usuarioId: string, huella: string, desde: string) {
+    const [c] = [...this.datos.values()]
+      .filter((x) => x.usuarioId === usuarioId && x.huella === huella && x.creadaEn >= desde)
+      .sort((a, b) => b.creadaEn.localeCompare(a.creadaEn));
+    return c ? structuredClone(c) : null;
   }
 
   async listarVencidas(ahora: string) {
     return [...this.datos.values()].filter((c) => c.pdfClave && c.venceEn && c.venceEn < ahora).map((c) => structuredClone(c));
+  }
+
+  async listarColgadas(antesDe: string) {
+    return [...this.datos.values()]
+      .filter((c) => (c.estado === 'en_curso' || c.estado === 'generando_pdf') && c.creadaEn < antesDe)
+      .map((c) => structuredClone(c));
   }
 }

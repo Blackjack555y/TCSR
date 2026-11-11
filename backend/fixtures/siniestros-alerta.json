@@ -1,0 +1,26 @@
+{
+  "source": "siniestros",
+  "status": "danger",
+  "data": {
+    "placa": "ABC123",
+    "perdidaTotal": true,
+    "totalSiniestros": 2,
+    "siniestros": [
+      {
+        "fecha": "2022-09-13",
+        "amparo": "Pérdida Mayor Cuantía",
+        "severidad": "mayor"
+      },
+      {
+        "fecha": "2015-01-20",
+        "amparo": "Pérdida Menor Cuantía",
+        "severidad": "menor"
+      }
+    ],
+    "fuente": "Reclamaciones reportadas por aseguradoras",
+    "cobertura": "Solo vehículos que estuvieron asegurados; reclamaciones reportadas por las aseguradoras desde 2008."
+  },
+  "mode": "live",
+  "fetchedAt": "2026-07-24T15:04:05.000Z",
+  "_nota": "Ejemplo de la especificación pública de PlacApi (datos ficticios). No es una respuesta real."
+}

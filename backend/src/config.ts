@@ -19,6 +19,18 @@ const esquema = z.object({
   /** Cloudflare Turnstile. Sin secreto, la verificación se omite (solo desarrollo). */
   TURNSTILE_SECRETO: z.string().optional(),
 
+  /** Sin Supabase, los datos quedan en memoria y disco (solo desarrollo). */
+  SUPABASE_URL: z.url().optional(),
+  /** Llave secreta (service role). Nunca debe llegar al frontend. */
+  SUPABASE_LLAVE_SECRETA: z.string().optional(),
+
+  /** Wompi: llaves del entorno de pruebas (pub_test_) o producción (pub_prod_). */
+  WOMPI_LLAVE_PUBLICA: z.string().default('pub_test_desarrollo'),
+  WOMPI_SECRETO_INTEGRIDAD: z.string().default('solo-para-desarrollo-integridad'),
+  WOMPI_SECRETO_EVENTOS: z.string().default('solo-para-desarrollo-eventos'),
+  /** A dónde vuelve el usuario después de pagar. */
+  WOMPI_URL_REDIRECCION: z.url().optional(),
+
   /** Días que el PDF se puede ver y descargar. */
   PDF_DIAS_VIGENCIA: z.coerce.number().int().positive().default(7),
   /** Ruta a un Chrome/Chromium del sistema. Vacío = el que instala Playwright. */
@@ -29,12 +41,19 @@ const esquema = z.object({
   if (c.PLACAPI_MODO === 'real' && !c.PLACAPI_KEY) {
     ctx.addIssue({ code: 'custom', path: ['PLACAPI_KEY'], message: 'Se requiere con PLACAPI_MODO=real' });
   }
+  if (c.SUPABASE_URL && !c.SUPABASE_LLAVE_SECRETA) {
+    ctx.addIssue({ code: 'custom', path: ['SUPABASE_LLAVE_SECRETA'], message: 'Se requiere con SUPABASE_URL' });
+  }
   if (c.NODE_ENV === 'production') {
     if (c.DOC_HASH_SECRETO === 'solo-para-desarrollo-cambiar') {
       ctx.addIssue({ code: 'custom', path: ['DOC_HASH_SECRETO'], message: 'Define un secreto propio en producción' });
     }
-    if (!c.TURNSTILE_SECRETO) {
-      ctx.addIssue({ code: 'custom', path: ['TURNSTILE_SECRETO'], message: 'Se requiere en producción' });
+    const requeridas = ['TURNSTILE_SECRETO', 'SUPABASE_URL', 'SUPABASE_LLAVE_SECRETA'] as const;
+    for (const k of requeridas) {
+      if (!c[k]) ctx.addIssue({ code: 'custom', path: [k], message: 'Se requiere en producción' });
+    }
+    for (const k of ['WOMPI_LLAVE_PUBLICA', 'WOMPI_SECRETO_INTEGRIDAD', 'WOMPI_SECRETO_EVENTOS'] as const) {
+      if (/desarrollo/.test(c[k])) ctx.addIssue({ code: 'custom', path: [k], message: 'Se requiere en producción' });
     }
   }
 });

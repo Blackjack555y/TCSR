@@ -4,42 +4,70 @@ import { crearVerificadorTurnstile } from './api/turnstile.js';
 import { cargarConfig } from './config.js';
 import { RepositorioMemoria } from './consultas/repositorio.js';
 import { ServicioConsultas } from './consultas/servicio.js';
+import { CuentasMemoria } from './cuentas/repositorio.js';
+import { sesionDesarrollo, sesionSupabase } from './cuentas/sesion.js';
 import { logger } from './logger.js';
+import { ServicioPagos } from './pagos/servicio.js';
 import { RenderizadorPdf } from './pdf/render.js';
 import { crearFuente } from './placapi/index.js';
 import { crearHasher } from './privacidad/hash.js';
+import { AlmacenamientoSupabase } from './supabase/almacenamiento.js';
+import { crearClienteServidor } from './supabase/cliente.js';
+import { ConsultasSupabase } from './supabase/consultas.js';
+import { CuentasSupabase } from './supabase/cuentas.js';
 
 const config = cargarConfig();
 const pdf = new RenderizadorPdf(config.CHROME_PATH);
+const esProduccion = config.NODE_ENV === 'production';
 
-// TODO: reemplazar memoria y disco local por Supabase (tablas en db/migraciones, bucket privado).
+// Con Supabase configurado se usa de verdad; sin él, memoria y disco (solo desarrollo).
+const db = config.SUPABASE_URL ? crearClienteServidor(config.SUPABASE_URL, config.SUPABASE_LLAVE_SECRETA!) : null;
+const repo = db ? new ConsultasSupabase(db) : new RepositorioMemoria();
+const cuentas = db ? new CuentasSupabase(db) : new CuentasMemoria();
+const almacenamiento = db ? new AlmacenamientoSupabase(db) : new AlmacenamientoLocal(config.ALMACENAMIENTO_DIR);
+
 const servicio = new ServicioConsultas({
-  repo: new RepositorioMemoria(),
+  repo,
+  cuentas,
   fuente: crearFuente(config),
   pdf,
-  almacenamiento: new AlmacenamientoLocal(config.ALMACENAMIENTO_DIR),
+  almacenamiento,
   hash: crearHasher(config.DOC_HASH_SECRETO),
   diasVigencia: config.PDF_DIAS_VIGENCIA
 });
 
+const pagos = new ServicioPagos(cuentas, {
+  publicKey: config.WOMPI_LLAVE_PUBLICA,
+  secretoIntegridad: config.WOMPI_SECRETO_INTEGRIDAD,
+  secretoEventos: config.WOMPI_SECRETO_EVENTOS,
+  redirectUrl: config.WOMPI_URL_REDIRECCION
+});
+
 const app = crearApp({
   servicio,
+  pagos,
+  cuentas,
+  verificarSesion: db ? sesionSupabase(db) : sesionDesarrollo,
   verificarHumano: crearVerificadorTurnstile(config.TURNSTILE_SECRETO),
-  origenes: config.CORS_ORIGENES.split(',').map((o) => o.trim()).filter(Boolean)
+  origenes: config.CORS_ORIGENES.split(',').map((o) => o.trim()).filter(Boolean),
+  // Aprobar compras sin pagar solo existe con datos simulados: con PlacApi real nunca,
+  // aunque NODE_ENV quede mal configurado.
+  rutasDesarrollo: !esProduccion && config.PLACAPI_MODO === 'simulado'
 });
 
 const servidor = app.listen(config.PORT, () => {
-  logger.info('API lista', { puerto: config.PORT, placapi: config.PLACAPI_MODO });
+  logger.info('API lista', { puerto: config.PORT, placapi: config.PLACAPI_MODO, datos: db ? 'supabase' : 'memoria' });
 });
 
-// Borra los PDF vencidos cada hora.
-const limpieza = setInterval(() => {
+// Mantenimiento: devuelve el saldo de consultas colgadas y borra los PDF vencidos.
+const mantenimiento = setInterval(() => {
+  servicio.recuperarColgadas().catch((e) => logger.error('recuperación fallida', { causa: String(e) }));
   servicio.limpiarVencidas().catch((e) => logger.error('limpieza fallida', { causa: String(e) }));
-}, 3_600_000);
+}, 10 * 60_000);
 
 async function apagar(senal: string) {
   logger.info('apagando', { senal });
-  clearInterval(limpieza);
+  clearInterval(mantenimiento);
   servidor.close();
   await servicio.esperarProcesos();
   await pdf.cerrar();

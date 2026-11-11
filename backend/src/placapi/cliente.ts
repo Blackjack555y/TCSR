@@ -1,5 +1,5 @@
 import { ErrorFuente, traducirError } from './errores.js';
-import type { FuenteVehicular, ParametrosConsulta, RawConsultaRunt } from './tipos.js';
+import type { FuenteVehicular, ParametrosFull, RawAvaluo, RawConsultaRunt, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from './tipos.js';
 
 interface Opciones {
   url: string;
@@ -11,8 +11,28 @@ interface Opciones {
 export class ClientePlacApi implements FuenteVehicular {
   constructor(private readonly opciones: Opciones) {}
 
-  consultarRunt(p: ParametrosConsulta): Promise<RawConsultaRunt> {
-    return this.post<RawConsultaRunt>('/consulta', p);
+  consultaFull(p: ParametrosFull) {
+    return this.post<RawFull>('/consulta-full', p);
+  }
+
+  consultaPorVin(vin: string) {
+    return this.post<RawConsultaRunt>('/consulta-por-vin', { vin });
+  }
+
+  avaluoPorVin(vin: string) {
+    return this.post<RespuestaBloque<RawAvaluo>>('/avaluo-por-vin', { vin });
+  }
+
+  reporteHurto(placa: string) {
+    return this.post<RespuestaBloque<RawHurto>>('/reporte-hurto', { placa });
+  }
+
+  perdidaTotal(placa: string) {
+    return this.post<RespuestaBloque<RawSiniestros>>('/perdida-total', { placa });
+  }
+
+  garantiasRgm(placa: string) {
+    return this.post<RespuestaBloque<RawGarantias>>('/garantias-rgm', { placa });
   }
 
   private async post<T>(ruta: string, cuerpo: unknown): Promise<T> {

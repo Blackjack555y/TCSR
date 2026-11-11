@@ -1,25 +1,28 @@
-// Genera el PDF de ejemplo con la respuesta guardada, sin servidor ni créditos.
+// Genera un PDF de ejemplo por cada tipo de informe, con la fuente simulada.
 // Uso: npm run demo:pdf   (con CHROME_PATH si no instalaste el Chromium de Playwright)
 
-import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { obtenerDatos, type EntradaInforme } from '../src/consultas/orquestador.js';
 import { armarInforme } from '../src/informe/armar.js';
-import { normalizarRunt } from '../src/normalizacion/runt.js';
 import { RenderizadorPdf } from '../src/pdf/render.js';
-import type { RawConsultaRunt } from '../src/placapi/tipos.js';
+import { FuenteSimulada } from '../src/placapi/simulado.js';
 import { renderInformeHtml } from '../src/plantilla/informe-html.js';
 
-const raw = JSON.parse(await readFile(new URL('../fixtures/runt-consulta-abc12d.json', import.meta.url), 'utf8')) as RawConsultaRunt;
-const ahora = process.argv[2] ? new Date(process.argv[2]) : new Date('2026-10-08T15:00:00Z');
+const ejemplos: [string, EntradaInforme][] = [
+  ['basico', { tipo: 'basico', placa: 'ABC12D' }],
+  ['vin', { tipo: 'vin', vin: '9FLA37CZ0EA000001' }],
+  ['full', { tipo: 'full', placa: 'ABC123', docType: 'CC', docNumber: '1020304050' }],
+  ['full-alertas', { tipo: 'full', placa: 'ALE123', docType: 'CC', docNumber: '1020304050' }]
+];
 
-const informe = armarInforme(normalizarRunt(raw), { ahora, consultadoEn: raw.fetchedAt ?? null, diasVigencia: 7 });
-const html = renderInformeHtml(informe);
-
-await mkdir('out', { recursive: true });
-await writeFile('out/informe-ejemplo.html', html);
-await writeFile('out/informe-ejemplo.json', JSON.stringify(informe, null, 2));
-
+const ahora = new Date('2026-10-08T15:00:00Z');
+const fuente = new FuenteSimulada(0);
 const pdf = new RenderizadorPdf(process.env.CHROME_PATH);
-const t = performance.now();
-await writeFile('out/informe-ejemplo.pdf', await pdf.renderizar(html));
-console.log(`PDF generado en ${Math.round(performance.now() - t)} ms → out/informe-ejemplo.pdf`);
+await mkdir('out', { recursive: true });
+
+for (const [nombre, entrada] of ejemplos) {
+  const informe = armarInforme(await obtenerDatos(fuente, entrada), { ahora, diasVigencia: 7 });
+  await writeFile(`out/informe-${nombre}.pdf`, await pdf.renderizar(renderInformeHtml(informe)));
+  console.log(`out/informe-${nombre}.pdf · ${informe.conclusion.titulo} · ${informe.hallazgos.length} hallazgos`);
+}
 await pdf.cerrar();

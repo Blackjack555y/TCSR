@@ -13,7 +13,8 @@
     "build": "tsc -p tsconfig.build.json",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "demo:pdf": "tsx --env-file-if-exists=.env scripts/demo-pdf.ts"
+    "demo:pdf": "tsx --env-file-if-exists=.env scripts/demo-pdf.ts",
+    "e2e:web": "tsx scripts/e2e-web.ts"
   },
   "dependencies": {
     "@fontsource/inter": "^5.3.0",

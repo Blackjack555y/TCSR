@@ -242,7 +242,7 @@
         <li><code>/reporte-hurto</code> · 1</li>
         <li><code>/perdida-total</code> · 2</li>
       </ul>
-      <p class="needs">Pide placa y VIN. Trae RUNT, SOAT, RTM y embargos, pero no SIMIT ni impuestos, que exigen la cédula.</p>
+      <p class="needs">Solo pide el VIN. Trae RUNT, SOAT, RTM y embargos, pero no SIMIT ni impuestos, que exigen la cédula.</p>
     </div>
     <div class="card scenario recommended">
       <div class="ribbon">Recomendado</div>
@@ -252,9 +252,8 @@
         <li><code>/consulta-full</code> · 3</li>
         <li><code>/reporte-hurto</code> · 1</li>
         <li><code>/perdida-total</code> · 2</li>
-        <li><code>/garantias-rgm</code> · +1 solo si el RUNT marca prenda</li>
       </ul>
-      <p class="needs">Pide placa y cédula del propietario activo. Si la cédula no coincide, la consulta falla sin cobrar, y eso ya es una alerta para el comprador.</p>
+      <p class="needs">Pide placa y cédula del propietario activo. Las prendas ya vienen incluidas. Si la cédula no coincide, la consulta falla sin cobrar, y eso ya es una alerta para el comprador.</p>
     </div>
   </div>
 
@@ -311,11 +310,6 @@
           </select>
         </div>
         <div class="field">
-          <label for="prenda">Vehículos con prenda: <span id="prenda-out" class="num">10</span>%</label>
-          <input id="prenda" type="range" min="0" max="100" step="5" value="10">
-          <p class="hint">Solo aplica al informe completo: suma 1 crédito por <code>/garantias-rgm</code>.</p>
-        </div>
-        <div class="field">
           <label for="cache">Placas repetidas dentro del caché: <span id="cache-out" class="num">15</span>%</label>
           <input id="cache" type="range" min="0" max="80" step="5" value="15">
           <p class="hint">Cuando la misma placa se consulta otra vez, se sirve desde caché y no cobra.</p>
@@ -339,7 +333,6 @@
   <ol class="tips">
     <li><strong>Caché propio por placa en Supabase</strong><span>Guardar cada bloque con su fecha y respetar los mismos tiempos que PlacApi: 30 días para RUNT y avalúo, hasta el vencimiento para SOAT y RTM, 24 horas para multas. Así una placa que consultan varios compradores se paga una sola vez. Guardar solo datos del vehículo, nunca la cédula completa.</span></li>
     <li><strong>Usar consulta-full en vez de llamadas sueltas</strong><span>Agrupa unas 8 fuentes por 3 créditos. Solo conviene llamar endpoints sueltos para actualizar un bloque vencido, por ejemplo <code>/multas</code> a 1 crédito.</span></li>
-    <li><strong>Llamar garantias-rgm solo cuando haga falta</strong><span>El RUNT ya dice si hay prenda (<code>prendas: "SI"</code>). Solo en ese caso vale la pena pagar 1 crédito por el detalle del acreedor.</span></li>
     <li><strong>No usar refresh por defecto</strong><span>Forzar la consulta nueva siempre cobra. Reservarlo para cuando el usuario pida explícitamente actualizar un dato.</span></li>
     <li><strong>Validar antes de llamar</strong><span>Revisar el formato de la placa (5 a 7 caracteres) y del documento en el frontend y el backend. Un error de formato no cobra, pero los 404 pasan del cupo gratis rápido si no se filtran.</span></li>
     <li><strong>Llamar hurto y pérdida total en paralelo con consulta-full</strong><span>Solo piden la placa y no dependen del resultado RUNT. En paralelo no cuestan más y la espera total la marca consulta-full, que ya tarda decenas de segundos.</span></li>
@@ -369,12 +362,10 @@
   function calc() {
     const reports = Math.max(0, Number($('reports').value) || 0);
     const base = Number($('scenario').value);
-    const prendaPct = Number($('prenda').value) / 100;
-    const cachePct = Number($('cache').value) / 100;
-    $('prenda-out').textContent = $('prenda').value;
-    $('cache-out').textContent = $('cache').value;
+        const cachePct = Number($('cache').value) / 100;
+        $('cache-out').textContent = $('cache').value;
 
-    const perReport = base + (base === 6 ? prendaPct : 0);
+    const perReport = base;
     const billed = Math.round(reports * (1 - cachePct));
     // la compra mínima es de 30 créditos
     const credits = Math.max(Math.ceil(billed * perReport), reports > 0 ? 30 : 0);
@@ -389,7 +380,7 @@
     $('out-per').textContent = reports ? fmt.format(cop / reports) + ' COP' : '—';
   }
 
-  ['reports', 'scenario', 'prenda', 'cache'].forEach((id) => $(id).addEventListener('input', calc));
+  ['reports', 'scenario', 'cache'].forEach((id) => $(id).addEventListener('input', calc));
   calc();
 </script>
 </body>

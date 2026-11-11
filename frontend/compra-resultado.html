@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tu compra · Carro Sin Rollos</title>
+<meta name="theme-color" content="#131516">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="img/logo-icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main_stylesheet.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/supabase.js"></script>
+</head>
+<body>
+
+<svg class="hex-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hexes" width="140" height="121" patternUnits="userSpaceOnUse" patternTransform="translate(-40,-30)">
+      <polygon points="70,4 132,39 132,91 70,126 8,91 8,39" fill="none" stroke="#2a3d3a" stroke-width="1.1"/>
+    </pattern>
+    <radialGradient id="fade" cx="25%" cy="15%" r="80%">
+      <stop offset="0%" stop-color="#131516" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#131516" stop-opacity="0.95"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#hexes)"/>
+  <rect width="1440" height="900" fill="url(#fade)"/>
+</svg>
+
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Carro Sin Rollos, ir al inicio">
+      <img class="brand-icon" src="img/logo-icono.png" alt="" width="30" height="40">
+      <img class="brand-name" src="img/logo-nombre.png" alt="Carro Sin Rollos" width="180" height="15">
+    </a>
+    <nav class="app-nav" id="nav" aria-label="Principal"></nav>
+  </div>
+</header>
+
+<main id="contenido" class="app-main container app-narrow">
+  <section class="card center" id="caja" role="status" aria-live="polite">
+    <div class="loader" aria-hidden="true">
+      <svg class="loader-ring" viewBox="0 0 100 100">
+        <defs><linearGradient id="hex-grad" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#2fe6a6"/><stop offset="100%" stop-color="#12a5a0"/></linearGradient></defs>
+        <polygon class="loader-track" points="50,4 90,27 90,73 50,96 10,73 10,27"/>
+        <polygon class="loader-trace" points="50,4 90,27 90,73 50,96 10,73 10,27" pathLength="100"/>
+      </svg>
+      <img src="img/logo-icono.png" alt="" width="34" height="46">
+    </div>
+    <h1 class="card-title" id="titulo">Confirmando tu pago</h1>
+    <p class="muted" id="texto">Esto puede tardar unos segundos.</p>
+    <div class="btn-row mt" id="acciones" hidden></div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="footer-legal">Carro Sin Rollos no es el RUNT ni una entidad oficial. La información de cada informe proviene de registros públicos consultados en la fecha indicada.</p>
+    <div class="footer-links">
+      <a href="privacidad.html">Aviso de privacidad</a>
+      <a href="terminos.html">Términos y condiciones</a>
+      <span>© 2026 Carro Sin Rollos</span>
+    </div>
+  </div>
+</footer>
+<script type="module" src="js/pagina-compra-resultado.js"></script>
+</body>
+</html>

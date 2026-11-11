@@ -1,0 +1,35 @@
+# Blueprint de Render: crea el servicio del backend con su Dockerfile.
+services:
+  - type: web
+    name: carro-sin-rollos-api
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/salud
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PLACAPI_MODO
+        value: real
+      - key: PLACAPI_TIMEOUT_MS
+        value: 90000
+      - key: PDF_DIAS_VIGENCIA
+        value: 7
+      - key: DOC_HASH_SECRETO
+        generateValue: true
+      - key: PLACAPI_KEY
+        sync: false
+      - key: CORS_ORIGENES
+        sync: false
+      - key: TURNSTILE_SECRETO
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_LLAVE_SECRETA
+        sync: false
+      - key: WOMPI_LLAVE_PUBLICA
+        sync: false
+      - key: WOMPI_SECRETO_INTEGRIDAD
+        sync: false
+      - key: WOMPI_SECRETO_EVENTOS
+        sync: false

@@ -1,6 +1,9 @@
 // Modelo propio de Carro Sin Rollos. Nada de aquí depende de la forma en que
 // responde PlacApi: la capa de normalización traduce hacia estos tipos.
 
+/** Los tres informes que se venden. Cada compra sirve para un solo tipo. */
+export type TipoInforme = 'basico' | 'vin' | 'full';
+
 /** Lo que ve el usuario. Cada nivel tiene su color y su texto; nunca se mezclan. */
 export type Nivel = 'sin_hallazgos' | 'revision' | 'no_disponible' | 'alerta';
 
@@ -25,6 +28,7 @@ export type IdVerificacion =
   | 'hurto'
   | 'siniestros'
   | 'propietarios'
+  | 'avaluo'
   | 'antecedentes_propietario';
 
 export interface Verificacion {
@@ -96,10 +100,82 @@ export interface VehiculoRunt {
   garantiasMobiliarias: number;
   blindado: boolean | null;
   repotenciado: boolean | null;
-  desintegrado: boolean;
+  /** null si la fuente no permite saberlo. */
+  desintegrado: boolean | null;
   dian: { validacion: string | null; visible: boolean };
   soat: Vigencia[];
   rtm: Vigencia[];
+  /** La fuente indica que aún no le toca revisión técnico-mecánica. */
+  rtmExento?: boolean;
+}
+
+export interface Prenda {
+  /** Razón social. Si parece una persona natural, se enmascara. */
+  acreedor: string;
+  fecha: string | null;
+}
+
+export interface Hurto {
+  denunciaActiva: boolean;
+  reportado: boolean;
+  totalRegistros: number;
+  extincionDominio: number;
+  /** Solo categoría, estado y fecha: sin noticia criminal ni datos de personas. */
+  registros: { categoria: string | null; fecha: string | null; estado: string | null }[];
+}
+
+export interface Siniestros {
+  perdidaTotal: boolean;
+  total: number;
+  registros: { fecha: string | null; amparo: string | null; severidad: string | null }[];
+}
+
+export interface Multas {
+  totalDeuda: number;
+  totalMultas: number;
+  acuerdosPago: number;
+}
+
+export interface Impuestos {
+  departamento: string | null;
+  totalPendiente: number;
+  aniosPendientes: number[];
+  /** Hay deuda, pero la gobernación no publica el monto. */
+  deudaSinMonto: boolean;
+}
+
+export interface Historial {
+  propietarios: number | null;
+  /** Fechas ISO de los traspasos registrados. */
+  traspasos: string[];
+}
+
+export interface Avaluo {
+  valorComercial: number;
+  rango: { min: number; max: number } | null;
+}
+
+/** Resultado de una fuente: el dato, o por qué no lo tenemos. */
+export type Bloque<T> =
+  | { estado: 'ok'; datos: T; consultadoEn: string | null }
+  | { estado: 'error' | 'no_consultada' | 'no_cubierta'; consultadoEn?: string | null };
+
+/** Todo lo que se obtuvo para un informe, ya normalizado. */
+export interface DatosConsulta {
+  tipo: TipoInforme;
+  placa: string | null;
+  vehiculo: Bloque<VehiculoRunt>;
+  /** Partes de la ficha que fallaron por separado: nunca se tratan como "no tiene". */
+  soatDisponible: boolean;
+  rtmDisponible: boolean;
+  legalDisponible: boolean;
+  prendas: Bloque<Prenda[]>;
+  hurto: Bloque<Hurto>;
+  siniestros: Bloque<Siniestros>;
+  multas: Bloque<Multas>;
+  impuestos: Bloque<Impuestos>;
+  historial: Bloque<Historial>;
+  avaluo: Bloque<Avaluo>;
 }
 
 // ---------------------------------------------------------------------------
@@ -125,6 +201,9 @@ export interface FilaEvidencia {
 export interface Informe {
   id: string;
   codigoVerificacion: string;
+  tipo: TipoInforme;
+  /** Alguna fuente falló: el informe se entrega con esas verificaciones como no disponibles. */
+  parcial: boolean;
   versiones: { reglas: string; plantilla: string };
   generadoEn: string;
   venceEn: string;
@@ -141,5 +220,8 @@ export interface Informe {
   evidencia: {
     soat: Vigencia[];
     rtm: Vigencia[];
+    traspasos: string[];
+    siniestros: Siniestros['registros'];
+    hurto: Hurto['registros'];
   };
 }
