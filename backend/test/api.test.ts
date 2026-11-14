@@ -177,7 +177,38 @@ describe('consultas', () => {
     const e = await request(a).get(`/api/consultas/${r.body.id}`).set(conToken(token));
     expect(e.body.estado).toBe('completada');
     expect(e.body.resultado.parcial).toBe(true);
+    expect(e.body.resultado.reintentoGratis).toBe(true);
     expect((await saldos(a)).full).toBe(0);
+  });
+
+  it('después de un informe parcial, la misma consulta se repite una vez sin costo', async () => {
+    const a = app();
+    await comprar(a, 'full', 2);
+    const r1 = await request(a).post('/api/consultas').set(conToken(token)).send(full({ placa: 'FAL123' }));
+    await servicio.esperarProcesos();
+    reloj = new Date(reloj.getTime() + 60_000);
+    const r2 = await request(a).post('/api/consultas').set(conToken(token)).send(full({ placa: 'FAL123' }));
+    expect(r2.status).toBe(202);
+    expect(r2.body.id).not.toBe(r1.body.id);
+    await servicio.esperarProcesos();
+    expect((await saldos(a)).full).toBe(1); // solo se pagó la primera
+    const e2 = await request(a).get(`/api/consultas/${r2.body.id}`).set(conToken(token));
+    expect(e2.body.resultado.reintentoGratis).toBe(false);
+    // El reintento no da otro reintento: la tercera vez reutiliza el último informe.
+    reloj = new Date(reloj.getTime() + 60_000);
+    const r3 = await request(a).post('/api/consultas').set(conToken(token)).send(full({ placa: 'FAL123' }));
+    expect(r3.status).toBe(200);
+    expect(r3.body.id).toBe(r2.body.id);
+    expect((await saldos(a)).full).toBe(1);
+  });
+
+  it('dos consultas iguales al mismo tiempo se cobran una sola vez', async () => {
+    const a = app();
+    await comprar(a, 'full', 3);
+    const [r1, r2, r3] = await Promise.all([1, 2, 3].map(() => request(a).post('/api/consultas').set(conToken(token)).send(full())));
+    expect(new Set([r1!.body.id, r2!.body.id, r3!.body.id]).size).toBe(1);
+    expect([r1!.status, r2!.status, r3!.status].sort()).toEqual([200, 200, 202]);
+    expect((await saldos(a)).full).toBe(2);
   });
 });
 

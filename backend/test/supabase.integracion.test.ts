@@ -151,6 +151,24 @@ describe.skipIf(!HAY_SUPABASE)('integración con Supabase', () => {
     expect((await cuentas.saldos(c.id)).vin).toBe(0);
   });
 
+  it('dos instancias del backend con la misma consulta a la vez cobran una sola vez', async () => {
+    const c = await crearUsuario();
+    const compra = await request(app).post('/api/compras').set(auth(c.token)).send({ tipo: 'basico', cantidad: 3 });
+    await request(app).post(`/api/dev/compras/${compra.body.compra.id}/aprobar`).set(auth(c.token));
+    // Cada instancia tiene su propio candado en memoria: aquí solo protege el índice de la base.
+    const instancia = () => new ServicioConsultas({
+      repo, cuentas, fuente: new FuenteSimulada(400), almacenamiento,
+      pdf: { renderizar: async () => PDF }, hash: crearHasher('secreto-de-pruebas-123'), diasVigencia: 7
+    });
+    const [s1, s2] = [instancia(), instancia()];
+    const pedido = { usuarioId: c.id, entrada: { tipo: 'basico', placa: 'DUP123' } as const, consentimiento: { version: '2026-10' }, ip: '127.0.0.1' };
+    const [r1, r2] = await Promise.all([s1.crear(pedido), s2.crear(pedido)]);
+    await Promise.all([s1.esperarProcesos(), s2.esperarProcesos()]);
+    expect(r1.consulta.id).toBe(r2.consulta.id);
+    expect([r1.reutilizada, r2.reutilizada].sort()).toEqual([false, true]);
+    expect((await cuentas.saldos(c.id)).basico).toBe(2);
+  });
+
   it('cuenta las fallidas por datos, guarda los créditos y resume el día', async () => {
     const c = await crearUsuario();
     const compra = await request(app).post('/api/compras').set(auth(c.token)).send({ tipo: 'full', cantidad: 3 });

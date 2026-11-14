@@ -107,6 +107,8 @@ export interface VehiculoRunt {
   rtm: Vigencia[];
   /** La fuente indica que aún no le toca revisión técnico-mecánica. */
   rtmExento?: boolean;
+  /** Matriculado antes del 19-may-2023 y entre los años 5 y 6: la obligación de la primera revisión está en discusión. */
+  rtmEnDisputa?: boolean;
 }
 
 export interface Prenda {

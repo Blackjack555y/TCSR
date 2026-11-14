@@ -65,6 +65,8 @@ export type ResultadoPdf =
 export class ServicioConsultas {
   /** Procesos en curso, para poder esperarlos en pruebas y al apagar. */
   private readonly enCurso = new Map<string, Promise<void>>();
+  /** Creaciones en curso por usuario y vehículo, para atenderlas en orden. */
+  private readonly creando = new Map<string, Promise<unknown>>();
   private creditosHoy = { dia: '', total: 0, alertado: false };
 
   constructor(private readonly d: Dependencias) {}
@@ -79,12 +81,28 @@ export class ServicioConsultas {
   }
 
   async crear(n: NuevaConsulta): Promise<{ consulta: Consulta; reutilizada: boolean }> {
+    // Dos pedidos iguales al mismo tiempo (doble clic, dos pestañas) se atienden uno tras otro:
+    // el segundo encuentra la consulta del primero y no paga dos veces.
+    const llave = `${n.usuarioId}:${this.huella(n.entrada)}`;
+    const anterior = this.creando.get(llave) ?? Promise.resolve();
+    const actual = anterior.catch(() => null).then(() => this.crearSinCompetencia(n));
+    const cola = actual.catch(() => null).finally(() => {
+      if (this.creando.get(llave) === cola) this.creando.delete(llave);
+    });
+    this.creando.set(llave, cola);
+    return actual;
+  }
+
+  private async crearSinCompetencia(n: NuevaConsulta): Promise<{ consulta: Consulta; reutilizada: boolean }> {
     const { entrada: e, usuarioId } = n;
     const ahora = this.ahora();
     const huella = this.huella(e);
+    const desde = new Date(ahora.getTime() - VENTANA_REUSO_MS).toISOString();
 
-    const previa = await this.d.repo.buscarReciente(usuarioId, huella, new Date(ahora.getTime() - VENTANA_REUSO_MS).toISOString());
-    if (previa && previa.estado !== 'error' && previa.estado !== 'vencida') {
+    const previa = await this.d.repo.buscarReciente(usuarioId, huella, desde);
+    // Un informe parcial da derecho a un reintento gratis dentro de la ventana; el reintento no da otro.
+    const reintentoDe = previa?.estado === 'completada' && previa.parcial && !previa.reintentoDe ? previa.id : undefined;
+    if (previa && previa.estado !== 'error' && previa.estado !== 'vencida' && !reintentoDe) {
       return { consulta: previa, reutilizada: true };
     }
 
@@ -95,9 +113,9 @@ export class ServicioConsultas {
       if (fallidas >= limite) throw new LimiteIntentosError(limite);
     }
 
-    // El saldo se descuenta antes de consultar; si algo falla, se devuelve.
+    // El saldo se descuenta antes de consultar; si algo falla, se devuelve. El reintento no descuenta.
     const id = randomUUID();
-    if (!(await this.d.cuentas.consumirSaldo(usuarioId, e.tipo, id))) throw new SinSaldoError(e.tipo);
+    if (!reintentoDe && !(await this.d.cuentas.consumirSaldo(usuarioId, e.tipo, id))) throw new SinSaldoError(e.tipo);
 
     const consulta: Consulta = {
       id,
@@ -112,13 +130,20 @@ export class ServicioConsultas {
       creadaEn: ahora.toISOString(),
       actualizadaEn: ahora.toISOString(),
       consentimiento: { version: n.consentimiento.version, aceptadoEn: ahora.toISOString(), ipHash: this.d.hash(n.ip) },
-      creditosEstimados: 0
+      creditosEstimados: 0,
+      ...(reintentoDe && { reintentoDe })
     };
 
     try {
       await this.d.repo.crear(consulta);
     } catch (err) {
       await this.d.cuentas.devolverSaldo(id);
+      // Con varias instancias del backend, la base rechaza la consulta duplicada en curso:
+      // se responde con la que ya está corriendo.
+      const enCurso = await this.d.repo.buscarReciente(usuarioId, huella, desde).catch(() => null);
+      if (enCurso && (enCurso.estado === 'en_curso' || enCurso.estado === 'generando_pdf')) {
+        return { consulta: enCurso, reutilizada: true };
+      }
       throw err;
     }
 

@@ -90,7 +90,7 @@ export interface RawFull {
   generatedAt?: string;
   vehicle?: RawBloque<Record<string, unknown>>;
   soat?: RawBloque<{ historico?: { aseguradora?: Txt; fechaInicioVigencia?: Txt; fechaExpedicion?: Txt; fechaVencimiento?: Txt; estado?: Txt }[] | null }>;
-  rtm?: RawBloque<{ exento?: boolean; historico?: { cda?: Txt; fechaExpedicion?: Txt; fechaVencimiento?: Txt; estado?: Txt }[] | null }>;
+  rtm?: RawBloque<{ exento?: boolean; enDisputa?: boolean; historico?: { cda?: Txt; fechaExpedicion?: Txt; fechaVencimiento?: Txt; estado?: Txt }[] | null }>;
   antecedentes?: RawBloque<{
     prendas?: { acreedor?: Txt; tipoDocAcreedor?: Txt; fechaInscripcion?: Txt }[] | null;
     embargos?: Record<string, unknown>[] | null;

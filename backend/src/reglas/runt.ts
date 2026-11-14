@@ -139,6 +139,15 @@ export function reglaRtm(v: VehiculoRunt, ctx: Contexto): Resultado {
   if (!a.actual && v.rtmExento) {
     nivel = 'sin_hallazgos';
     valor = 'Aún no es obligatoria';
+  } else if (!a.actual && v.rtmEnDisputa) {
+    nivel = 'revision';
+    valor = 'Sin revisión: la obligación está en discusión';
+    hallazgos.push(hallazgo(ctx, id, 'revision', {
+      titulo: 'No es claro si ya le toca la revisión técnico-mecánica',
+      queEncontramos: 'El vehículo no tiene revisión vigente. Fue matriculado antes del 19 de mayo de 2023 y tiene entre 5 y 6 años de matrícula.',
+      queSignifica: 'La Ley 2294 de 2023 bajó el plazo de la primera revisión de 6 a 5 años, y hay interpretaciones distintas sobre si aplica a los vehículos matriculados antes. Un agente de tránsito podría multarlo.',
+      queHacer: 'Acuerda con el vendedor que haga la revisión antes del traspaso: además te dice en qué estado mecánico está.'
+    }));
   } else if (!a.actual && obligacion && ctx.hoy < obligacion) {
     nivel = 'sin_hallazgos';
     valor = `Aún no es obligatoria (primera revisión antes del ${fechaCorta(obligacion)})`;

@@ -76,7 +76,16 @@ export function reglaSiniestros(d: Siniestros, b: Base): Resultado {
       })]
     };
   }
-  return { verificacion: verif(b, 'sin_hallazgos', 'Sin reclamaciones (solo cubre vehículos asegurados)'), hallazgos: [] };
+  // La fuente solo ve reclamaciones de vehículos asegurados: "no figura" no descarta un salvamento.
+  return {
+    verificacion: verif(b, 'revision', 'Sin reclamaciones reportadas · no descarta salvamento'),
+    hallazgos: [hallazgo(b, 'revision', {
+      titulo: 'La fuente no descarta que sea un salvamento',
+      queEncontramos: 'Las aseguradoras no reportan reclamaciones para esta placa en la fuente consultada.',
+      queSignifica: 'Esta fuente solo incluye las reclamaciones que reportan las aseguradoras, y no siempre registra las pérdidas totales ni los vehículos vendidos como salvamento. Un vehículo recuperado de una pérdida total vale menos y puede ser difícil de asegurar.',
+      queHacer: 'Pide el certificado de tradición en el organismo de tránsito: muestra todos los propietarios, y si una aseguradora fue uno de ellos, es señal de salvamento. Haz además un peritaje de estructura.'
+    })]
+  };
 }
 
 export function reglaPrendasDetalle(prendas: Prenda[], b: Base): Resultado {
@@ -135,17 +144,16 @@ export function reglaImpuestos(d: Impuestos, b: Base): Resultado {
       })]
     };
   }
-  return { verificacion: verif(b, 'sin_hallazgos', 'Sin deuda pendiente'), hallazgos: [] };
+  // La fuente informa deuda en cobro, no un paz y salvo: puede haber una declaración pendiente.
+  return { verificacion: verif(b, 'sin_hallazgos', 'Sin deuda en cobro · no equivale a paz y salvo'), hallazgos: [] };
 }
 
 export function reglaHistorial(d: Historial, b: Base, hoy: string): Resultado {
   const recientes = d.traspasos.filter((f) => sumarAnios(f, ANIOS_VENTANA_TRASPASOS) >= hoy).length;
-  const valor = [d.propietarios != null && plural(d.propietarios, 'propietario', 'propietarios'), plural(d.traspasos.length, 'traspaso', 'traspasos')]
-    .filter(Boolean).join(' · ');
 
   if (recientes >= UMBRAL_TRASPASOS) {
     return {
-      verificacion: verif(b, 'revision', valor),
+      verificacion: verif(b, 'revision', `${plural(recientes, 'traspaso', 'traspasos')} en ${ANIOS_VENTANA_TRASPASOS} años`),
       hallazgos: [hallazgo(b, 'revision', {
         titulo: 'Ha cambiado de dueño muchas veces',
         queEncontramos: `Registra ${recientes} traspasos en los últimos ${ANIOS_VENTANA_TRASPASOS} años.`,
@@ -154,7 +162,16 @@ export function reglaHistorial(d: Historial, b: Base, hoy: string): Resultado {
       })]
     };
   }
-  return { verificacion: verif(b, 'sin_hallazgos', valor), hallazgos: [] };
+  // La fuente solo trae los trámites recientes: el número de propietarios y traspasos se queda corto.
+  // No se muestra como "sin hallazgos": el historial completo está en el certificado de tradición.
+  const ultimo = [...d.traspasos].sort().at(-1);
+  return {
+    verificacion: {
+      ...verif(b, 'no_disponible', `Historial incompleto en la fuente${ultimo ? ` · último traspaso: ${fechaCorta(ultimo)}` : ''}`),
+      consulta: 'no_cubierta'
+    },
+    hallazgos: []
+  };
 }
 
 export function reglaAvaluo(d: Avaluo, b: Base): Resultado {

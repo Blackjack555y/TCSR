@@ -56,7 +56,7 @@ const fechaLarga = (iso: string) =>
 // ---------------------------------------------------------------------------
 
 function chip(v: Verificacion): string {
-  const detalle = v.nivel === 'no_disponible' ? MOTIVO_NO_DISPONIBLE[v.consulta] : v.valor;
+  const detalle = v.nivel === 'no_disponible' ? v.valor ?? MOTIVO_NO_DISPONIBLE[v.consulta] : v.valor;
   return `<li class="chip">
     <div class="chip-text"><span class="chip-name">${esc(v.nombre)}</span>${detalle ? `<span class="chip-detail">${esc(detalle)}</span>` : ''}</div>
     ${estado(v.nivel)}

@@ -22,7 +22,10 @@ describe('informe Full', () => {
     expect(ver('multas')).toMatchObject({ nivel: 'sin_hallazgos' });
     expect(ver('avaluo')?.valor).toBe('$ 109.100.000');
     expect(ver('hurto')).toMatchObject({ nivel: 'sin_hallazgos' });
-    expect(ver('propietarios')?.valor).toContain('1 propietario');
+    // La fuente no trae el historial completo: gris, con el último traspaso que sí conoce.
+    expect(ver('propietarios')).toMatchObject({ nivel: 'no_disponible', consulta: 'no_cubierta' });
+    expect(ver('propietarios')?.valor).toContain('Historial incompleto');
+    expect(i.proximosPasos.join(' ')).toContain('certificado de tradición');
     expect(ver('antecedentes_propietario')).toMatchObject({ nivel: 'no_disponible' });
     expect(i.conclusion.nivel).toBe('atencion_prioritaria');
     expect(JSON.stringify(i)).not.toContain('1020304050');
@@ -118,8 +121,11 @@ describe('informe Básico', () => {
     expect(JSON.stringify(i)).not.toContain('JUAN PEREZ');
   });
 
-  it('nunca concluye "sin alertas": le faltan verificaciones', async () => {
+  it('nunca concluye "sin alertas": siniestros sin reclamaciones no descarta salvamento', async () => {
     const i = await informe({ tipo: 'basico', placa: 'ABC123' });
-    expect(i.conclusion.nivel).toBe('con_observaciones');
+    const s = i.verificaciones.find((v) => v.id === 'siniestros');
+    expect(s).toMatchObject({ nivel: 'revision', valor: 'Sin reclamaciones reportadas · no descarta salvamento' });
+    expect(i.hallazgos.find((h) => h.verificacion === 'siniestros')?.queHacer).toContain('certificado de tradición');
+    expect(i.conclusion.nivel).toBe('revision_recomendada');
   });
 });

@@ -256,6 +256,8 @@ export function vistaPublica(c: Consulta) {
     ...(c.estado === 'completada' && c.informe && {
       resultado: {
         parcial: c.informe.parcial,
+        /** Puede volver a consultar el mismo vehículo sin costo para completar el informe. */
+        reintentoGratis: c.informe.parcial && !c.reintentoDe,
         conclusion: {
           nivel: c.informe.conclusion.nivel,
           titulo: c.informe.conclusion.titulo,

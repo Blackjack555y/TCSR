@@ -6,7 +6,7 @@ import {
 } from './runt.js';
 
 /** Cambia cada vez que una regla cambia su resultado. Queda guardada en cada informe. */
-export const VERSION_REGLAS = '2026.11.1';
+export const VERSION_REGLAS = '2026.11.2';
 
 const NOMBRES: Record<IdVerificacion, { nombre: string; fuente: string }> = {
   estado_matricula: { nombre: 'Estado de la matrícula', fuente: 'RUNT' },

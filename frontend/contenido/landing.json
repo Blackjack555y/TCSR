@@ -73,7 +73,7 @@
   "preguntas.3.pregunta": "¿Mi saldo vence?",
   "preguntas.3.respuesta": "No. Los informes que compras quedan en tu saldo hasta que los uses. Cada compra sirve para un solo tipo de informe.",
   "preguntas.4.pregunta": "¿Qué pasa si la consulta falla?",
-  "preguntas.4.respuesta": "Si no se puede completar, el informe vuelve a tu saldo. Si solo falla una fuente, recibes un informe parcial en el que esa verificación aparece como \"No disponible\".",
+  "preguntas.4.respuesta": "Si no se puede completar, el informe vuelve a tu saldo. Si solo falla una fuente, recibes un informe parcial en el que esa verificación aparece como \"No disponible\", y puedes consultar el mismo vehículo otra vez en las siguientes 24 horas sin costo.",
   "preguntas.5.pregunta": "¿Cuánto tiempo tengo mi informe?",
   "preguntas.5.respuesta": "Lo puedes ver y descargar en PDF durante 7 días desde que se genera. Después se elimina.",
   "preguntas.6.pregunta": "¿Es un certificado oficial?",

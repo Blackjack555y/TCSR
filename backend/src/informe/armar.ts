@@ -59,10 +59,18 @@ export function armarInforme(datos: DatosConsulta, op: OpcionesInforme): Informe
 
 // ---------------------------------------------------------------------------
 
+/**
+ * Verificaciones que, cuando no están disponibles, no cambian la conclusión: siempre lo están
+ * (antecedentes no se incluyen, la fuente no trae el historial completo) o son solo informativas
+ * (valor de referencia). Se siguen mostrando en gris y se cuentan como no disponibles.
+ */
+const NO_AFECTAN_CONCLUSION = new Set<Verificacion['id']>(['antecedentes_propietario', 'avaluo', 'propietarios']);
+
 export function concluir(verificaciones: Verificacion[]): Conclusion {
   const alertas = verificaciones.filter((v) => v.nivel === 'alerta').length;
   const revisiones = verificaciones.filter((v) => v.nivel === 'revision').length;
   const noDisponibles = verificaciones.filter((v) => v.nivel === 'no_disponible').length;
+  const noDisponiblesQueCuentan = verificaciones.filter((v) => v.nivel === 'no_disponible' && !NO_AFECTAN_CONCLUSION.has(v.id)).length;
   const aspectosAtencion = alertas + revisiones;
 
   // Nunca "listo para traspaso" ni "compra recomendada": el informe ayuda a decidir, no certifica.
@@ -82,7 +90,7 @@ export function concluir(verificaciones: Verificacion[]): Conclusion {
         : 'No encontramos alertas críticas, pero hay puntos que debes revisar antes de continuar.'
     };
   }
-  if (noDisponibles > 0) {
+  if (noDisponiblesQueCuentan > 0) {
     return {
       nivel: 'con_observaciones', aspectosAtencion, noDisponibles,
       titulo: 'Revisión completada con observaciones',
@@ -92,7 +100,9 @@ export function concluir(verificaciones: Verificacion[]): Conclusion {
   return {
     nivel: 'sin_alertas', aspectosAtencion, noDisponibles,
     titulo: 'Sin alertas relevantes',
-    descripcion: 'No encontramos alertas en las verificaciones realizadas. Esto no es una certificación oficial ni garantiza el traspaso.'
+    descripcion: noDisponibles > 0
+      ? 'No encontramos alertas en las verificaciones realizadas. Las que aparecen como no disponibles no están incluidas o son informativas: revísalas igual. Esto no es una certificación oficial ni garantiza el traspaso.'
+      : 'No encontramos alertas en las verificaciones realizadas. Esto no es una certificación oficial ni garantiza el traspaso.'
   };
 }
 
@@ -100,6 +110,13 @@ function proximosPasos(hallazgos: Hallazgo[], verificaciones: Verificacion[]): s
   const pasos = new Set(hallazgos.map((h) => h.queHacer));
   const noDisponible = (id: Verificacion['id']) => verificaciones.some((v) => v.id === id && v.nivel === 'no_disponible');
 
+  // Si un hallazgo ya pide el certificado de tradición, no se repite.
+  if (verificaciones.some((v) => v.id === 'propietarios' && v.consulta === 'no_cubierta') && ![...pasos].some((p) => p.includes('certificado de tradición'))) {
+    pasos.add('Pide el certificado de tradición en el organismo de tránsito: muestra todos los propietarios y traspasos, que la fuente no trae completos.');
+  }
+  if (verificaciones.some((v) => v.id === 'impuestos' && v.nivel === 'sin_hallazgos')) {
+    pasos.add('Pide al vendedor el comprobante de pago del impuesto vehicular del año: no tener deuda en cobro no equivale a estar a paz y salvo.');
+  }
   if (noDisponible('multas')) {
     pasos.add('Consulta en el SIMIT las multas del vehículo y del vendedor: para el traspaso, ambos deben estar a paz y salvo.');
   }

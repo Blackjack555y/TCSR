@@ -18,6 +18,7 @@ interface Fila {
   error_reintentable: boolean | null;
   saldo_devuelto: boolean;
   creditos_estimados: number | null;
+  reintento_de: string | null;
   parcial: boolean;
   codigo_verificacion: string | null;
   informe: Informe | null;
@@ -54,7 +55,8 @@ function aConsulta(f: Fila): Consulta {
     ...(f.informe && { informe: f.informe }),
     ...(f.pdf_clave && { pdfClave: f.pdf_clave }),
     ...(f.vence_en && { venceEn: f.vence_en }),
-    ...(f.creditos_estimados != null && { creditosEstimados: f.creditos_estimados })
+    ...(f.creditos_estimados != null && { creditosEstimados: f.creditos_estimados }),
+    ...(f.reintento_de && { reintentoDe: f.reintento_de })
   };
 }
 
@@ -94,6 +96,7 @@ export class ConsultasSupabase implements RepositorioConsultas {
       huella: c.huella,
       estado: c.estado,
       creditos_estimados: c.creditosEstimados ?? null,
+      reintento_de: c.reintentoDe ?? null,
       creada_en: c.creadaEn,
       actualizada_en: c.actualizadaEn
     });

@@ -120,7 +120,8 @@ function vehiculoFull(raw: RawFull, v: Record<string, unknown>): VehiculoRunt {
     dian: { validacion: null, visible: false },
     soat: vigenciasSoat(raw),
     rtm: vigenciasRtm(raw),
-    rtmExento: raw.rtm?.data?.exento === true
+    rtmExento: raw.rtm?.data?.exento === true,
+    rtmEnDisputa: raw.rtm?.data?.enDisputa === true
   };
 }
 

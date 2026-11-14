@@ -44,7 +44,9 @@ describe('respuestas reales de PlacApi', () => {
     expect(ver('avaluo')?.valor).toBe('$ 6.300.000');
     expect(ver('validacion_dian')).toBeUndefined(); // el RUNT no la muestra
     expect(i.parcial).toBe(false);
-    expect(i.conclusion.nivel).toBe('con_observaciones');
+    // Sin reclamaciones a aseguradoras no descarta un salvamento: requiere revisión.
+    expect(ver('siniestros')?.nivel).toBe('revision');
+    expect(i.conclusion.nivel).toBe('revision_recomendada');
   });
 
   it('informe Básico', async () => {

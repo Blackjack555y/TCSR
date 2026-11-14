@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="es">
-<head>
+<html lang="es"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semáforo del informe</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
 <style>
   :root {
     --bg-0: #131516; --bg-1: #1b1e20; --bg-2: #23272a; --line: #33383b;
@@ -108,7 +107,7 @@
 
   <h1>Semáforo del <span class="grad">informe</span></h1>
   <p class="sub">Prototipo para hacer la cuenta: elige el tipo de informe y el resultado de cada verificación, y el documento calcula la conclusión con las mismas reglas que usa el backend. Sirve para revisar las reglas, preparar casos de prueba y explicarle a cualquiera cómo se llega a cada resultado.</p>
-  <p class="muted">Reglas versión 2026.11.1 · Fuente: <code>backend/src/reglas/</code> e <code>informe/armar.ts</code></p>
+  <p class="muted">Reglas versión 2026.11.2 · Fuente: <code>backend/src/reglas/</code> e <code>informe/armar.ts</code></p>
 
   <p class="sin-js"><strong style="color:var(--text-1)">Vista de solo lectura.</strong> Tu visor no está ejecutando JavaScript, así que no se puede calcular. Ábrelo en Chrome, Firefox o Edge para usar el prototipo.</p>
 
@@ -118,14 +117,14 @@
       <div class="segmentos" role="radiogroup" aria-label="Tipo de informe">
         <input type="radio" name="tipo" id="t-basico" value="basico"><label for="t-basico">Básico</label>
         <input type="radio" name="tipo" id="t-vin" value="vin"><label for="t-vin">Por VIN</label>
-        <input type="radio" name="tipo" id="t-full" value="full" checked><label for="t-full">Full</label>
+        <input type="radio" name="tipo" id="t-full" value="full" checked=""><label for="t-full">Full</label>
       </div>
     </div>
     <div class="grupo">
       <label class="titulo" for="escenario">Cargar un escenario</label>
       <select id="escenario">
         <option value="">—</option>
-        <option value="limpio">Todo limpio</option>
+        <option value="limpio">Todo limpio en las fuentes</option>
         <option value="moto">SOAT y RTM por vencer</option>
         <option value="alertas">Con alertas (prenda, hurto, pérdida total)</option>
         <option value="caida">Una fuente no respondió (informe parcial)</option>
@@ -147,7 +146,7 @@
             <label class="opcion"><input type="radio" name="v-matricula" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no trae el estado</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-matricula"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-matricula">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="soat">
         <div class="fila-head"><h3>SOAT</h3><span class="fuente">RUNT</span></div>
@@ -162,7 +161,7 @@
             <label class="opcion"><input type="radio" name="v-soat" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El bloque de SOAT no respondió</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-soat"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-soat">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="rtm">
         <div class="fila-head"><h3>Revisión técnico-mecánica</h3><span class="fuente">RUNT</span></div>
@@ -171,13 +170,13 @@
             <label class="opcion"><input type="radio" name="v-rtm" value="ok" checked="">
               <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Vigente, o aún no le toca (exento o antes de la primera revisión)</span></span></label>
             <label class="opcion"><input type="radio" name="v-rtm" value="revision">
-              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Vence en 30 días o menos, o hay huecos de más de 30 días después de la primera obligación</span></span></label>
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Vence en 30 días o menos, hay huecos de más de 30 días después de la primera obligación, o la obligación está en disputa (matriculado antes del 19-may-2023 y entre 5 y 6 años)</span></span></label>
             <label class="opcion"><input type="radio" name="v-rtm" value="alerta">
               <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Vencida, o sin certificados cuando ya era obligatoria</span></span></label>
             <label class="opcion"><input type="radio" name="v-rtm" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El bloque de RTM no respondió</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-rtm"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-rtm">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="gravamenes">
         <div class="fila-head"><h3>Embargos y limitaciones</h3><span class="fuente">RUNT</span></div>
@@ -190,7 +189,7 @@
             <label class="opcion"><input type="radio" name="v-gravamenes" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se pudo consultar</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-gravamenes"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-gravamenes">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="prendas">
         <div class="fila-head"><h3>Prendas</h3><span class="fuente">RUNT / Confecámaras</span></div>
@@ -216,7 +215,7 @@
             <label class="opcion"><input type="radio" name="v-regrabados" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no informa regrabados</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-regrabados"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-regrabados">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="desintegracion">
         <div class="fila-head"><h3>Desintegración</h3><span class="fuente">RUNT</span></div>
@@ -229,7 +228,7 @@
             <label class="opcion"><input type="radio" name="v-desintegracion" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se puede determinar</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-desintegracion"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-desintegracion">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="multas">
         <div class="fila-head"><h3>Multas y comparendos</h3><span class="fuente">SIMIT</span></div>
@@ -244,33 +243,31 @@
             <label class="opcion"><input type="radio" name="v-multas" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El SIMIT no respondió</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-multas"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-multas">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="impuestos">
         <div class="fila-head"><h3>Impuesto vehicular</h3><span class="fuente">Secretarías de Hacienda</span></div>
         <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Impuesto vehicular</legend>
           
             <label class="opcion"><input type="radio" name="v-impuestos" value="ok" checked="">
-              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin deuda pendiente</span></span></label>
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin deuda en cobro (se aclara que no equivale a paz y salvo)</span></span></label>
             <label class="opcion"><input type="radio" name="v-impuestos" value="revision">
               <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Saldo pendiente, o deuda sin monto publicado</span></span></label>
             <label class="opcion"><input type="radio" name="v-impuestos" value="na">
               <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">El departamento no publica el dato (22 lo publican)</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-impuestos"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-impuestos">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="propietarios">
         <div class="fila-head"><h3>Historial de propietarios</h3><span class="fuente">RUNT</span></div>
         <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Historial de propietarios</legend>
           
-            <label class="opcion"><input type="radio" name="v-propietarios" value="ok" checked="">
-              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Menos de 3 traspasos en los últimos 2 años</span></span></label>
+            <label class="opcion"><input type="radio" name="v-propietarios" value="na" checked="">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no trae el historial completo: se muestra el último traspaso y se pide el certificado de tradición (no cambia la conclusión)</span></span></label>
             <label class="opcion"><input type="radio" name="v-propietarios" value="revision">
               <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">3 o más traspasos en los últimos 2 años</span></span></label>
-            <label class="opcion"><input type="radio" name="v-propietarios" value="na">
-              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">No se pudo consultar</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-propietarios"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-propietarios">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila" data-id="hurto">
         <div class="fila-head"><h3>Reportes de hurto</h3><span class="fuente">Registros judiciales</span></div>
@@ -291,10 +288,8 @@
         <div class="fila-head"><h3>Reclamaciones a aseguradoras</h3><span class="fuente">FASECOLDA</span></div>
         <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Reclamaciones a aseguradoras</legend>
           
-            <label class="opcion"><input type="radio" name="v-siniestros" value="ok" checked="">
-              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin reclamaciones (solo cubre vehículos asegurados)</span></span></label>
-            <label class="opcion"><input type="radio" name="v-siniestros" value="revision">
-              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Reclamaciones menores</span></span></label>
+            <label class="opcion"><input type="radio" name="v-siniestros" value="revision" checked="">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Sin reclamaciones reportadas (no descarta salvamento), o reclamaciones menores</span></span></label>
             <label class="opcion"><input type="radio" name="v-siniestros" value="alerta">
               <span><span class="state s-alerta"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>Alerta</span><span class="cond">Pérdida total</span></span></label>
             <label class="opcion"><input type="radio" name="v-siniestros" value="na">
@@ -309,9 +304,9 @@
             <label class="opcion"><input type="radio" name="v-avaluo" value="ok" checked="">
               <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Muestra el valor comercial (es informativo: nunca genera alerta)</span></span></label>
             <label class="opcion"><input type="radio" name="v-avaluo" value="na">
-              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no respondió</span></span></label>
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no respondió (no cambia la conclusión)</span></span></label>
         </fieldset>
-        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-avaluo"></span></p>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-avaluo">No incluido en el informe Básico.</span></p>
       </div>
       <div class="fila excluida" data-id="antecedentes">
         <div class="fila-head"><h3>Antecedentes del propietario</h3><span class="fuente">—</span></div>
@@ -323,24 +318,24 @@
     </section>
 
     <aside class="resultado" aria-live="polite">
-      <section class="card conclusion na" id="conclusion">
+      <section class="card conclusion revision" id="conclusion">
         <p class="kicker">Resultado de la revisión</p>
-        <p class="titulo-res" id="titulo"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>Revisión completada con observaciones</p>
-        <p class="muted" id="descripcion">No encontramos alertas, pero hay verificaciones que no pudimos hacer.</p>
+        <p class="titulo-res" id="titulo"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Revisión recomendada</p>
+        <p class="muted" id="descripcion">No encontramos alertas críticas, pero hay puntos que debes revisar y verificaciones no disponibles.</p>
         <div class="conteos">
           <div class="conteo"><b id="n-alerta">0</b><span>Alertas</span></div>
-          <div class="conteo"><b id="n-revision">0</b><span>Requieren revisión</span></div>
-          <div class="conteo"><b id="n-na">1</b><span>No disponibles</span></div>
-          <div class="conteo"><b id="n-ok">13</b><span>Sin hallazgos</span></div>
+          <div class="conteo"><b id="n-revision">1</b><span>Requieren revisión</span></div>
+          <div class="conteo"><b id="n-na">2</b><span>No disponibles</span></div>
+          <div class="conteo"><b id="n-ok">11</b><span>Sin hallazgos</span></div>
         </div>
-        <p class="muted" style="margin-top:12px" id="linea">Así se ve en el informe: 1 verificación no disponible.</p>
-        <p class="parcial" id="parcial"><strong>Informe parcial:</strong> una fuente no respondió. El informe se entrega igual, con esa verificación como "No disponible".</p>
+        <p class="muted" style="margin-top:12px" id="linea">Así se ve en el informe: 1 aspecto requiere atención · 2 verificaciones no disponibles.</p>
+        <p class="parcial" id="parcial"><strong>Informe parcial:</strong> una fuente no respondió. El informe se entrega igual, con esa verificación como "No disponible", y descuenta saldo. El cliente puede consultar el mismo vehículo una vez más en las 24 horas siguientes sin costo.</p>
         <div class="cuenta">
           <strong style="color:var(--text-1)">Cómo se hace la cuenta</strong>
           <ol id="pasos">
-            <li data-paso="alerta">¿Hay al menos una <b>alerta</b>? → Atención prioritaria</li>
-            <li data-paso="revision">Si no: ¿hay algo que <b>requiere revisión</b>? → Revisión recomendada</li>
-            <li data-paso="na" class="activa">Si no: ¿hay algo <b>no disponible</b>? → Revisión completada con observaciones</li>
+            <li data-paso="alerta" class="">¿Hay al menos una <b>alerta</b>? → Atención prioritaria</li>
+            <li data-paso="revision" class="activa">Si no: ¿hay algo que <b>requiere revisión</b>? → Revisión recomendada</li>
+            <li data-paso="na" class="">Si no: ¿hay algo <b>no disponible</b> (sin contar antecedentes, valor de referencia ni historial de propietarios)? → Revisión completada con observaciones</li>
             <li data-paso="ok">Si no: → Sin alertas relevantes</li>
           </ol>
         </div>
@@ -350,11 +345,11 @@
 
   <h2>Por qué no es un puntaje</h2>
   <div class="nota">
-    <strong>El semáforo no suma puntos: manda el peor resultado.</strong> Una sola alerta (por ejemplo, un embargo) basta para "Atención prioritaria", aunque todo lo demás esté limpio, porque un puntaje promedio podría esconderla. Los conteos solo sirven para decir cuántos aspectos requieren atención. Y como "No disponible" significa que no tuvimos el dato, nunca deja concluir "Sin alertas relevantes". El sistema tampoco concluye nunca "listo para traspaso" ni "compra recomendada".
+    <strong>El semáforo no suma puntos: manda el peor resultado.</strong> Una sola alerta (por ejemplo, un embargo) basta para "Atención prioritaria", aunque todo lo demás esté limpio, porque un puntaje promedio podría esconderla. Los conteos solo sirven para decir cuántos aspectos requieren atención. Y como "No disponible" significa que no tuvimos el dato, nunca deja concluir "Sin alertas relevantes", salvo en tres verificaciones que siempre o casi siempre están en gris (antecedentes del propietario, valor de referencia e historial de propietarios): se muestran, pero no cambian la conclusión. El sistema tampoco concluye nunca "listo para traspaso" ni "compra recomendada".
   </div>
 
   <h2>Qué verificaciones incluye cada informe</h2>
-  <p class="sub">Lo que un informe no incluye aparece como "No disponible", nunca se omite. Por eso el Básico y el Por VIN nunca pueden llegar a "Sin alertas relevantes".</p>
+  <p class="sub">Lo que un informe no incluye aparece como "No disponible", nunca se omite. Por eso el Básico y el Por VIN no llegan a "Sin alertas relevantes". Y como "Reclamaciones a aseguradoras" sin reclamaciones queda en "Requiere revisión" (la fuente no descarta un salvamento), hoy ningún informe llega a "Sin alertas relevantes": lo mejor posible es "Revisión recomendada".</p>
   <div class="tabla-wrap"><table id="tabla-incluye"><thead><tr><th>Verificación</th><th>Fuente</th><th>Básico</th><th>Por VIN</th><th>Full</th></tr></thead>
       <tbody><tr><td>Estado de la matrícula</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>SOAT</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Revisión técnico-mecánica</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Embargos y limitaciones</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Prendas</td><td>RUNT / Confecámaras</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Regrabado de motor, chasis o VIN</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Desintegración</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Multas y comparendos</td><td>SIMIT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Impuesto vehicular</td><td>Secretarías de Hacienda</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Historial de propietarios</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reportes de hurto</td><td>Registros judiciales</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reclamaciones a aseguradoras</td><td>FASECOLDA</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Valor de referencia</td><td>FASECOLDA</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Antecedentes del propietario</td><td>—</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td></tr></tbody></table></div>
 
@@ -366,13 +361,18 @@
         <tr><td>SOAT o RTM "por vencer"</td><td>Vence en 30 días o menos → requiere revisión</td><td><code>reglas/vigencias.ts</code></td><td>Definido por desarrollo</td></tr>
         <tr><td>Hueco en el historial de SOAT o RTM</td><td>Más de 30 días sin cobertura entre dos pólizas o certificados</td><td><code>reglas/vigencias.ts</code></td><td>Definido por desarrollo</td></tr>
         <tr><td>Primera revisión técnico-mecánica</td><td>5 años cumplidos desde la matrícula para particulares; 2 años para motos y servicio público</td><td><code>reglas/runt.ts</code></td><td>Confirmado: Ley 2294 de 2023, art. 179 (circular MinTransporte 20234000000637)</td></tr>
-        <tr><td>Muchos cambios de dueño</td><td>3 o más traspasos en los últimos 2 años → requiere revisión</td><td><code>reglas/complementarias.ts</code></td><td>Por confirmar</td></tr>
+        <tr><td>Revisión técnico-mecánica en disputa</td><td>Sin revisión vigente, matriculado antes del 19-may-2023 y entre 5 y 6 años (marca de PlacApi) → requiere revisión, no alerta</td><td><code>reglas/runt.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
+        <tr><td>Muchos cambios de dueño</td><td>3 o más traspasos en los últimos 2 años → requiere revisión. Si no se cumple, el historial queda "No disponible" porque la fuente no lo trae completo</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
+        <tr><td>Reclamaciones a aseguradoras</td><td>Sin reclamaciones reportadas → requiere revisión: la fuente no descarta un salvamento. Se pide el certificado de tradición y un peritaje</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
+        <tr><td>Impuesto vehicular</td><td>Sin deuda en cobro → sin hallazgos, con la aclaración de que no equivale a paz y salvo y el paso de pedir el comprobante</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
+        <tr><td>No disponibles que no cambian la conclusión</td><td>Antecedentes del propietario, valor de referencia e historial de propietarios: se muestran y se cuentan, pero no bajan la conclusión a "con observaciones"</td><td><code>informe/armar.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
+        <tr><td>Informe parcial</td><td>Descuenta saldo; la misma consulta se puede repetir una vez sin costo durante 24 horas</td><td><code>consultas/servicio.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
         <tr><td>Validación DIAN</td><td>Solo se evalúa si el RUNT la muestra; si no, no aparece en el informe</td><td><code>reglas/runt.ts</code></td><td>Definido por desarrollo</td></tr>
       </tbody>
     </table>
   </div>
 
-  <footer>Documento interno de Carro Sin Rollos · 9 de noviembre de 2026. Si una regla cambia en el código, este documento debe actualizarse con ella.</footer>
+  <footer>Documento interno de Carro Sin Rollos · 14 de noviembre de 2026. Si una regla cambia en el código, este documento debe actualizarse con ella.</footer>
 </div>
 
 <script>
@@ -388,6 +388,7 @@
 
   // Cada verificación: en qué informes está y qué condición produce cada nivel.
   // "na" = la fuente no respondió o no publica el dato.
+  // noCuenta: cuando está "no disponible", se muestra y se cuenta, pero no cambia la conclusión.
   const VERIFICACIONES = [
     { id: 'matricula', nombre: 'Estado de la matrícula', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
       ok: 'Matrícula ACTIVA', alerta: 'Cualquier otro estado (cancelada, suspendida…)', na: 'La fuente no trae el estado' } },
@@ -395,7 +396,7 @@
       ok: 'Vigente y vence en más de 30 días, sin huecos', revision: 'Vence en 30 días o menos, o hay huecos de más de 30 días en el historial',
       alerta: 'Vencido o sin ninguna póliza registrada', na: 'El bloque de SOAT no respondió' } },
     { id: 'rtm', nombre: 'Revisión técnico-mecánica', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
-      ok: 'Vigente, o aún no le toca (exento o antes de la primera revisión)', revision: 'Vence en 30 días o menos, o hay huecos de más de 30 días después de la primera obligación',
+      ok: 'Vigente, o aún no le toca (exento o antes de la primera revisión)', revision: 'Vence en 30 días o menos, hay huecos de más de 30 días después de la primera obligación, o la obligación está en disputa (matriculado antes del 19-may-2023 y entre 5 y 6 años)',
       alerta: 'Vencida, o sin certificados cuando ya era obligatoria', na: 'El bloque de RTM no respondió' } },
     { id: 'gravamenes', nombre: 'Embargos y limitaciones', fuente: 'RUNT', en: ['vin', 'full'], opciones: {
       ok: 'Sin gravámenes ni limitaciones', alerta: 'Tiene gravamen, embargo o limitación a la propiedad', na: 'No se pudo consultar' } },
@@ -408,16 +409,16 @@
     { id: 'multas', nombre: 'Multas y comparendos', fuente: 'SIMIT', en: ['full'], opciones: {
       ok: 'Sin deuda', revision: 'Tiene acuerdo de pago, sin deuda vencida', alerta: 'Deuda pendiente en el SIMIT', na: 'El SIMIT no respondió' } },
     { id: 'impuestos', nombre: 'Impuesto vehicular', fuente: 'Secretarías de Hacienda', en: ['full'], opciones: {
-      ok: 'Sin deuda pendiente', revision: 'Saldo pendiente, o deuda sin monto publicado', na: 'El departamento no publica el dato (22 lo publican)' } },
-    { id: 'propietarios', nombre: 'Historial de propietarios', fuente: 'RUNT', en: ['full'], opciones: {
-      ok: 'Menos de 3 traspasos en los últimos 2 años', revision: '3 o más traspasos en los últimos 2 años', na: 'No se pudo consultar' } },
+      ok: 'Sin deuda en cobro (se aclara que no equivale a paz y salvo)', revision: 'Saldo pendiente, o deuda sin monto publicado', na: 'El departamento no publica el dato (22 lo publican)' } },
+    { id: 'propietarios', nombre: 'Historial de propietarios', fuente: 'RUNT', en: ['full'], noCuenta: true, opciones: {
+      na: 'La fuente no trae el historial completo: se muestra el último traspaso y se pide el certificado de tradición (no cambia la conclusión)', revision: '3 o más traspasos en los últimos 2 años' } },
     { id: 'hurto', nombre: 'Reportes de hurto', fuente: 'Registros judiciales', en: ['basico', 'vin', 'full'], opciones: {
       ok: 'Sin registros', revision: 'Aparece en procesos penales, sin denuncia de hurto activa', alerta: 'Denuncia de hurto activa o extinción de dominio', na: 'La fuente no respondió' } },
     { id: 'siniestros', nombre: 'Reclamaciones a aseguradoras', fuente: 'FASECOLDA', en: ['basico', 'vin', 'full'], opciones: {
-      ok: 'Sin reclamaciones (solo cubre vehículos asegurados)', revision: 'Reclamaciones menores', alerta: 'Pérdida total', na: 'La fuente no respondió' } },
-    { id: 'avaluo', nombre: 'Valor de referencia', fuente: 'FASECOLDA', en: ['vin', 'full'], opciones: {
-      ok: 'Muestra el valor comercial (es informativo: nunca genera alerta)', na: 'La fuente no respondió' } },
-    { id: 'antecedentes', nombre: 'Antecedentes del propietario', fuente: '—', en: [], opciones: {} }
+      revision: 'Sin reclamaciones reportadas (no descarta salvamento), o reclamaciones menores', alerta: 'Pérdida total', na: 'La fuente no respondió' } },
+    { id: 'avaluo', nombre: 'Valor de referencia', fuente: 'FASECOLDA', en: ['vin', 'full'], noCuenta: true, opciones: {
+      ok: 'Muestra el valor comercial (es informativo: nunca genera alerta)', na: 'La fuente no respondió (no cambia la conclusión)' } },
+    { id: 'antecedentes', nombre: 'Antecedentes del propietario', fuente: '—', en: [], noCuenta: true, opciones: {} }
   ];
 
   const ESCENARIOS = {
@@ -447,14 +448,16 @@
   }
 
   function nivelDe(v, tipo) {
-    if (!incluida(v, tipo)) return { nivel: 'na', error: false };
+    if (!incluida(v, tipo)) return { nivel: 'na', error: false, cuenta: !v.noCuenta };
     const n = document.querySelector(`input[name="v-${v.id}"]:checked`).value;
-    return { nivel: n, error: n === 'na' };
+    // El historial de propietarios en gris es lo normal (la fuente no lo trae completo), no una falla.
+    return { nivel: n, error: n === 'na' && v.id !== 'propietarios', cuenta: !(n === 'na' && v.noCuenta) };
   }
 
   function calcular() {
     const tipo = tipoActual();
     const conteo = { alerta: 0, revision: 0, na: 0, ok: 0 };
+    let naQueCuentan = 0;
     let parcial = false;
 
     for (const v of VERIFICACIONES) {
@@ -468,6 +471,7 @@
       }
       const r = nivelDe(v, tipo);
       conteo[r.nivel]++;
+      if (r.nivel === 'na' && r.cuenta) naQueCuentan++;
       if (r.error) parcial = true;
     }
 
@@ -476,7 +480,7 @@
     else if (conteo.revision > 0) res = ['revision', 'revision', 'Revisión recomendada', conteo.na > 0
       ? 'No encontramos alertas críticas, pero hay puntos que debes revisar y verificaciones no disponibles.'
       : 'No encontramos alertas críticas, pero hay puntos que debes revisar antes de continuar.'];
-    else if (conteo.na > 0) res = ['na', 'na', 'Revisión completada con observaciones', 'No encontramos alertas, pero hay verificaciones que no pudimos hacer.'];
+    else if (naQueCuentan > 0) res = ['na', 'na', 'Revisión completada con observaciones', 'No encontramos alertas, pero hay verificaciones que no pudimos hacer.'];
     else res = ['ok', 'ok', 'Sin alertas relevantes', 'No encontramos alertas en las verificaciones realizadas. No es una certificación oficial.'];
 
     const [clase, ic, titulo, desc] = res;
@@ -498,7 +502,7 @@
     const e = ESCENARIOS[nombre];
     if (!e) return;
     for (const v of VERIFICACIONES) {
-      const valor = e[v.id] && v.opciones[e[v.id]] ? e[v.id] : 'ok';
+      const valor = e[v.id] && v.opciones[e[v.id]] ? e[v.id] : Object.keys(v.opciones)[0];
       const r = document.querySelector(`input[name="v-${v.id}"][value="${valor}"]`);
       if (r) r.checked = true;
     }
@@ -520,5 +524,6 @@
   calcular();
   document.documentElement.classList.add('con-js');
 </script>
-</body>
-</html>
+
+
+</body></html>

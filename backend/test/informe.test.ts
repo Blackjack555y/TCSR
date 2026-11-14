@@ -127,4 +127,43 @@ describe('reglas con otros escenarios', () => {
     ]);
     expect(c.nivel).toBe('con_observaciones');
   });
+
+  it('lo que siempre está no disponible o es informativo no cambia la conclusión', () => {
+    const v = (id: 'soat' | 'avaluo' | 'antecedentes_propietario' | 'propietarios', nivel: 'sin_hallazgos' | 'no_disponible', consulta: 'ok' | 'no_consultada' | 'no_cubierta' | 'error') =>
+      ({ id, nombre: id, consulta, valor: null, nivel, fuente: '—', consultadoEn: null });
+    const c = concluir([
+      v('soat', 'sin_hallazgos', 'ok'),
+      v('antecedentes_propietario', 'no_disponible', 'no_consultada'),
+      v('propietarios', 'no_disponible', 'no_cubierta'),
+      v('avaluo', 'no_disponible', 'error')
+    ]);
+    expect(c.nivel).toBe('sin_alertas');
+    expect(c.noDisponibles).toBe(3); // se siguen mostrando y contando
+    expect(c.descripcion).toContain('no disponibles');
+  });
+
+  it('RTM en disputa (matrícula antes de mayo 2023, entre 5 y 6 años) requiere revisión, no alerta', () => {
+    const coche = { ...base, clasificacion: 'AUTOMOVIL', clase: 'AUTOMOVIL', servicio: 'PARTICULAR', fechaMatricula: '2021-06-01', rtm: [] };
+    const hoy = new Date('2026-08-01T15:00:00Z');
+    const enDisputa = informeDe({ ...coche, rtmEnDisputa: true }, hoy);
+    expect(enDisputa.verificaciones.find((x) => x.id === 'rtm')).toMatchObject({ nivel: 'revision' });
+    expect(enDisputa.hallazgos.find((h) => h.verificacion === 'rtm')?.titulo).toContain('No es claro');
+    // Sin la marca de la fuente, la regla de los 5 años sigue siendo alerta.
+    expect(informeDe(coche, hoy).verificaciones.find((x) => x.id === 'rtm')?.nivel).toBe('alerta');
+  });
+
+  it('tres traspasos en dos años requieren revisión', () => {
+    const d = datosDe(base);
+    d.historial = { estado: 'ok', consultadoEn: null, datos: { propietarios: 4, traspasos: ['2025-01-10', '2025-09-01', '2026-06-15'] } };
+    const i = armarInforme(d, { ahora: AHORA, diasVigencia: 7 });
+    expect(i.verificaciones.find((x) => x.id === 'propietarios')).toMatchObject({ nivel: 'revision', valor: '3 traspasos en 2 años' });
+  });
+
+  it('impuestos sin deuda en cobro no se presenta como paz y salvo', () => {
+    const d = datosDe(base);
+    d.impuestos = { estado: 'ok', consultadoEn: null, datos: { departamento: 'Bogotá D.C.', totalPendiente: 0, aniosPendientes: [], deudaSinMonto: false } };
+    const i = armarInforme(d, { ahora: AHORA, diasVigencia: 7 });
+    expect(i.verificaciones.find((x) => x.id === 'impuestos')?.valor).toBe('Sin deuda en cobro · no equivale a paz y salvo');
+    expect(i.proximosPasos.join(' ')).toContain('no equivale a estar a paz y salvo');
+  });
 });

@@ -70,6 +70,7 @@ function mostrarResultado(c) {
   $('#c-conteo').innerHTML = partes.join(' · ') || 'Ningún aspecto requiere atención';
   $('#c-texto').textContent = conclusion.descripcion;
   $('#parcial').hidden = !r.parcial;
+  $('#parcial-reintento').hidden = !r.reintentoGratis;
   $('#vence').textContent = `Código ${r.codigoVerificacion} · Disponible hasta el ${fechaHora(r.venceEn)}`;
 
   const boton = $('#descargar');

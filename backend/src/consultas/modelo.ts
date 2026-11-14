@@ -35,6 +35,8 @@ export interface Consulta {
   /** Hasta cuándo se puede ver y descargar el PDF. */
   venceEn?: string;
   creditosEstimados?: number;
+  /** Reintento gratis de un informe parcial: id de la consulta parcial que completa. No descuenta saldo. */
+  reintentoDe?: string;
 }
 
 export const MENSAJES_ERROR: Record<CodigoErrorSistema, { titulo: string; mensaje: string }> = {
