@@ -1,0 +1,16 @@
+{
+  "_nota": "Respuesta real de /accidentes-bogota (14-nov-2026), placa anonimizada.",
+  "source": "accidentes",
+  "fetchedAt": "2026-11-14T22:20:11.610Z",
+  "mode": "live",
+  "status": "ok",
+  "data": {
+    "placa": "XYZ12A",
+    "totalAccidentes": 0,
+    "gravedadMaxima": null,
+    "accidentes": [],
+    "fuente": "Accidentes de tránsito reportados por la autoridad de tránsito de Bogotá",
+    "cobertura": "Solo accidentes ocurridos en Bogotá; no cubre otras ciudades. Incluye choques sin heridos (solo daños)."
+  },
+  "cost": 1
+}

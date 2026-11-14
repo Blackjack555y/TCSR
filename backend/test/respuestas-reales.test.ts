@@ -27,13 +27,7 @@ function fuenteReal(): FuenteVehicular {
     reporteHurto: responder('real-reporte-hurto'),
     perdidaTotal: responder('real-perdida-total'),
     garantiasRgm: responder('real-garantias-rgm'),
-    // Aún sin respuesta real guardada: forma de la documentación de PlacApi, sin registros.
-    accidentesBogota: async () => {
-      const r = { source: 'accidentes', status: 'ok', fetchedAt: '2026-11-11T23:40:00Z', data: { placa: 'XYZ12A', totalAccidentes: 0, gravedadMaxima: null, accidentes: [] } };
-      if (vistas.has('accidentes')) Object.assign(r, { fromCache: true, cost: 0 });
-      vistas.add('accidentes');
-      return r;
-    }
+    accidentesBogota: responder('real-accidentes-bogota')
   };
 }
 
