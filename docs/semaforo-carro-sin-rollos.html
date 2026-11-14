@@ -107,7 +107,7 @@
 
   <h1>Semáforo del <span class="grad">informe</span></h1>
   <p class="sub">Prototipo para hacer la cuenta: elige el tipo de informe y el resultado de cada verificación, y el documento calcula la conclusión con las mismas reglas que usa el backend. Sirve para revisar las reglas, preparar casos de prueba y explicarle a cualquiera cómo se llega a cada resultado.</p>
-  <p class="muted">Reglas versión 2026.11.2 · Fuente: <code>backend/src/reglas/</code> e <code>informe/armar.ts</code></p>
+  <p class="muted">Reglas versión 2026.11.3 · Fuente: <code>backend/src/reglas/</code> e <code>informe/armar.ts</code></p>
 
   <p class="sin-js"><strong style="color:var(--text-1)">Vista de solo lectura.</strong> Tu visor no está ejecutando JavaScript, así que no se puede calcular. Ábrelo en Chrome, Firefox o Edge para usar el prototipo.</p>
 
@@ -297,6 +297,19 @@
         </fieldset>
         <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-siniestros"></span></p>
       </div>
+      <div class="fila" data-id="accidentes">
+        <div class="fila-head"><h3>Accidentes en Bogotá</h3><span class="fuente">Movilidad de Bogotá (IPAT)</span></div>
+        <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Accidentes en Bogotá</legend>
+          
+            <label class="opcion"><input type="radio" name="v-accidentes" value="ok" checked="">
+              <span><span class="state s-ok"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>Sin hallazgos</span><span class="cond">Sin accidentes registrados en Bogotá (no cubre otras ciudades)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-accidentes" value="revision">
+              <span><span class="state s-revision"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v6"></path><path d="M12 17h.01"></path></svg>Requiere revisión</span><span class="cond">Uno o más accidentes en Bogotá (solo daños, con heridos o con muertos)</span></span></label>
+            <label class="opcion"><input type="radio" name="v-accidentes" value="na">
+              <span><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span><span class="cond">La fuente no respondió</span></span></label>
+        </fieldset>
+        <p class="nota-excluida"><span class="state s-na"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M8 12h8"></path></svg>No disponible</span> <span id="motivo-accidentes"></span></p>
+      </div>
       <div class="fila" data-id="avaluo">
         <div class="fila-head"><h3>Valor de referencia</h3><span class="fuente">FASECOLDA</span></div>
         <fieldset class="opciones"><legend class="muted" style="position:absolute;left:-9999px">Valor de referencia</legend>
@@ -326,7 +339,7 @@
           <div class="conteo"><b id="n-alerta">0</b><span>Alertas</span></div>
           <div class="conteo"><b id="n-revision">1</b><span>Requieren revisión</span></div>
           <div class="conteo"><b id="n-na">2</b><span>No disponibles</span></div>
-          <div class="conteo"><b id="n-ok">11</b><span>Sin hallazgos</span></div>
+          <div class="conteo"><b id="n-ok">12</b><span>Sin hallazgos</span></div>
         </div>
         <p class="muted" style="margin-top:12px" id="linea">Así se ve en el informe: 1 aspecto requiere atención · 2 verificaciones no disponibles.</p>
         <p class="parcial" id="parcial"><strong>Informe parcial:</strong> una fuente no respondió. El informe se entrega igual, con esa verificación como "No disponible", y descuenta saldo. El cliente puede consultar el mismo vehículo una vez más en las 24 horas siguientes sin costo.</p>
@@ -351,7 +364,7 @@
   <h2>Qué verificaciones incluye cada informe</h2>
   <p class="sub">Lo que un informe no incluye aparece como "No disponible", nunca se omite. Por eso el Básico y el Por VIN no llegan a "Sin alertas relevantes". Y como "Reclamaciones a aseguradoras" sin reclamaciones queda en "Requiere revisión" (la fuente no descarta un salvamento), hoy ningún informe llega a "Sin alertas relevantes": lo mejor posible es "Revisión recomendada".</p>
   <div class="tabla-wrap"><table id="tabla-incluye"><thead><tr><th>Verificación</th><th>Fuente</th><th>Básico</th><th>Por VIN</th><th>Full</th></tr></thead>
-      <tbody><tr><td>Estado de la matrícula</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>SOAT</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Revisión técnico-mecánica</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Embargos y limitaciones</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Prendas</td><td>RUNT / Confecámaras</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Regrabado de motor, chasis o VIN</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Desintegración</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Multas y comparendos</td><td>SIMIT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Impuesto vehicular</td><td>Secretarías de Hacienda</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Historial de propietarios</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reportes de hurto</td><td>Registros judiciales</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reclamaciones a aseguradoras</td><td>FASECOLDA</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Valor de referencia</td><td>FASECOLDA</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Antecedentes del propietario</td><td>—</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td></tr></tbody></table></div>
+      <tbody><tr><td>Estado de la matrícula</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>SOAT</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Revisión técnico-mecánica</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Embargos y limitaciones</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Prendas</td><td>RUNT / Confecámaras</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Regrabado de motor, chasis o VIN</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Desintegración</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Multas y comparendos</td><td>SIMIT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Impuesto vehicular</td><td>Secretarías de Hacienda</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Historial de propietarios</td><td>RUNT</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reportes de hurto</td><td>Registros judiciales</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Reclamaciones a aseguradoras</td><td>FASECOLDA</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Accidentes en Bogotá</td><td>Movilidad de Bogotá (IPAT)</td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Valor de referencia</td><td>FASECOLDA</td><td><span class="no">No disponible</span></td><td><span class="si">Incluida</span></td><td><span class="si">Incluida</span></td></tr><tr><td>Antecedentes del propietario</td><td>—</td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td><td><span class="no">No disponible</span></td></tr></tbody></table></div>
 
   <h2>Umbrales usados por las reglas</h2>
   <div class="tabla-wrap">
@@ -364,6 +377,7 @@
         <tr><td>Revisión técnico-mecánica en disputa</td><td>Sin revisión vigente, matriculado antes del 19-may-2023 y entre 5 y 6 años (marca de PlacApi) → requiere revisión, no alerta</td><td><code>reglas/runt.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
         <tr><td>Muchos cambios de dueño</td><td>3 o más traspasos en los últimos 2 años → requiere revisión. Si no se cumple, el historial queda "No disponible" porque la fuente no lo trae completo</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
         <tr><td>Reclamaciones a aseguradoras</td><td>Sin reclamaciones reportadas → requiere revisión: la fuente no descarta un salvamento. Se pide el certificado de tradición y un peritaje</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
+        <tr><td>Accidentes en Bogotá</td><td>Cualquier accidente reportado en Bogotá → requiere revisión (con heridos o muertos, se advierte posible daño de estructura). Solo cubre Bogotá. Cuesta 1 crédito más por informe</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
         <tr><td>Impuesto vehicular</td><td>Sin deuda en cobro → sin hallazgos, con la aclaración de que no equivale a paz y salvo y el paso de pedir el comprobante</td><td><code>reglas/complementarias.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
         <tr><td>No disponibles que no cambian la conclusión</td><td>Antecedentes del propietario, valor de referencia e historial de propietarios: se muestran y se cuentan, pero no bajan la conclusión a "con observaciones"</td><td><code>informe/armar.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
         <tr><td>Informe parcial</td><td>Descuenta saldo; la misma consulta se puede repetir una vez sin costo durante 24 horas</td><td><code>consultas/servicio.ts</code></td><td>Confirmado (14-nov-2026)</td></tr>
@@ -416,6 +430,8 @@
       ok: 'Sin registros', revision: 'Aparece en procesos penales, sin denuncia de hurto activa', alerta: 'Denuncia de hurto activa o extinción de dominio', na: 'La fuente no respondió' } },
     { id: 'siniestros', nombre: 'Reclamaciones a aseguradoras', fuente: 'FASECOLDA', en: ['basico', 'vin', 'full'], opciones: {
       revision: 'Sin reclamaciones reportadas (no descarta salvamento), o reclamaciones menores', alerta: 'Pérdida total', na: 'La fuente no respondió' } },
+    { id: 'accidentes', nombre: 'Accidentes en Bogotá', fuente: 'Movilidad de Bogotá (IPAT)', en: ['basico', 'vin', 'full'], opciones: {
+      ok: 'Sin accidentes registrados en Bogotá (no cubre otras ciudades)', revision: 'Uno o más accidentes en Bogotá (solo daños, con heridos o con muertos)', na: 'La fuente no respondió' } },
     { id: 'avaluo', nombre: 'Valor de referencia', fuente: 'FASECOLDA', en: ['vin', 'full'], noCuenta: true, opciones: {
       ok: 'Muestra el valor comercial (es informativo: nunca genera alerta)', na: 'La fuente no respondió (no cambia la conclusión)' } },
     { id: 'antecedentes', nombre: 'Antecedentes del propietario', fuente: '—', en: [], noCuenta: true, opciones: {} }
@@ -424,7 +440,7 @@
   const ESCENARIOS = {
     limpio: {},
     moto: { soat: 'revision', rtm: 'revision' },
-    alertas: { prendas: 'alerta', hurto: 'alerta', siniestros: 'alerta', impuestos: 'revision', soat: 'alerta' },
+    alertas: { prendas: 'alerta', hurto: 'alerta', siniestros: 'alerta', accidentes: 'revision', impuestos: 'revision', soat: 'alerta' },
     caida: { hurto: 'na' }
   };
 

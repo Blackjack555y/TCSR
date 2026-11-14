@@ -1,5 +1,5 @@
 import type { Bloque, DatosConsulta, TipoInforme } from '../dominio/tipos.js';
-import { bloque, normalizarAvaluo, normalizarFull, normalizarGarantias, normalizarHurto, normalizarSiniestros } from '../normalizacion/fuentes.js';
+import { bloque, normalizarAccidentes, normalizarAvaluo, normalizarFull, normalizarGarantias, normalizarHurto, normalizarSiniestros } from '../normalizacion/fuentes.js';
 import { normalizarRunt } from '../normalizacion/runt.js';
 import { ErrorFuente, type FuenteVehicular, type ParametrosFull, type RespuestaBloque } from '../placapi/index.js';
 
@@ -12,7 +12,7 @@ const NO_CONSULTADA = { estado: 'no_consultada' } as const;
 
 /** Créditos que cobra PlacApi por cada llamada que responde (consulta con datos). */
 export const COSTO_CREDITOS = {
-  consultaFull: 3, consultaPorVin: 1, avaluoPorVin: 1, reporteHurto: 1, perdidaTotal: 2, garantiasRgm: 1
+  consultaFull: 3, consultaPorVin: 1, avaluoPorVin: 1, reporteHurto: 1, perdidaTotal: 2, garantiasRgm: 1, accidentesBogota: 1
 } as const;
 
 /** Envuelve la fuente para contar los créditos de las llamadas que respondieron. */
@@ -48,10 +48,13 @@ function resolver<R, T>(r: PromiseSettledResult<RespuestaBloque<R>>, mapear: (d:
 }
 
 async function complementarias(fuente: FuenteVehicular, placa: string) {
-  const [hurto, siniestros] = await Promise.allSettled([fuente.reporteHurto(placa), fuente.perdidaTotal(placa)]);
+  const [hurto, siniestros, accidentes] = await Promise.allSettled([
+    fuente.reporteHurto(placa), fuente.perdidaTotal(placa), fuente.accidentesBogota(placa)
+  ]);
   return {
     hurto: resolver(hurto, normalizarHurto),
-    siniestros: resolver(siniestros, normalizarSiniestros)
+    siniestros: resolver(siniestros, normalizarSiniestros),
+    accidentes: resolver(accidentes, normalizarAccidentes)
   };
 }
 
@@ -85,17 +88,18 @@ async function porVin(fuente: FuenteVehicular, vin: string): Promise<DatosConsul
     historial: NO_CONSULTADA,
     avaluo: resolver(avaluo[0]!, normalizarAvaluo),
     hurto: comp?.hurto ?? { estado: 'error' },
-    siniestros: comp?.siniestros ?? { estado: 'error' }
+    siniestros: comp?.siniestros ?? { estado: 'error' },
+    accidentes: comp?.accidentes ?? { estado: 'error' }
   };
 }
 
 async function basico(fuente: FuenteVehicular, placa: string): Promise<DatosConsulta> {
-  const [hurto, siniestros, prendas] = await Promise.allSettled([
-    fuente.reporteHurto(placa), fuente.perdidaTotal(placa), fuente.garantiasRgm(placa)
+  const [hurto, siniestros, prendas, accidentes] = await Promise.allSettled([
+    fuente.reporteHurto(placa), fuente.perdidaTotal(placa), fuente.garantiasRgm(placa), fuente.accidentesBogota(placa)
   ]);
   // Si no respondió ninguna, no hay informe que entregar.
-  if (hurto.status === 'rejected' && siniestros.status === 'rejected' && prendas.status === 'rejected') {
-    throw hurto.reason;
+  if ([hurto, siniestros, prendas, accidentes].every((r) => r.status === 'rejected')) {
+    throw (hurto as PromiseRejectedResult).reason;
   }
   return {
     tipo: 'basico',
@@ -110,7 +114,8 @@ async function basico(fuente: FuenteVehicular, placa: string): Promise<DatosCons
     historial: NO_CONSULTADA,
     avaluo: NO_CONSULTADA,
     hurto: resolver(hurto, normalizarHurto),
-    siniestros: resolver(siniestros, normalizarSiniestros)
+    siniestros: resolver(siniestros, normalizarSiniestros),
+    accidentes: resolver(accidentes, normalizarAccidentes)
   };
 }
 

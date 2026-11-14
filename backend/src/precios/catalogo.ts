@@ -20,7 +20,7 @@ export const RANGOS: Rango[] = [
 export const CANTIDAD_MAXIMA = 10_000;
 
 /** Créditos de PlacApi que gasta cada informe. */
-export const CREDITOS_POR_INFORME: Record<TipoInforme, number> = { basico: 4, vin: 5, full: 6 };
+export const CREDITOS_POR_INFORME: Record<TipoInforme, number> = { basico: 5, vin: 6, full: 7 };
 
 export interface Cotizacion {
   tipo: TipoInforme;

@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import { ErrorFuente } from './errores.js';
-import type { FuenteVehicular, ParametrosFull, RawAvaluo, RawConsultaRunt, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from './tipos.js';
+import type { FuenteVehicular, ParametrosFull, RawAccidentes, RawAvaluo, RawConsultaRunt, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from './tipos.js';
 
 const leer = async <T>(archivo: string): Promise<T> => {
   const j = JSON.parse(await readFile(new URL(`../../fixtures/${archivo}`, import.meta.url), 'utf8')) as T & { _nota?: string };
@@ -15,7 +15,7 @@ const ahora = () => new Date().toISOString();
  * Documentos que simulan errores en Full: 0000000404 (sin resultados),
  * 0000000409 (no coincide con el propietario), 0000000502 (fuente caída).
  * VIN terminado en 00404 simula "sin resultados". La placa ALE123 trae hurto activo,
- * pérdida total y prenda. FAL123 hace fallar el reporte de hurto (informe parcial).
+ * pérdida total, prenda y un accidente con heridos en Bogotá. FAL123 hace fallar el reporte de hurto (informe parcial).
  */
 export class FuenteSimulada implements FuenteVehicular {
   constructor(private readonly demoraMs = 1500) {}
@@ -60,5 +60,12 @@ export class FuenteSimulada implements FuenteVehicular {
   async garantiasRgm(placa: string): Promise<RespuestaBloque<RawGarantias>> {
     if (placa === 'ALE123') return leer('garantias-alerta.json');
     return { status: 'ok', fetchedAt: ahora(), data: { tienePrenda: false, garantias: [] } };
+  }
+
+  async accidentesBogota(placa: string): Promise<RespuestaBloque<RawAccidentes>> {
+    if (placa === 'ALE123') {
+      return { status: 'danger', fetchedAt: ahora(), data: { totalAccidentes: 1, gravedadMaxima: 'con_heridos', accidentes: [{ fecha: '2023-05-20', gravedad: 'CON HERIDOS' }] } };
+    }
+    return { status: 'ok', fetchedAt: ahora(), data: { totalAccidentes: 0, gravedadMaxima: null, accidentes: [] } };
   }
 }

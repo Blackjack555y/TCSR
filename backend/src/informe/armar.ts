@@ -52,6 +52,7 @@ export function armarInforme(datos: DatosConsulta, op: OpcionesInforme): Informe
       rtm: porFecha(vehiculo?.rtm ?? []),
       traspasos: datos.historial.estado === 'ok' ? datos.historial.datos.traspasos : [],
       siniestros: datos.siniestros.estado === 'ok' ? datos.siniestros.datos.registros : [],
+      accidentes: datos.accidentes.estado === 'ok' ? datos.accidentes.datos.registros : [],
       hurto: datos.hurto.estado === 'ok' ? datos.hurto.datos.registros : []
     }
   };

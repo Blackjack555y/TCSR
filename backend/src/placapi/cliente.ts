@@ -1,5 +1,5 @@
 import { ErrorFuente, traducirError } from './errores.js';
-import type { FuenteVehicular, ParametrosFull, RawAvaluo, RawConsultaRunt, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from './tipos.js';
+import type { FuenteVehicular, ParametrosFull, RawAccidentes, RawAvaluo, RawConsultaRunt, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from './tipos.js';
 
 interface Opciones {
   url: string;
@@ -33,6 +33,10 @@ export class ClientePlacApi implements FuenteVehicular {
 
   garantiasRgm(placa: string) {
     return this.post<RespuestaBloque<RawGarantias>>('/garantias-rgm', { placa });
+  }
+
+  accidentesBogota(placa: string) {
+    return this.post<RespuestaBloque<RawAccidentes>>('/accidentes-bogota', { placa });
   }
 
   private async post<T>(ruta: string, cuerpo: unknown): Promise<T> {

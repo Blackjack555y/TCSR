@@ -181,7 +181,7 @@ describe.skipIf(!HAY_SUPABASE)('integración con Supabase', () => {
 
     const hace1h = new Date(Date.now() - 3_600_000).toISOString();
     expect(await repo.contarFallidas(c.id, hace1h, ['documento_no_coincide', 'sin_resultados'])).toBe(1);
-    expect((await repo.obtener(ok.body.id))?.creditosEstimados).toBe(6);
+    expect((await repo.obtener(ok.body.id))?.creditosEstimados).toBe(7);
 
     const { data: resumen, error } = await db.from('resumen_diario').select('*').limit(5);
     expect(error).toBeNull();

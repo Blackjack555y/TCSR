@@ -177,6 +177,7 @@ ${inf.hallazgos.length > 0 ? `<section class="block">
   ${inf.tipo === 'basico' ? '' : tablaVigencias('Historial de revisión técnico-mecánica', inf.evidencia.rtm, hoy, 'CDA')}
   ${inf.evidencia.traspasos.length > 0 ? `<h3 class="ev-title">Traspasos registrados</h3><p class="muted">${inf.evidencia.traspasos.map(fechaCorta).join(' · ')}</p>` : ''}
   ${inf.evidencia.siniestros.length > 0 ? tabla('Reclamaciones a aseguradoras', ['Fecha', 'Amparo', 'Severidad'], inf.evidencia.siniestros.map((r) => [fechaCorta(r.fecha), r.amparo ?? '—', r.severidad ?? '—'])) : ''}
+  ${(inf.evidencia.accidentes ?? []).length > 0 ? tabla('Accidentes en Bogotá', ['Fecha', 'Gravedad'], inf.evidencia.accidentes.map((r) => [fechaCorta(r.fecha), r.gravedad ?? '—'])) : ''}
   ${inf.evidencia.hurto.length > 0 ? tabla('Registros judiciales de la placa', ['Fecha', 'Categoría', 'Estado'], inf.evidencia.hurto.map((r) => [fechaCorta(r.fecha), r.categoria ?? '—', r.estado ?? '—'])) : ''}
 </section>
 

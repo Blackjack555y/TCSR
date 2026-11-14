@@ -129,3 +129,26 @@ describe('informe Básico', () => {
     expect(i.conclusion.nivel).toBe('revision_recomendada');
   });
 });
+
+describe('accidentes en Bogotá', () => {
+  it('sin registros: sin hallazgos, aclarando que solo cubre Bogotá', async () => {
+    const i = await informe({ tipo: 'basico', placa: 'ABC123' });
+    expect(i.verificaciones.find((v) => v.id === 'accidentes')).toMatchObject({ nivel: 'sin_hallazgos', valor: 'Sin accidentes registrados en Bogotá' });
+  });
+
+  it('con un accidente con heridos: requiere revisión y queda en la evidencia', async () => {
+    const i = await informe({ tipo: 'basico', placa: 'ALE123' });
+    expect(i.verificaciones.find((v) => v.id === 'accidentes')).toMatchObject({ nivel: 'revision', valor: '1 accidente en Bogotá (el más grave: con heridos)' });
+    expect(i.hallazgos.find((h) => h.verificacion === 'accidentes')?.queEncontramos).toContain('20/05/2023');
+    expect(i.evidencia.accidentes).toEqual([{ fecha: '2023-05-20', gravedad: 'CON HERIDOS' }]);
+  });
+
+  it('si la fuente falla, queda no disponible y el informe es parcial', async () => {
+    const f: FuenteVehicular = { ...fuente, consultaFull: fuente.consultaFull.bind(fuente), reporteHurto: fuente.reporteHurto.bind(fuente),
+      perdidaTotal: fuente.perdidaTotal.bind(fuente), garantiasRgm: fuente.garantiasRgm.bind(fuente), consultaPorVin: fuente.consultaPorVin.bind(fuente),
+      avaluoPorVin: fuente.avaluoPorVin.bind(fuente), accidentesBogota: async () => { throw new ErrorFuente('fuente_caida', 502, 'source_error'); } };
+    const i = await informe(FULL, f);
+    expect(i.verificaciones.find((v) => v.id === 'accidentes')).toMatchObject({ nivel: 'no_disponible', consulta: 'error' });
+    expect(i.parcial).toBe(true);
+  });
+});

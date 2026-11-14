@@ -1,4 +1,4 @@
-import type { Avaluo, Hallazgo, Historial, Hurto, IdVerificacion, Impuestos, Multas, Nivel, Prenda, Siniestros, Verificacion } from '../dominio/tipos.js';
+import type { Accidentes, Avaluo, Hallazgo, Historial, Hurto, IdVerificacion, Impuestos, Multas, Nivel, Prenda, Siniestros, Verificacion } from '../dominio/tipos.js';
 import { fechaCorta, sumarAnios } from './fechas.js';
 import type { Resultado } from './runt.js';
 
@@ -84,6 +84,25 @@ export function reglaSiniestros(d: Siniestros, b: Base): Resultado {
       queEncontramos: 'Las aseguradoras no reportan reclamaciones para esta placa en la fuente consultada.',
       queSignifica: 'Esta fuente solo incluye las reclamaciones que reportan las aseguradoras, y no siempre registra las pérdidas totales ni los vehículos vendidos como salvamento. Un vehículo recuperado de una pérdida total vale menos y puede ser difícil de asegurar.',
       queHacer: 'Pide el certificado de tradición en el organismo de tránsito: muestra todos los propietarios, y si una aseguradora fue uno de ellos, es señal de salvamento. Haz además un peritaje de estructura.'
+    })]
+  };
+}
+
+/** Cubre solo Bogotá: "sin registros" no dice nada de lo que pasó en otras ciudades. */
+export function reglaAccidentes(d: Accidentes, b: Base): Resultado {
+  if (d.total === 0) return { verificacion: verif(b, 'sin_hallazgos', 'Sin accidentes registrados en Bogotá'), hallazgos: [] };
+  const graves = d.gravedadMaxima === 'con_heridos' || d.gravedadMaxima === 'con_muertos';
+  const ultimo = d.registros.map((r) => r.fecha).filter((f): f is string => !!f).sort().at(-1);
+  const detalle = graves ? (d.gravedadMaxima === 'con_muertos' ? 'con muertos' : 'con heridos') : 'solo daños';
+  return {
+    verificacion: verif(b, 'revision', `${plural(d.total, 'accidente', 'accidentes')} en Bogotá (el más grave: ${detalle})`),
+    hallazgos: [hallazgo(b, 'revision', {
+      titulo: `${plural(d.total, 'accidente registrado', 'accidentes registrados')} en Bogotá`,
+      queEncontramos: `La autoridad de tránsito de Bogotá tiene ${plural(d.total, 'informe', 'informes')} de accidente para esta placa, el más grave ${detalle}${ultimo ? `; el más reciente del ${fechaCorta(ultimo)}` : ''}.`,
+      queSignifica: graves
+        ? 'Un choque con heridos suele ser fuerte: pudo dejar daños de estructura, aunque no aparezca en las reclamaciones a aseguradoras.'
+        : 'Hubo un choque, aunque sin heridos. Puede haber reparaciones de latonería o pintura que no se ven a simple vista.',
+      queHacer: 'Pregúntale al vendedor qué pasó y haz un peritaje de estructura y pintura antes de pagar.'
     })]
   };
 }

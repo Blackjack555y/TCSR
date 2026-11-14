@@ -20,7 +20,7 @@ const datosDe = (v: VehiculoRunt): DatosConsulta => ({
   soatDisponible: true,
   rtmDisponible: true,
   legalDisponible: true,
-  prendas: NC, hurto: NC, siniestros: NC, multas: NC, impuestos: NC, historial: NC, avaluo: NC
+  prendas: NC, hurto: NC, siniestros: NC, accidentes: NC, multas: NC, impuestos: NC, historial: NC, avaluo: NC
 });
 
 const informeDe = (v: VehiculoRunt, ahora = AHORA) => armarInforme(datosDe(v), { ahora, diasVigencia: 7 });
@@ -92,7 +92,7 @@ describe('informe de la moto de ejemplo', () => {
   });
 
   it('concluye "Revisión recomendada" con 2 aspectos', () => {
-    expect(informe.conclusion).toMatchObject({ nivel: 'revision_recomendada', aspectosAtencion: 2, noDisponibles: 7 });
+    expect(informe.conclusion).toMatchObject({ nivel: 'revision_recomendada', aspectosAtencion: 2, noDisponibles: 8 });
   });
 
   it('vence a los 7 días y lleva código de verificación', () => {

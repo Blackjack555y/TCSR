@@ -1,5 +1,5 @@
-import type { Avaluo, Bloque, DatosConsulta, Historial, Hurto, Impuestos, Limitacion, Multas, Prenda, Siniestros, VehiculoRunt, Vigencia } from '../dominio/tipos.js';
-import type { RawAvaluo, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from '../placapi/tipos.js';
+import type { Accidentes, Avaluo, Bloque, DatosConsulta, Historial, Hurto, Impuestos, Limitacion, Multas, Prenda, Siniestros, VehiculoRunt, Vigencia } from '../dominio/tipos.js';
+import type { RawAccidentes, RawAvaluo, RawFull, RawGarantias, RawHurto, RawSiniestros, RespuestaBloque } from '../placapi/tipos.js';
 import { entero, fecha, siNo, texto } from './valores.js';
 
 // Traduce los bloques de PlacApi al modelo propio. Aquí se quedan los datos de terceros:
@@ -42,6 +42,11 @@ export function normalizarSiniestros(d: RawSiniestros): Siniestros {
     total: d.totalSiniestros ?? d.siniestros?.length ?? 0,
     registros: (d.siniestros ?? []).map((s) => ({ fecha: fecha(s.fecha), amparo: texto(s.amparo), severidad: texto(s.severidad) }))
   };
+}
+
+export function normalizarAccidentes(d: RawAccidentes): Accidentes {
+  const registros = (d.accidentes ?? []).map((a) => ({ fecha: fecha(a.fecha), gravedad: texto(a.gravedad) }));
+  return { total: d.totalAccidentes ?? registros.length, gravedadMaxima: texto(d.gravedadMaxima)?.toLowerCase() ?? null, registros };
 }
 
 export function normalizarGarantias(d: RawGarantias): Prenda[] {
@@ -159,8 +164,8 @@ function historial(raw: RawFull): Bloque<Historial> {
 
 const disponible = (b?: RespuestaBloque<unknown>) => !!b && b.status !== 'error' && b.data != null;
 
-/** Lo que aporta /consulta-full. Hurto y siniestros vienen de otras llamadas. */
-export function normalizarFull(raw: RawFull): Omit<DatosConsulta, 'tipo' | 'hurto' | 'siniestros'> {
+/** Lo que aporta /consulta-full. Hurto, siniestros y accidentes vienen de otras llamadas. */
+export function normalizarFull(raw: RawFull): Omit<DatosConsulta, 'tipo' | 'hurto' | 'siniestros' | 'accidentes'> {
   const vb = raw.vehicle;
   const vehiculo: Bloque<VehiculoRunt> = bloque(vb, (d) => vehiculoFull(raw, d));
   const placa = vehiculo.estado === 'ok' ? vehiculo.datos.placa || null : null;

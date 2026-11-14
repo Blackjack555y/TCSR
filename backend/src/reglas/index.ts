@@ -1,12 +1,12 @@
 import type { Bloque, DatosConsulta, EstadoConsulta, Hallazgo, IdVerificacion, Verificacion } from '../dominio/tipos.js';
-import { reglaAvaluo, reglaHistorial, reglaHurto, reglaImpuestos, reglaMultas, reglaPrendasDetalle, reglaSiniestros } from './complementarias.js';
+import { reglaAccidentes, reglaAvaluo, reglaHistorial, reglaHurto, reglaImpuestos, reglaMultas, reglaPrendasDetalle, reglaSiniestros } from './complementarias.js';
 import {
   reglaDesintegracion, reglaDian, reglaEstadoMatricula, reglaGravamenes, reglaPrendas,
   reglaRegrabados, reglaRtm, reglaSoat, type Contexto, type Resultado
 } from './runt.js';
 
 /** Cambia cada vez que una regla cambia su resultado. Queda guardada en cada informe. */
-export const VERSION_REGLAS = '2026.11.2';
+export const VERSION_REGLAS = '2026.11.3';
 
 const NOMBRES: Record<IdVerificacion, { nombre: string; fuente: string }> = {
   estado_matricula: { nombre: 'Estado de la matrícula', fuente: 'RUNT' },
@@ -22,6 +22,7 @@ const NOMBRES: Record<IdVerificacion, { nombre: string; fuente: string }> = {
   propietarios: { nombre: 'Historial de propietarios', fuente: 'RUNT' },
   hurto: { nombre: 'Reportes de hurto', fuente: 'Registros judiciales' },
   siniestros: { nombre: 'Reclamaciones a aseguradoras', fuente: 'FASECOLDA' },
+  accidentes: { nombre: 'Accidentes en Bogotá', fuente: 'Movilidad de Bogotá (IPAT)' },
   avaluo: { nombre: 'Valor de referencia', fuente: 'FASECOLDA' },
   antecedentes_propietario: { nombre: 'Antecedentes del propietario', fuente: '—' }
 };
@@ -71,6 +72,7 @@ export function evaluar(d: DatosConsulta, hoy: string): Evaluacion {
     segun('propietarios', d.historial, (x, b) => reglaHistorial(x, b, hoy)),
     segun('hurto', d.hurto, reglaHurto),
     segun('siniestros', d.siniestros, reglaSiniestros),
+    segun('accidentes', d.accidentes, reglaAccidentes),
     segun('avaluo', d.avaluo, reglaAvaluo),
     // No se consulta hasta tener la validación legal. Nunca se omite.
     noDisponible('antecedentes_propietario', 'no_consultada')

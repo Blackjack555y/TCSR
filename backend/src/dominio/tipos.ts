@@ -27,6 +27,7 @@ export type IdVerificacion =
   | 'impuestos'
   | 'hurto'
   | 'siniestros'
+  | 'accidentes'
   | 'propietarios'
   | 'avaluo'
   | 'antecedentes_propietario';
@@ -132,6 +133,14 @@ export interface Siniestros {
   registros: { fecha: string | null; amparo: string | null; severidad: string | null }[];
 }
 
+/** Accidentes reportados en Bogotá (informes IPAT): solo fecha y gravedad. */
+export interface Accidentes {
+  total: number;
+  /** solo_danos, con_heridos o con_muertos; null si no hay registros. */
+  gravedadMaxima: string | null;
+  registros: { fecha: string | null; gravedad: string | null }[];
+}
+
 export interface Multas {
   totalDeuda: number;
   totalMultas: number;
@@ -175,6 +184,7 @@ export interface DatosConsulta {
   prendas: Bloque<Prenda[]>;
   hurto: Bloque<Hurto>;
   siniestros: Bloque<Siniestros>;
+  accidentes: Bloque<Accidentes>;
   multas: Bloque<Multas>;
   impuestos: Bloque<Impuestos>;
   historial: Bloque<Historial>;
@@ -225,6 +235,7 @@ export interface Informe {
     rtm: Vigencia[];
     traspasos: string[];
     siniestros: Siniestros['registros'];
+    accidentes: Accidentes['registros'];
     hurto: Hurto['registros'];
   };
 }

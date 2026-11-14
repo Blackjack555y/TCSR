@@ -160,18 +160,18 @@
   <div class="kpis">
     <div class="card kpi">
       <div class="label">Informe completo recomendado</div>
-      <div class="value num">6 <small>créditos</small></div>
-      <div class="muted">consulta-full + hurto + pérdida total</div>
+      <div class="value num">7 <small>créditos</small></div>
+      <div class="muted">consulta-full + hurto + pérdida total + accidentes Bogotá</div>
     </div>
     <div class="card kpi">
       <div class="label">Costo por informe, precio base</div>
-      <div class="value num">2.094 <small>COP</small></div>
-      <div class="muted">6 × 349 COP (compras desde 30 créditos)</div>
+      <div class="value num">2.443 <small>COP</small></div>
+      <div class="muted">7 × 349 COP (compras desde 30 créditos)</div>
     </div>
     <div class="card kpi">
       <div class="label">Costo por informe, mayor volumen</div>
-      <div class="value num">594 <small>COP</small></div>
-      <div class="muted">6 × 99 COP (compras desde 50.000 créditos)</div>
+      <div class="value num">693 <small>COP</small></div>
+      <div class="muted">7 × 99 COP (compras desde 50.000 créditos)</div>
     </div>
   </div>
 
@@ -181,15 +181,15 @@
   <div class="table-wrap">
     <table>
       <thead>
-        <tr><th>Compra desde</th><th class="r">Precio por crédito</th><th class="r">Informe básico (4 cr.)</th><th class="r">Informe por VIN (5 cr.)</th><th class="r">Informe completo (6 cr.)</th></tr>
+        <tr><th>Compra desde</th><th class="r">Precio por crédito</th><th class="r">Informe básico (5 cr.)</th><th class="r">Informe por VIN (6 cr.)</th><th class="r">Informe completo (7 cr.)</th></tr>
       </thead>
       <tbody class="num">
-        <tr><td>30 créditos</td><td class="r">349 COP</td><td class="r">1.396</td><td class="r">1.745</td><td class="r">2.094</td></tr>
-        <tr><td>1.000 créditos</td><td class="r">249 COP</td><td class="r">996</td><td class="r">1.245</td><td class="r">1.494</td></tr>
-        <tr><td>5.000 créditos</td><td class="r">149 COP</td><td class="r">596</td><td class="r">745</td><td class="r">894</td></tr>
-        <tr><td>10.000 créditos</td><td class="r">139 COP</td><td class="r">556</td><td class="r">695</td><td class="r">834</td></tr>
-        <tr><td>20.000 créditos</td><td class="r">119 COP</td><td class="r">476</td><td class="r">595</td><td class="r">714</td></tr>
-        <tr><td>50.000 créditos</td><td class="r">99 COP</td><td class="r">396</td><td class="r">495</td><td class="r">594</td></tr>
+        <tr><td>30 créditos</td><td class="r">349 COP</td><td class="r">1.745</td><td class="r">2.094</td><td class="r">2.443</td></tr>
+        <tr><td>1.000 créditos</td><td class="r">249 COP</td><td class="r">1.245</td><td class="r">1.494</td><td class="r">1.743</td></tr>
+        <tr><td>5.000 créditos</td><td class="r">149 COP</td><td class="r">745</td><td class="r">894</td><td class="r">1.043</td></tr>
+        <tr><td>10.000 créditos</td><td class="r">139 COP</td><td class="r">695</td><td class="r">834</td><td class="r">973</td></tr>
+        <tr><td>20.000 créditos</td><td class="r">119 COP</td><td class="r">595</td><td class="r">714</td><td class="r">833</td></tr>
+        <tr><td>50.000 créditos</td><td class="r">99 COP</td><td class="r">495</td><td class="r">594</td><td class="r">693</td></tr>
       </tbody>
     </table>
   </div>
@@ -213,6 +213,7 @@
         <tr><td><code>/reporte-hurto</code></td><td>Denuncias de hurto, incautación, extinción de dominio</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
         <tr><td><code>/perdida-total</code></td><td>Reclamaciones a aseguradoras desde 2008 (solo vehículos asegurados)</td><td><span class="tag placa">Solo placa</span></td><td class="r num">2</td></tr>
         <tr><td><code>/garantias-rgm</code></td><td>Detalle de prendas en Confecámaras (acreedor, fechas)</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
+        <tr><td><code>/accidentes-bogota</code></td><td>Accidentes reportados en Bogotá (informes IPAT): fecha y gravedad. Solo Bogotá; incluye choques sin heridos y vehículos sin seguro</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
         <tr><td><code>/accidentes-bogota</code></td><td>Accidentes con informe IPAT, solo Bogotá</td><td><span class="tag placa">Solo placa</span></td><td class="r num">1</td></tr>
       </tbody>
     </table>
@@ -225,33 +226,36 @@
   <div class="scenarios">
     <div class="card scenario">
       <h3>Básico, solo placa</h3>
-      <div class="credits num">4 <small>créditos</small></div>
+      <div class="credits num">5 <small>créditos</small></div>
       <ul>
         <li><code>/reporte-hurto</code> · 1</li>
         <li><code>/perdida-total</code> · 2</li>
         <li><code>/garantias-rgm</code> · 1</li>
+        <li><code>/accidentes-bogota</code> · 1</li>
       </ul>
-      <p class="needs">Solo pide la placa. Trae hurto, reclamaciones y prendas. No trae marca, modelo, SOAT, RTM, multas ni avalúo.</p>
+      <p class="needs">Solo pide la placa. Trae hurto, reclamaciones, accidentes en Bogotá y prendas. No trae marca, modelo, SOAT, RTM, multas ni avalúo.</p>
     </div>
     <div class="card scenario">
       <h3>Por VIN, sin cédula</h3>
-      <div class="credits num">5 <small>créditos</small></div>
+      <div class="credits num">6 <small>créditos</small></div>
       <ul>
         <li><code>/consulta-por-vin</code> · 1</li>
         <li><code>/avaluo-por-vin</code> · 1</li>
         <li><code>/reporte-hurto</code> · 1</li>
         <li><code>/perdida-total</code> · 2</li>
+        <li><code>/accidentes-bogota</code> · 1</li>
       </ul>
       <p class="needs">Solo pide el VIN. Trae RUNT, SOAT, RTM y embargos, pero no SIMIT ni impuestos, que exigen la cédula.</p>
     </div>
     <div class="card scenario recommended">
       <div class="ribbon">Recomendado</div>
       <h3>Completo, con cédula del propietario</h3>
-      <div class="credits num">6 <small>créditos</small></div>
+      <div class="credits num">7 <small>créditos</small></div>
       <ul>
         <li><code>/consulta-full</code> · 3</li>
         <li><code>/reporte-hurto</code> · 1</li>
         <li><code>/perdida-total</code> · 2</li>
+        <li><code>/accidentes-bogota</code> · 1</li>
       </ul>
       <p class="needs">Pide placa y cédula del propietario activo. Las prendas ya vienen incluidas. Si la cédula no coincide, la consulta falla sin cobrar, y eso ya es una alerta para el comprador.</p>
     </div>
@@ -304,9 +308,9 @@
         <div class="field">
           <label for="scenario">Tipo de informe</label>
           <select id="scenario">
-            <option value="4">Básico, solo placa (4 créditos)</option>
-            <option value="5">Por VIN, sin cédula (5 créditos)</option>
-            <option value="6" selected>Completo, con cédula (6 créditos)</option>
+            <option value="5">Básico, solo placa (5 créditos)</option>
+            <option value="6">Por VIN, sin cédula (6 créditos)</option>
+            <option value="7" selected>Completo, con cédula (7 créditos)</option>
           </select>
         </div>
         <div class="field">

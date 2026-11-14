@@ -26,7 +26,14 @@ function fuenteReal(): FuenteVehicular {
     avaluoPorVin: responder('real-avaluo-por-vin'),
     reporteHurto: responder('real-reporte-hurto'),
     perdidaTotal: responder('real-perdida-total'),
-    garantiasRgm: responder('real-garantias-rgm')
+    garantiasRgm: responder('real-garantias-rgm'),
+    // Aún sin respuesta real guardada: forma de la documentación de PlacApi, sin registros.
+    accidentesBogota: async () => {
+      const r = { source: 'accidentes', status: 'ok', fetchedAt: '2026-11-11T23:40:00Z', data: { placa: 'XYZ12A', totalAccidentes: 0, gravedadMaxima: null, accidentes: [] } };
+      if (vistas.has('accidentes')) Object.assign(r, { fromCache: true, cost: 0 });
+      vistas.add('accidentes');
+      return r;
+    }
   };
 }
 
@@ -52,14 +59,14 @@ describe('respuestas reales de PlacApi', () => {
   it('informe Básico', async () => {
     const { datos, creditos } = await obtenerDatosConCreditos(fuenteReal(), { tipo: 'basico', placa: 'XYZ12A' });
     const i = armarInforme(datos, { ahora: AHORA, diasVigencia: 7 });
-    expect(i.verificaciones.filter((v) => v.consulta === 'ok').map((v) => v.id).sort()).toEqual(['hurto', 'prendas', 'siniestros']);
-    expect(creditos).toBe(4);
+    expect(i.verificaciones.filter((v) => v.consulta === 'ok').map((v) => v.id).sort()).toEqual(['accidentes', 'hurto', 'prendas', 'siniestros']);
+    expect(creditos).toBe(5);
   });
 
   it('las llamadas que vienen del caché no se cuentan como gasto', async () => {
     const f = fuenteReal();
     await obtenerDatosConCreditos(f, { tipo: 'basico', placa: 'XYZ12A' });
-    // Hurto y pérdida total ya están en caché: solo cobran la ficha y el avalúo.
+    // Hurto, pérdida total y accidentes ya están en caché: solo cobran la ficha y el avalúo.
     expect((await obtenerDatosConCreditos(f, { tipo: 'vin', vin: '9FKRE0000T0000001' })).creditos).toBe(2);
   });
 });

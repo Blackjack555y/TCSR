@@ -73,6 +73,13 @@ export interface RawSiniestros {
   siniestros?: { fecha?: Txt; amparo?: Txt; severidad?: Txt }[] | null;
 }
 
+export interface RawAccidentes {
+  totalAccidentes?: number;
+  gravedadMaxima?: Txt;
+  /** formulario e ipat no se usan: identifican el informe policial, no aportan a la decisión. */
+  accidentes?: { fecha?: Txt; gravedad?: Txt }[] | null;
+}
+
 export interface RawGarantias {
   tienePrenda?: boolean;
   /** Trae deudor y documento del deudor: nunca salen de la normalización. */
@@ -119,4 +126,5 @@ export interface FuenteVehicular {
   reporteHurto(placa: string): Promise<RawBloque<RawHurto>>;
   perdidaTotal(placa: string): Promise<RawBloque<RawSiniestros>>;
   garantiasRgm(placa: string): Promise<RawBloque<RawGarantias>>;
+  accidentesBogota(placa: string): Promise<RawBloque<RawAccidentes>>;
 }

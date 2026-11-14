@@ -190,10 +190,10 @@ describe('correos', () => {
 
 describe('créditos de PlacApi gastados', () => {
   it.each([
-    [{ tipo: 'full', placa: 'ABC123', docType: 'CC', docNumber: '1020304050' }, 6],
-    [{ tipo: 'vin', vin: '9FLA37CZ0EA000001' }, 5],
-    [{ tipo: 'basico', placa: 'ABC123' }, 4],
-    [{ tipo: 'full', placa: 'FAL123', docType: 'CC', docNumber: '1020304050' }, 5] // hurto falló: no cobra
+    [{ tipo: 'full', placa: 'ABC123', docType: 'CC', docNumber: '1020304050' }, 7],
+    [{ tipo: 'vin', vin: '9FLA37CZ0EA000001' }, 6],
+    [{ tipo: 'basico', placa: 'ABC123' }, 5],
+    [{ tipo: 'full', placa: 'FAL123', docType: 'CC', docNumber: '1020304050' }, 6] // hurto falló: no cobra
   ] as const)('%o → %i créditos', async (entrada, esperado) => {
     expect((await obtenerDatosConCreditos(fuente, entrada)).creditos).toBe(esperado);
   });
@@ -208,6 +208,6 @@ describe('créditos de PlacApi gastados', () => {
     await darSaldo(a, 1);
     const r = await request(a).post('/api/consultas').set(auth()).send({ tipo: 'full', placa: 'ABC123', docType: 'CC', docNumber: '1020304050', consentimiento });
     await servicio.esperarProcesos();
-    expect((await repo.obtener(r.body.id))?.creditosEstimados).toBe(6);
+    expect((await repo.obtener(r.body.id))?.creditosEstimados).toBe(7);
   });
 });
