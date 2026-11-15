@@ -4,7 +4,7 @@ Pasos para pasar de lo que está en el repositorio a la plataforma en producció
 
 ## Antes de empezar
 
-- [ ] Abogado: aviso de privacidad, términos, consulta de la cédula de un tercero y plazos de retención. Los textos de `frontend/privacidad.html` y `frontend/terminos.html` son borradores con datos entre corchetes: no se publican así.
+- [ ] Abogado: aviso de privacidad, términos, consulta de la cédula de un tercero, plazos de retención y transferencia internacional de datos (la base de datos y el backend quedan en Estados Unidos). Los textos de `frontend/privacidad.html` y `frontend/terminos.html` son borradores con datos entre corchetes: no se publican así.
 - [ ] Contador: si se factura electrónicamente, si la tarifa de IVA es 19 % y qué datos del cliente exige la factura.
 - [ ] Correo del negocio para abrir todas las cuentas, con verificación en dos pasos.
 
@@ -15,7 +15,7 @@ Pasos para pasar de lo que está en el repositorio a la plataforma en producció
 
 ## 2. Supabase
 
-1. Crear el proyecto (región más cercana: São Paulo).
+1. Crear el proyecto en East US (Ohio, `us-east-2`), la misma región del backend en Render. Lo que importa es la distancia entre el backend y la base: Render no tiene servidores en Sudamérica.
 2. Aplicar el esquema:
    ```bash
    cd backend

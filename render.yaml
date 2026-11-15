@@ -2,6 +2,8 @@
 services:
   - type: web
     name: carro-sin-rollos-api
+    # Misma región que la base de datos de Supabase (us-east-2): el backend la consulta varias veces por pedido.
+    region: ohio
     runtime: docker
     rootDir: backend
     dockerfilePath: ./Dockerfile

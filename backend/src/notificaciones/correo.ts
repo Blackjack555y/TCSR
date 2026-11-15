@@ -50,7 +50,7 @@ function plantilla(sitio: string, titulo: string, texto: string, boton: string, 
   return `<!doctype html><html lang="es"><body style="margin:0;padding:24px;background:#131516;font-family:Arial,sans-serif;color:#f3f4f4">
 <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr><td align="center">
 <table role="presentation" width="100%" style="max-width:480px;background:#1b1e20;border:1px solid #33383b;border-radius:18px" cellpadding="28" cellspacing="0"><tr><td>
-<img src="${sitio}/img/logo-icono.png" alt="Carro Sin Rollos" width="39" height="52" style="display:block;margin-bottom:18px">
+<img src="https://xufwueysgfokiknwnnfy.supabase.co/storage/v1/object/public/marca/logo-icono.png" alt="" width="39" height="52" style="display:block;margin-bottom:18px;border:0">
 <h1 style="font-size:22px;margin:0 0 10px">${titulo}</h1>
 <p style="color:#a9afb2;line-height:1.6;margin:0 0 22px">${texto}</p>
 <a href="${enlace}" style="display:inline-block;background:#f0a83c;color:#1a1206;font-weight:bold;text-decoration:none;padding:14px 26px;border-radius:999px">${boton}</a>

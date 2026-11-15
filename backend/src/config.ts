@@ -35,7 +35,7 @@ const esquema = z.object({
 
   /** Resend para los correos de compra aprobada e informe listo. Sin llave, solo se registran en el log. */
   RESEND_LLAVE: z.string().optional(),
-  CORREO_REMITENTE: z.string().default('Carro Sin Rollos <no-responder@carrosinrollos.com>'),
+  CORREO_REMITENTE: z.string().default('Carro Sin Rollos <informes@notificaciones.carrosinrollos.com.co>'),
   /** URL pública del sitio, para los enlaces de los correos. */
   SITIO_URL: z.url().default('http://localhost:5173'),
 
