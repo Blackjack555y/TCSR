@@ -43,6 +43,8 @@ services:
         sync: false
       - key: CORREO_REMITENTE
         sync: false
+      - key: CORREO_SOPORTE
+        sync: false
       - key: SITIO_URL
         sync: false
       - key: LIMITE_FALLIDAS_DIA

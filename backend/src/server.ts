@@ -30,9 +30,10 @@ const almacenamiento = db ? new AlmacenamientoSupabase(db) : new AlmacenamientoL
 
 if (!config.RESEND_LLAVE) logger.warn('sin RESEND_LLAVE: los correos de compra e informe no se envían');
 const notificador = new Notificador(
-  config.RESEND_LLAVE ? new EnviadorResend(config.RESEND_LLAVE, config.CORREO_REMITENTE) : new EnviadorRegistro(),
+  config.RESEND_LLAVE ? new EnviadorResend(config.RESEND_LLAVE, config.CORREO_REMITENTE, config.CORREO_SOPORTE) : new EnviadorRegistro(),
   db ? correoSupabase(db) : async (id) => `${id}@dev.local`,
-  config.SITIO_URL.replace(/\/$/, '')
+  config.SITIO_URL.replace(/\/$/, ''),
+  !!(config.RESEND_LLAVE && config.CORREO_SOPORTE)
 );
 
 const servicio = new ServicioConsultas({

@@ -21,13 +21,13 @@ export type DirectorioUsuarios = (usuarioId: string) => Promise<string | null>;
 
 /** Envía con Resend. https://resend.com/docs/api-reference/emails/send-email */
 export class EnviadorResend implements EnviadorCorreo {
-  constructor(private readonly llave: string, private readonly remitente: string) {}
+  constructor(private readonly llave: string, private readonly remitente: string, private readonly responderA?: string) {}
 
   async enviar(c: Correo) {
     const res = await fetch('https://api.resend.com/emails', {
       method: 'POST',
       headers: { Authorization: `Bearer ${this.llave}`, 'Content-Type': 'application/json', 'Idempotency-Key': c.idempotencia },
-      body: JSON.stringify({ from: this.remitente, to: [c.para], subject: c.asunto, html: c.html }),
+      body: JSON.stringify({ from: this.remitente, to: [c.para], subject: c.asunto, html: c.html, ...(this.responderA && { reply_to: this.responderA }) }),
       signal: AbortSignal.timeout(15_000)
     });
     if (!res.ok) throw new Error(`Resend respondió ${res.status}`);
@@ -71,7 +71,9 @@ export class Notificador {
   constructor(
     private readonly enviador: EnviadorCorreo,
     private readonly correoDe: DirectorioUsuarios,
-    private readonly sitio: string
+    private readonly sitio: string,
+    /** Si hay buzón de soporte, el correo invita a responder; si no, no promete una respuesta. */
+    private readonly hayDondeResponder = false
   ) {}
 
   private async enviar(usuarioId: string, armar: (para: string) => Correo) {
@@ -92,7 +94,7 @@ export class Notificador {
       html: plantilla(this.sitio, 'Tu compra fue aprobada',
         `Ya tienes ${c.cantidad} ${c.cantidad === 1 ? 'informe' : 'informes'} ${NOMBRES[c.tipo]} en tu saldo, por ${pesos(c.total)}. Tu saldo no vence.`,
         'Analizar un vehículo', `${this.sitio}/consultar.html?tipo=${c.tipo}`,
-        'Si no hiciste esta compra, responde este correo.')
+        this.hayDondeResponder ? 'Si no hiciste esta compra, responde este correo.' : 'Si no hiciste esta compra, cambia tu contraseña y revisa tu historial de compras.')
     }));
   }
 
