@@ -4,7 +4,8 @@
 export type VerificadorHumano = (token: string | undefined, ip: string) => Promise<boolean>;
 
 export function crearVerificadorTurnstile(secreto: string | undefined): VerificadorHumano {
-  if (!secreto) return async () => true; // desarrollo: config.ts lo exige en producción
+  // Sin secreto no se verifica. En producción queda una advertencia al arrancar (ver server.ts).
+  if (!secreto) return async () => true;
 
   return async (token, ip) => {
     if (!token) return false;

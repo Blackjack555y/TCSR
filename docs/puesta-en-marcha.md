@@ -35,9 +35,14 @@ Guarda: URL del proyecto, llave pública (anon) y llave secreta (service role).
 2. Poner en Cloudflare los registros DNS que indique Resend.
 3. En Supabase > Authentication > SMTP: conectar Resend. Sin esto, Supabase solo envía unos pocos correos por hora.
 
-## 4. Cloudflare Turnstile
+## 4. Cloudflare Turnstile (pendiente: se lanza sin él)
 
-Crear un widget para el dominio. Guarda la llave del sitio (pública) y la llave secreta.
+El backend arranca sin Turnstile y lo advierte en el registro. Mientras tanto, lo que frena el abuso es el saldo pagado y el límite de 5 consultas fallidas por usuario al día.
+
+Para activarlo:
+1. Crear un widget para el dominio. Guarda la llave del sitio (pública) y la llave secreta.
+2. Poner **las dos a la vez**: `TURNSTILE_SECRETO` en Render y `TURNSTILE_LLAVE_SITIO` en `frontend/js/config.js`. Si el backend tiene el secreto y el sitio no tiene la llave, todas las consultas se rechazan.
+3. Opcional: activarlo también para registro e inicio de sesión en Supabase > Authentication > Bot and Abuse Protection (exige agregar el widget en esas páginas).
 
 ## 5. PlacApi
 

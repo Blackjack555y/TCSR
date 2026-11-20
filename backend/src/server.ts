@@ -28,6 +28,9 @@ const repo = db ? new ConsultasSupabase(db) : new RepositorioMemoria();
 const cuentas = db ? new CuentasSupabase(db) : new CuentasMemoria();
 const almacenamiento = db ? new AlmacenamientoSupabase(db) : new AlmacenamientoLocal(config.ALMACENAMIENTO_DIR);
 
+if (!config.TURNSTILE_SECRETO && config.NODE_ENV === 'production') {
+  logger.warn('sin TURNSTILE_SECRETO: las consultas no verifican que sea una persona (pendiente de activar)');
+}
 if (!config.RESEND_LLAVE) logger.warn('sin RESEND_LLAVE: los correos de compra e informe no se envían');
 const notificador = new Notificador(
   config.RESEND_LLAVE ? new EnviadorResend(config.RESEND_LLAVE, config.CORREO_REMITENTE, config.CORREO_SOPORTE) : new EnviadorRegistro(),

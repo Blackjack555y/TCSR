@@ -16,7 +16,7 @@ const esquema = z.object({
   /** Clave secreta para el hash del documento del propietario. */
   DOC_HASH_SECRETO: z.string().min(16).default('solo-para-desarrollo-cambiar'),
 
-  /** Cloudflare Turnstile. Sin secreto, la verificación se omite (solo desarrollo). */
+  /** Cloudflare Turnstile. Sin secreto, la verificación se omite (pendiente para producción: ver docs/puesta-en-marcha.md). */
   TURNSTILE_SECRETO: z.string().optional(),
 
   /** Sin Supabase, los datos quedan en memoria y disco (solo desarrollo). */
@@ -63,7 +63,7 @@ const esquema = z.object({
     if (c.DOC_HASH_SECRETO === 'solo-para-desarrollo-cambiar') {
       ctx.addIssue({ code: 'custom', path: ['DOC_HASH_SECRETO'], message: 'Define un secreto propio en producción' });
     }
-    const requeridas = ['TURNSTILE_SECRETO', 'SUPABASE_URL', 'SUPABASE_LLAVE_SECRETA', 'WOMPI_LLAVE_PRIVADA'] as const;
+    const requeridas = ['SUPABASE_URL', 'SUPABASE_LLAVE_SECRETA', 'WOMPI_LLAVE_PRIVADA'] as const;
     for (const k of requeridas) {
       if (!c[k]) ctx.addIssue({ code: 'custom', path: [k], message: 'Se requiere en producción' });
     }
