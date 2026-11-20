@@ -1,0 +1,19 @@
+{
+  "_nota": "Respuesta real de PlacApi (11/11/2026), anonimizada: placa, VIN, motor, chasis, licencia, pólizas y certificados son ficticios.",
+  "source": "hurto",
+  "fetchedAt": "2026-11-11T23:42:56.520Z",
+  "mode": "live",
+  "status": "ok",
+  "data": {
+    "placa": "XYZ12A",
+    "reportadoHurto": false,
+    "denunciaHurtoActiva": false,
+    "totalRegistros": 0,
+    "registros": [],
+    "extincionDominio": [],
+    "bienesAdministrados": 0,
+    "fuente": "Noticias criminales y procesos de extinción de dominio registrados por la autoridad judicial",
+    "cobertura": "Denuncias y procesos penales en los que la placa quedó vinculada. Un vehículo robado y recuperado sin denuncia no aparece; una denuncia activa no significa que el vehículo siga desaparecido. Compara los datos del vehículo de cada registro con la ficha: una placa mal digitada en una denuncia puede caer sobre otra placa."
+  },
+  "cost": 1
+}

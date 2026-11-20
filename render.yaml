@@ -1,0 +1,53 @@
+# Blueprint de Render: crea el servicio del backend con su Dockerfile.
+services:
+  - type: web
+    name: carro-sin-rollos-api
+    # Misma región que la base de datos de Supabase (us-east-2): el backend la consulta varias veces por pedido.
+    region: ohio
+    runtime: docker
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /api/salud
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PLACAPI_MODO
+        value: real
+      - key: PLACAPI_TIMEOUT_MS
+        value: 90000
+      - key: PDF_DIAS_VIGENCIA
+        value: 7
+      - key: DOC_HASH_SECRETO
+        generateValue: true
+      - key: PLACAPI_KEY
+        sync: false
+      - key: CORS_ORIGENES
+        sync: false
+      - key: TURNSTILE_SECRETO
+        sync: false
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_LLAVE_SECRETA
+        sync: false
+      - key: WOMPI_LLAVE_PUBLICA
+        sync: false
+      - key: WOMPI_SECRETO_INTEGRIDAD
+        sync: false
+      - key: WOMPI_SECRETO_EVENTOS
+        sync: false
+      - key: WOMPI_LLAVE_PRIVADA
+        sync: false
+      - key: WOMPI_URL_REDIRECCION
+        sync: false
+      - key: RESEND_LLAVE
+        sync: false
+      - key: CORREO_REMITENTE
+        sync: false
+      - key: CORREO_SOPORTE
+        sync: false
+      - key: SITIO_URL
+        sync: false
+      - key: LIMITE_FALLIDAS_DIA
+        value: 5
+      - key: ALERTA_CREDITOS_DIA
+        value: 0

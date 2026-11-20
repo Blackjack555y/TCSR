@@ -1,0 +1,13 @@
+{
+  "_nota": "Respuesta real de PlacApi (11/11/2026), anonimizada: placa, VIN, motor, chasis, licencia, pólizas y certificados son ficticios.",
+  "source": "garantias",
+  "status": "ok",
+  "data": {
+    "placa": "XYZ12A",
+    "tienePrenda": false,
+    "garantias": [],
+    "fuente": "Prendas y garantías mobiliarias registradas"
+  },
+  "fetchedAt": "2026-11-11T23:42:56.542Z",
+  "mode": "live"
+}

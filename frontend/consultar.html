@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nueva consulta · Carro Sin Rollos</title>
+<meta name="theme-color" content="#131516">
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/png" href="img/logo-icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main_stylesheet.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/supabase.js"></script>
+</head>
+<body>
+
+<svg class="hex-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hexes" width="140" height="121" patternUnits="userSpaceOnUse" patternTransform="translate(-40,-30)">
+      <polygon points="70,4 132,39 132,91 70,126 8,91 8,39" fill="none" stroke="#2a3d3a" stroke-width="1.1"/>
+    </pattern>
+    <radialGradient id="fade" cx="25%" cy="15%" r="80%">
+      <stop offset="0%" stop-color="#131516" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#131516" stop-opacity="0.95"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#hexes)"/>
+  <rect width="1440" height="900" fill="url(#fade)"/>
+</svg>
+
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Carro Sin Rollos, ir al inicio">
+      <img class="brand-icon" src="img/logo-icono.png" alt="" width="30" height="40">
+      <img class="brand-name" src="img/logo-nombre.png" alt="Carro Sin Rollos" width="180" height="15">
+    </a>
+    <nav class="app-nav" id="nav" aria-label="Principal"></nav>
+  </div>
+</header>
+
+<main id="contenido" class="app-main container app-medium">
+  <h1 class="page-title">Analiza un vehículo</h1>
+  <p class="page-lead">Se descuenta un informe de tu saldo. Si la consulta falla, se devuelve.</p>
+  <form class="stack" id="form" novalidate>
+    <fieldset class="opciones" id="tipos"><legend>Tipo de informe</legend></fieldset>
+    <section class="card form">
+      <div class="field" id="f-placa"><label for="placa">Placa</label><input id="placa" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="8" placeholder="ABC123" aria-describedby="e-placa"><p class="field-error" id="e-placa" role="alert" hidden></p></div>
+      <div class="field" id="f-vin" hidden><label for="vin">VIN</label><input id="vin" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="20" placeholder="17 letras y números" aria-describedby="a-vin e-vin">
+        <p class="field-hint" id="a-vin">Está en la licencia de tránsito y grabado en el vehículo.</p><p class="field-error" id="e-vin" role="alert" hidden></p></div>
+      <div id="f-doc" hidden>
+        <div class="doc-row">
+          <div class="field"><label for="doc-type">Tipo</label><select id="doc-type"><option value="CC">C.C.</option><option value="CE">C.E.</option><option value="NIT">NIT</option><option value="PA">Pasaporte</option><option value="PPT">PPT</option></select></div>
+          <div class="field"><label for="doc-number">Documento del propietario</label><input id="doc-number" autocomplete="off" inputmode="numeric" maxlength="15" aria-describedby="a-doc e-doc"></div>
+        </div>
+        <p class="field-hint" id="a-doc">El RUNT exige el documento del propietario actual. Pídeselo al vendedor: si no coincide, te lo diremos y no se descuenta de tu saldo.</p>
+        <p class="field-error" id="e-doc" role="alert" hidden></p>
+      </div>
+      <!-- PENDIENTE DE VALIDACIÓN LEGAL: finalidad, consulta de datos de un tercero y retención. -->
+      <fieldset class="consent">
+        <legend>Aviso de privacidad y tratamiento de datos</legend>
+        <p>Usaremos estos datos solo para consultar la información del vehículo y generar tu informe, conforme a la Ley 1581 de 2012 y el Capítulo 25 del Decreto 1074 de 2015. <a href="privacidad.html" target="_blank">Leer el aviso completo</a>.</p>
+        <div class="choices">
+          <label class="choice"><input type="radio" name="consent" value="si"> Sí acepto</label>
+          <label class="choice"><input type="radio" name="consent" value="no"> No acepto</label>
+        </div>
+        <p class="consent-msg" id="consent-msg" hidden>Sin tu autorización no podemos hacer la consulta.</p>
+      </fieldset>
+      <div id="turnstile"></div>
+      <p class="field-error" id="error" role="alert" hidden></p>
+      <p class="notice" id="sin-saldo" data-state="na" hidden><strong>No tienes saldo para este informe.</strong> <a id="a-comprar" href="comprar.html">Compra informes</a> para continuar.</p>
+      <button type="submit" class="btn-cta btn-block" id="enviar" disabled><span>Analizar vehículo</span></button>
+    </section>
+  </form>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="footer-legal">Carro Sin Rollos no es el RUNT ni una entidad oficial. La información de cada informe proviene de registros públicos consultados en la fecha indicada.</p>
+    <div class="footer-links">
+      <a href="privacidad.html">Aviso de privacidad</a>
+      <a href="terminos.html">Términos y condiciones</a>
+      <span>© 2026 Carro Sin Rollos</span>
+    </div>
+  </div>
+</footer>
+<script type="module" src="js/pagina-consultar.js"></script>
+</body>
+</html>

@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carro Sin Rollos · Estructura de páginas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-0: #131516;
+    --bg-1: #1b1e20;
+    --bg-2: #23272a;
+    --line: #33383b;
+    --text-1: #f3f4f4;
+    --text-2: #a9afb2;
+    --green-1: #2fe6a6;
+    --green-2: #12a5a0;
+    --orange: #f0a83c;
+    --radius: 18px;
+
+    --state-ok-bg: rgba(47, 230, 166, 0.09);
+    --state-ok-text: #2fe6a6;
+    --state-pending-bg: rgba(240, 168, 60, 0.10);
+    --state-pending-text: #f0a83c;
+    --state-na-bg: rgba(138, 143, 147, 0.10);
+    --state-na-text: #a9afb2;
+    --state-alert-bg: rgba(229, 72, 77, 0.10);
+    --state-alert-text: #ff6b6f;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    padding: 0;
+    background: var(--bg-0);
+    color: var(--text-1);
+    font-family: 'Inter', -apple-system, sans-serif;
+  }
+
+  .page-divider {
+    text-align: center;
+    padding: 18px;
+    color: var(--text-2);
+    font-family: 'Sora', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    border-top: 2px dashed var(--line);
+    border-bottom: 2px dashed var(--line);
+    background: var(--bg-0);
+  }
+
+  /* ---------- fondo decorativo ---------- */
+  .hex-field {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    opacity: 0.4;
+    pointer-events: none;
+  }
+
+  header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 28px clamp(20px, 6vw, 64px) 10px;
+  }
+
+  .brand-logo {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: 1.3rem;
+  }
+
+  .brand-logo .accent { color: var(--orange); }
+  .brand-logo .grad {
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  main {
+    position: relative;
+    z-index: 2;
+    padding: 20px clamp(20px, 6vw, 64px) 60px;
+  }
+
+  .hero {
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: clamp(24px, 5vw, 64px);
+    align-items: center;
+    padding: 20px 0 40px;
+  }
+
+  @media (max-width: 760px) {
+    .hero { grid-template-columns: 1fr; text-align: center; }
+    .search-card { margin: 0 auto; }
+  }
+
+  h1 {
+    font-family: 'Sora', sans-serif;
+    font-weight: 800;
+    font-size: clamp(1.5rem, 4vw, 2.6rem);
+    line-height: 1.1;
+    margin: 0 0 16px;
+  }
+
+  h1 .grad {
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .lead {
+    color: var(--text-2);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 46ch;
+    margin: 0 0 24px;
+  }
+
+  @media (max-width: 760px) { .lead { margin-left: auto; margin-right: auto; } }
+
+  .steps { display: flex; flex-direction: column; gap: 10px; }
+  @media (max-width: 760px) { .steps { align-items: center; } }
+
+  .step { display: flex; align-items: center; gap: 10px; color: var(--text-2); font-size: 0.92rem; }
+
+  .step-num {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--bg-2); border: 1px solid var(--line); color: var(--text-1);
+    font-size: 0.72rem; font-weight: 600;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+
+  .search-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 26px;
+    width: 100%; max-width: 340px;
+    box-shadow: 0 24px 60px -30px rgba(0,0,0,0.6);
+  }
+
+  .search-card strong { display: block; font-family: 'Sora', sans-serif; font-size: 0.98rem; margin-bottom: 4px; }
+  .search-card .search-sub { color: var(--text-2); font-size: 0.82rem; margin: 0 0 16px; }
+
+  .plate-input {
+    width: 100%;
+    background: var(--bg-2);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    color: var(--text-1);
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 1.05rem;
+    letter-spacing: 0.08em;
+    text-align: center;
+    padding: 13px;
+    margin-bottom: 10px;
+  }
+
+  button.primary {
+    width: 100%;
+    background: linear-gradient(100deg, var(--green-1), var(--green-2));
+    color: #0d1210;
+    border: none;
+    font-family: 'Sora', sans-serif;
+    font-weight: 700;
+    font-size: 0.9rem;
+    padding: 12px 20px;
+    border-radius: 999px;
+    cursor: pointer;
+  }
+
+  .stages {
+    max-width: 920px;
+    margin: 10px auto 0;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 14px;
+  }
+
+  @media (max-width: 760px) { .stages { grid-template-columns: 1fr 1fr; } }
+
+  .stage-card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px;
+  }
+
+  .stage-num { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 0.7rem; color: var(--green-1); letter-spacing: 0.08em; margin-bottom: 6px; }
+  .stage-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.88rem; margin-bottom: 5px; }
+  .stage-text { color: var(--text-2); font-size: 0.78rem; line-height: 1.5; margin: 0; }
+
+  footer-mini {
+    display: block;
+    max-width: 920px;
+    margin: 30px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--text-2);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+
+  /* ---------- reporte ---------- */
+  .report-wrap { max-width: 720px; margin: 0 auto; }
+
+  .report-meta { color: var(--text-2); font-size: 0.85rem; margin-bottom: 18px; }
+  .report-meta strong { color: var(--text-1); font-family: 'Sora', sans-serif; }
+
+  .card {
+    background: var(--bg-1);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 22px;
+    margin-bottom: 18px;
+  }
+
+  .card h2 { font-family: 'Sora', sans-serif; font-size: 0.95rem; font-weight: 700; margin: 0 0 14px; }
+
+  .status-card { border-left: 4px solid var(--state-pending-text); }
+  .status-label { font-family: 'Sora', sans-serif; font-weight: 800; font-size: 1.1rem; margin-bottom: 8px; color: var(--state-pending-text); }
+  .status-desc { color: var(--text-2); font-size: 0.9rem; line-height: 1.6; margin: 0; }
+
+  .verif-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+  @media (max-width: 560px) { .verif-grid { grid-template-columns: 1fr; } }
+
+  .verif-chip {
+    display: flex; justify-content: space-between; align-items: center; gap: 10px;
+    background: var(--bg-2); border-radius: 10px; padding: 11px 13px; font-size: 0.85rem;
+  }
+
+  .verif-state { font-size: 0.72rem; font-weight: 700; padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+  .verif-state.ok { background: var(--state-ok-bg); color: var(--state-ok-text); }
+  .verif-state.pending { background: var(--state-pending-bg); color: var(--state-pending-text); }
+  .verif-state.na { background: var(--state-na-bg); color: var(--state-na-text); }
+  .verif-state.alert { background: var(--state-alert-bg); color: var(--state-alert-text); }
+
+  .finding {
+    background: var(--bg-2);
+    border-left: 3px solid var(--state-pending-text);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .finding:last-child { margin-bottom: 0; }
+  .finding-title { font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.88rem; margin-bottom: 6px; }
+  .finding p { font-size: 0.83rem; color: var(--text-2); line-height: 1.6; margin: 0 0 5px; }
+  .finding p:last-child { margin-bottom: 0; }
+  .finding p strong { color: var(--text-1); }
+
+  .next-steps { margin: 0; padding-left: 18px; color: var(--text-2); font-size: 0.87rem; line-height: 1.8; }
+
+  .methodology { border: 1px dashed var(--line); background: transparent; }
+  .methodology p { color: var(--text-2); font-size: 0.8rem; line-height: 1.6; margin: 0 0 8px; }
+  .methodology p:last-child { margin-bottom: 0; }
+
+  .pdf-action { text-align: center; }
+  button.secondary {
+    background: transparent; color: var(--text-1); border: 1px solid var(--line);
+    font-family: 'Sora', sans-serif; font-weight: 700; font-size: 0.86rem;
+    padding: 11px 24px; border-radius: 999px; cursor: pointer;
+  }
+
+  footer-end {
+    display: block;
+    max-width: 720px;
+    margin: 20px auto 0;
+    padding-top: 16px;
+    border-top: 1px solid var(--line);
+    color: var(--text-2);
+    font-size: 0.78rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+
+<svg class="hex-field" viewBox="0 0 1440 1800" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+  <defs>
+    <pattern id="hexes" width="140" height="121" patternUnits="userSpaceOnUse" patternTransform="translate(-40,-30)">
+      <polygon points="70,4 132,39 132,91 70,126 8,91 8,39" fill="none" stroke="#2a3d3a" stroke-width="1.1" />
+    </pattern>
+    <radialGradient id="fade" cx="30%" cy="10%" r="60%">
+      <stop offset="0%" stop-color="#101213" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#101213" stop-opacity="0.9"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="1800" fill="url(#hexes)" />
+  <rect width="1440" height="1800" fill="url(#fade)" />
+</svg>
+
+<div class="page-divider">Página 1 — Landing</div>
+
+<header>
+  <div class="brand-logo">CARRO <span class="accent">SIN</span> <span class="grad">ROLLOS</span></div>
+</header>
+
+<main>
+  <div class="hero">
+    <div>
+      <h1>Antes de comprar,<br>conoce lo que dicen <span class="grad">los registros públicos</span></h1>
+      <p class="lead">Consulta el estado legal, administrativo y técnico de un vehículo usado en Colombia, respaldado por inteligencia artificial y datos en tiempo real.</p>
+      <div class="steps">
+        <div class="step"><span class="step-num">1</span> Ingresa la placa del vehículo</div>
+        <div class="step"><span class="step-num">2</span> Consultamos las fuentes autorizadas</div>
+        <div class="step"><span class="step-num">3</span> Recibe tu informe, sin rollos</div>
+      </div>
+    </div>
+
+    <div class="search-card">
+      <strong>Consulta tu vehículo</strong>
+      <p class="search-sub">Ingresa la placa para comenzar la verificación.</p>
+      <input class="plate-input" type="text" value="ABC123" readonly>
+      <button class="primary" type="button">Consultar vehículo</button>
+    </div>
+  </div>
+
+  <div class="stages">
+    <div class="stage-card">
+      <div class="stage-num">01 · IDENTIFICAR</div>
+      <div class="stage-title">Identidad del vehículo</div>
+      <p class="stage-text">Confirmamos que los datos corresponden al vehículo registrado.</p>
+    </div>
+    <div class="stage-card">
+      <div class="stage-num">02 · VERIFICAR</div>
+      <div class="stage-title">Estado legal y técnico</div>
+      <p class="stage-text">SOAT, revisión técnico-mecánica, gravámenes y limitaciones.</p>
+    </div>
+    <div class="stage-card">
+      <div class="stage-num">03 · DETECTAR</div>
+      <div class="stage-title">Historial y riesgos</div>
+      <p class="stage-text">Propietarios, trámites y alertas que requieren tu atención.</p>
+    </div>
+    <div class="stage-card">
+      <div class="stage-num">04 · DECIDIR</div>
+      <div class="stage-title">Informe claro</div>
+      <p class="stage-text">Un resultado que te dice qué hacer, no solo qué encontramos.</p>
+    </div>
+  </div>
+
+  <footer-mini>© 2026 Carro Sin Rollos · Aviso de privacidad y tratamiento de datos (popup Ley 1581 de 2012)</footer-mini>
+</main>
+
+<div class="page-divider">Página 2 — Verificación / Informe</div>
+
+<main>
+  <div class="report-wrap">
+
+    <p class="report-meta">
+      Placa <strong>ENL18D</strong> · BAJAJ DISCOVER 125 ST, 2014<br>
+      Consulta realizada: 06 de octubre de 2026
+    </p>
+
+    <div class="card status-card">
+      <div class="status-label">Listo con observaciones</div>
+      <p class="status-desc">
+        No se identificaron impedimentos críticos en las fuentes consultadas, pero hay secciones que este proveedor
+        no cubre todavía (antecedentes del propietario y listas restrictivas). Revisa los próximos pasos antes de
+        formalizar el traspaso.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2>Resumen de verificaciones</h2>
+      <div class="verif-grid">
+        <div class="verif-chip"><span>SOAT</span><span class="verif-state ok">VIGENTE</span></div>
+        <div class="verif-chip"><span>Revisión técnico-mecánica</span><span class="verif-state ok">VIGENTE</span></div>
+        <div class="verif-chip"><span>Gravámenes</span><span class="verif-state ok">SIN HALLAZGOS</span></div>
+        <div class="verif-chip"><span>Prendas</span><span class="verif-state ok">SIN HALLAZGOS</span></div>
+        <div class="verif-chip"><span>Regrabado chasis / motor / VIN</span><span class="verif-state ok">SIN HALLAZGOS</span></div>
+        <div class="verif-chip"><span>Validación DIAN</span><span class="verif-state pending">REQUIERE REVISIÓN</span></div>
+        <div class="verif-chip"><span>Antecedentes del propietario</span><span class="verif-state na">NO DISPONIBLE</span></div>
+        <div class="verif-chip"><span>Listas restrictivas</span><span class="verif-state na">NO DISPONIBLE</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Hallazgos que requieren atención</h2>
+      <div class="finding">
+        <div class="finding-title">01 · Validación DIAN sin éxito</div>
+        <p>La consulta a la DIAN no se completó correctamente para este vehículo.</p>
+        <p><strong>Qué hacer:</strong> repetir la verificación o confirmar directamente con el organismo de tránsito antes del traspaso.</p>
+      </div>
+      <div class="finding">
+        <div class="finding-title">02 · Secciones no disponibles con el proveedor actual</div>
+        <p>Este informe no incluye antecedentes judiciales/policiales del propietario ni listas restrictivas internacionales, porque la fuente actual no las cubre.</p>
+        <p><strong>Qué hacer:</strong> si necesitas esa verificación, solicítala como un paso adicional.</p>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Próximos pasos</h2>
+      <ol class="next-steps">
+        <li>Confirmar la validación DIAN directamente con el organismo de tránsito.</li>
+        <li>Verificar el historial de SOAT y RTM completo en la sección de evidencia.</li>
+        <li>Si necesitas antecedentes del propietario, solicitarlos por separado.</li>
+      </ol>
+    </div>
+
+    <div class="card methodology">
+      <h2>¿Qué significa este informe?</h2>
+      <p>Este informe reúne información obtenida de las fuentes consultadas en la fecha indicada. Un resultado "sin hallazgos" significa que no se identificó información adversa en la fuente consultada; no constituye por sí mismo una certificación oficial ni garantiza la realización del traspaso.</p>
+      <p>Actualmente no se incluyen antecedentes judiciales/policiales del propietario ni listas restrictivas internacionales.</p>
+    </div>
+
+    <div class="pdf-action">
+      <button type="button" class="secondary">Descargar informe en PDF</button>
+    </div>
+
+    <footer-end>© 2026 Carro Sin Rollos · Volver al inicio</footer-end>
+  </div>
+</main>
+
+</body>
+</html>

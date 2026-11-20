@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Carro Sin Rollos · Revisa un usado antes de comprarlo</title>
+<meta name="description" content="Antes de comprar un carro o moto usada, revisa lo que no se ve: embargos, multas, SOAT, tecnomecánica, reportes de hurto y más. Te decimos qué revisar antes de decidir.">
+<meta name="theme-color" content="#131516">
+<link rel="icon" type="image/png" href="img/logo-icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main_stylesheet.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/supabase.js"></script>
+</head>
+<body>
+
+<!-- Íconos: un solo estilo de línea (24px, trazo 1.75) para toda la página -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></symbol>
+    <symbol id="i-receipt" viewBox="0 0 24 24"><path d="M4 2v20l2-1 2 1 2-1 2 1 2-1 2 1 2-1 2 1V2l-2 1-2-1-2 1-2-1-2 1-2-1-2 1Z"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 17.5v-11"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-shield-alert" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/><path d="M12 8v4"/><path d="M12 16h.01"/></symbol>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H5c-.6 0-1.1.4-1.4.9l-1.4 2.9A3.7 3.7 0 0 0 2 12v4c0 .6.4 1 1 1h2"/><circle cx="7" cy="17" r="2"/><path d="M9 17h6"/><circle cx="17" cy="17" r="2"/></symbol>
+    <symbol id="i-id" viewBox="0 0 24 24"><rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2.2"/><path d="M14 10h4"/><path d="M14 14h4"/></symbol>
+    <symbol id="i-history" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M12 7v5l4 2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="i-signpost" viewBox="0 0 24 24"><path d="M12 13v8"/><path d="M12 3v3"/><path d="M18 6a2 2 0 0 1 1.39.56l2.3 2.22a1 1 0 0 1 0 1.44l-2.3 2.22A2 2 0 0 1 18 13H6a2 2 0 0 1-1.39-.56L2.31 10.22a1 1 0 0 1 0-1.44l2.3-2.22A2 2 0 0 1 6 6z"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
+    <symbol id="i-user-x" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="m17 8 5 5"/><path d="m22 8-5 5"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></symbol>
+    <symbol id="i-review" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 7v6"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-minus-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M8 12h8"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></symbol>
+    <symbol id="i-arrow-right" viewBox="0 0 24 24"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+  </defs>
+</svg>
+
+<svg class="hex-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hexes" width="140" height="121" patternUnits="userSpaceOnUse" patternTransform="translate(-40,-30)">
+      <polygon points="70,4 132,39 132,91 70,126 8,91 8,39" fill="none" stroke="#2a3d3a" stroke-width="1.1"/>
+    </pattern>
+    <radialGradient id="fade" cx="25%" cy="15%" r="80%">
+      <stop offset="0%" stop-color="#131516" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#131516" stop-opacity="0.95"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#hexes)"/>
+  <rect width="1440" height="900" fill="url(#fade)"/>
+</svg>
+
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="#inicio" aria-label="Carro Sin Rollos, ir al inicio">
+      <img class="brand-icon" src="img/logo-icono.png" alt="" width="30" height="40">
+      <img class="brand-name" src="img/logo-nombre.png" alt="Carro Sin Rollos" width="180" height="15">
+    </a>
+    <nav class="site-nav" aria-label="Principal">
+      <a href="#como-funciona">Cómo funciona</a>
+      <a href="#que-revisamos">Qué revisamos</a>
+      <a href="#precios">Precios</a>
+      <a href="#preguntas">Preguntas</a>
+    </nav>
+    <div class="app-nav" id="nav-sesion"></div>
+  </div>
+</header>
+
+<main id="contenido">
+
+  <!-- ============ HERO ============ -->
+  <section class="hero container" id="inicio" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p data-cms="hero.etiqueta" class="eyebrow">Asistente de compra de vehículos usados</p>
+      <h1 data-cms="hero.titulo" id="hero-title">Compra tu próximo vehículo usado <span class="grad">sin rollos.</span></h1>
+      <p data-cms="hero.descripcion" class="lead">Antes de pagar, revisa lo que no se ve a simple vista. Te mostramos alertas por embargos, multas o reportes de hurto, y <strong>qué deberías revisar antes de decidir</strong>.</p>
+    </div>
+
+    <form class="search-card" id="plate-form" novalidate>
+      <label class="search-label" for="plate">Placa del vehículo</label>
+      <div class="plate">
+        <input id="plate" name="placa" type="text" inputmode="text" autocomplete="off" autocapitalize="characters" spellcheck="false"
+               maxlength="8" placeholder="ABC123" aria-describedby="plate-hint plate-error" required>
+        <span class="plate-country" aria-hidden="true">COLOMBIA</span>
+      </div>
+      <p class="field-hint" id="plate-hint">Carro o moto. Ej.: ABC123 o ABC12D</p>
+      <p class="field-error" id="plate-error" role="alert" hidden></p>
+
+      <button type="submit" class="btn-cta">
+        <span>Analizar vehículo</span>
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+      </button>
+
+      <p data-cms="hero.apoyo" class="search-support">Consultamos y cruzamos registros públicos y bases de datos vehiculares de Colombia para entregarte un informe claro. Para consultar, crea tu cuenta y compra tu informe.</p>
+    </form>
+
+    <ul class="trust-list" aria-label="Lo que puedes revisar">
+      <li><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg><span data-cms="confianza.1">Historial de propietarios</span></li>
+      <li><svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg><span data-cms="confianza.2">Embargos y prendas</span></li>
+      <li><svg class="icon" aria-hidden="true"><use href="#i-receipt"/></svg><span data-cms="confianza.3">Multas y comparendos</span></li>
+      <li><svg class="icon" aria-hidden="true"><use href="#i-shield-check"/></svg><span data-cms="confianza.4">SOAT y tecnomecánica</span></li>
+      <li><svg class="icon" aria-hidden="true"><use href="#i-shield-alert"/></svg><span data-cms="confianza.5">Reportes de hurto</span></li>
+      <li><svg class="icon" aria-hidden="true"><use href="#i-car"/></svg><span data-cms="confianza.6">Reclamaciones a aseguradoras</span></li>
+    </ul>
+  </section>
+
+  <!-- ============ PROBLEMA ============ -->
+  <section class="section container" aria-labelledby="problema-title">
+    <div class="section-head">
+      <h2 data-cms="problema.titulo" id="problema-title">Lo que no se ve en las fotos del anuncio</h2>
+      <p data-cms="problema.descripcion">Un usado puede verse impecable y aun así tener algo que te complique la compra. Estas son las situaciones que te ayudamos a detectar a tiempo.</p>
+    </div>
+    <div class="problem-grid">
+      <article class="card problem">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-lock"/></svg>
+        <h3 data-cms="problema.1.titulo">Un embargo que frena el traspaso</h3>
+        <p data-cms="problema.1.texto">Pagas, pero el vehículo no se puede poner a tu nombre hasta que se levante la medida.</p>
+      </article>
+      <article class="card problem">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-clock"/></svg>
+        <h3 data-cms="problema.2.titulo">Años sin SOAT ni revisión</h3>
+        <p data-cms="problema.2.texto">¿Estuvo guardado o circuló así? Un hueco de años en el historial merece una pregunta antes de pagar.</p>
+      </article>
+      <article class="card problem">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-receipt"/></svg>
+        <h3 data-cms="problema.3.titulo">Multas que bloquean el trámite</h3>
+        <p data-cms="problema.3.texto">Los comparendos pendientes en el SIMIT pueden detener el traspaso hasta que se paguen.</p>
+      </article>
+      <article class="card problem">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-user-x"/></svg>
+        <h3 data-cms="problema.4.titulo">Quien vende no es el dueño</h3>
+        <p data-cms="problema.4.texto">En el informe Full, si el documento no coincide con el propietario registrado, te lo decimos antes de que entregues un peso.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ============ CÓMO FUNCIONA ============ -->
+  <section class="section container" id="como-funciona" aria-labelledby="como-title">
+    <div class="section-head">
+      <h2 data-cms="como.titulo" id="como-title">Cómo funciona</h2>
+      <p data-cms="como.descripcion">Crea tu cuenta, compra tu informe y consulta con la placa, el VIN o la cédula del propietario, según el informe. Esto es lo que hacemos con cada consulta.</p>
+    </div>
+    <ol class="stages">
+      <li class="card stage">
+        <span data-cms="como.1.paso" class="stage-num">01 · Identificar</span>
+        <h3 data-cms="como.1.titulo">Identidad del vehículo</h3>
+        <p data-cms="como.1.texto">Confirmamos que los datos corresponden al vehículo registrado.</p>
+      </li>
+      <li class="card stage">
+        <span data-cms="como.2.paso" class="stage-num">02 · Verificar</span>
+        <h3 data-cms="como.2.titulo">Estado legal y técnico</h3>
+        <p data-cms="como.2.texto">SOAT, tecnomecánica, embargos, prendas y limitaciones.</p>
+      </li>
+      <li class="card stage">
+        <span data-cms="como.3.paso" class="stage-num">03 · Detectar</span>
+        <h3 data-cms="como.3.titulo">Historial y riesgos</h3>
+        <p data-cms="como.3.texto">Multas, traspasos, reportes de hurto y reclamaciones.</p>
+      </li>
+      <li class="card stage stage-key">
+        <span data-cms="como.4.paso" class="stage-num">04 · Decidir</span>
+        <h3 data-cms="como.4.titulo">Informe claro</h3>
+        <p data-cms="como.4.texto">Te decimos qué atender antes de comprar y con quién confirmarlo.</p>
+      </li>
+    </ol>
+    <p data-cms="como.frase" class="statement">Un resultado que te dice <span class="grad">qué hacer</span>, no solo qué encontramos.</p>
+  </section>
+
+  <!-- ============ QUÉ REVISAMOS ============ -->
+  <section class="section container" id="que-revisamos" aria-labelledby="revisamos-title">
+    <div class="section-head">
+      <h2 data-cms="revisamos.titulo" id="revisamos-title">¿Qué revisamos?</h2>
+      <p data-cms="revisamos.frase" class="tagline">No ocultamos lo que no podemos verificar.</p>
+    </div>
+    <div class="check-grid">
+      <article class="card check">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-id"/></svg>
+        <h3 data-cms="revisamos.1.titulo">Identidad del vehículo</h3>
+        <p data-cms="revisamos.1.texto">Placa, VIN, motor y chasis, regrabados y estado de la matrícula.</p>
+      </article>
+      <article class="card check">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-lock"/></svg>
+        <h3 data-cms="revisamos.2.titulo">Situación legal</h3>
+        <p data-cms="revisamos.2.texto">Embargos, gravámenes, prendas y limitaciones a la propiedad.</p>
+      </article>
+      <article class="card check">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-shield-check"/></svg>
+        <h3 data-cms="revisamos.3.titulo">SOAT y tecnomecánica</h3>
+        <p data-cms="revisamos.3.texto">Vigencia actual e historial completo, para detectar periodos sin cobertura.</p>
+      </article>
+      <article class="card check">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-receipt"/></svg>
+        <h3 data-cms="revisamos.4.titulo">Multas e impuestos</h3>
+        <p data-cms="revisamos.4.texto">Comparendos en el SIMIT e impuesto vehicular, donde el departamento lo publica.</p>
+      </article>
+      <article class="card check">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-history"/></svg>
+        <h3 data-cms="revisamos.5.titulo">Historial</h3>
+        <p data-cms="revisamos.5.texto">Traspasos registrados y reportes de hurto o incautación.</p>
+      </article>
+      <article class="card check">
+        <svg class="icon icon-lg" aria-hidden="true"><use href="#i-car"/></svg>
+        <h3 data-cms="revisamos.6.titulo">Historial con aseguradoras</h3>
+        <p data-cms="revisamos.6.texto">Reclamaciones a aseguradoras, accidentes reportados en Bogotá y valor comercial de referencia.</p>
+      </article>
+    </div>
+
+    <div class="card not-checked">
+      <h3 data-cms="no_revisamos.titulo">Lo que este informe no revisa</h3>
+      <ul>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-wrench"/></svg><span data-cms="no_revisamos.1"><strong>Estado mecánico.</strong> No reemplaza la revisión de un mecánico o un peritaje.</span></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-gauge"/></svg><span data-cms="no_revisamos.2"><strong>Kilometraje real.</strong> No tenemos una fuente confiable para verificarlo.</span></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-user-x"/></svg><span data-cms="no_revisamos.3"><strong>Antecedentes del propietario.</strong> No están incluidos en este informe y aparecen como "No disponible".</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ PRECIOS ============ -->
+  <section class="section container" id="precios" aria-labelledby="precios-title">
+    <div class="section-head">
+      <h2 data-cms="precios.titulo" id="precios-title">Elige tu informe</h2>
+      <p data-cms="precios.descripcion">Pagas solo por los informes que compras. Tu saldo no vence y, si una consulta falla, se devuelve.</p>
+    </div>
+    <div class="check-grid">
+      <article class="card check">
+        <h3 data-cms="precios.basico.nombre">Básico</h3>
+        <p data-precio="basico:0" class="saldo-num">$ 22.500</p>
+        <p data-cms="precios.basico.pide"><strong>Pide:</strong> solo la placa.</p>
+        <p data-cms="precios.basico.texto">Reportes de hurto, reclamaciones a aseguradoras, accidentes en Bogotá y prendas. No identifica el vehículo ni incluye SOAT, tecnomecánica, embargos ni multas.</p>
+        <a class="btn-secondary mt" href="comprar.html?tipo=basico">Comprar Básico</a>
+      </article>
+      <article class="card check">
+        <h3 data-cms="precios.vin.nombre">Por VIN</h3>
+        <p data-precio="vin:0" class="saldo-num">$ 37.000</p>
+        <p data-cms="precios.vin.pide"><strong>Pide:</strong> solo el VIN.</p>
+        <p data-cms="precios.vin.texto">Ficha del vehículo, SOAT, tecnomecánica, embargos, regrabados, avalúo, hurto, reclamaciones y accidentes en Bogotá. No incluye multas, impuestos ni propietarios.</p>
+        <a class="btn-secondary mt" href="comprar.html?tipo=vin">Comprar Por VIN</a>
+      </article>
+      <article class="card check stage-key">
+        <h3 data-cms="precios.full.nombre">Full</h3>
+        <p data-precio="full:0" class="saldo-num">$ 45.000</p>
+        <p data-cms="precios.full.pide"><strong>Pide:</strong> placa y cédula del propietario.</p>
+        <p data-cms="precios.full.texto">Todo lo anterior, más multas del SIMIT, impuestos e historial de propietarios. El análisis más completo.</p>
+        <a class="btn-cta mt" href="comprar.html?tipo=full"><span>Comprar Full</span></a>
+      </article>
+    </div>
+    <div class="card mt">
+      <h3 class="card-title">Precio por informe según la cantidad de cada compra</h3>
+      <div class="tabla-wrap">
+        <table class="precios">
+          <thead><tr><th>Plan</th><th>Informes</th><th class="n">Básico</th><th class="n">Por VIN</th><th class="n">Full</th></tr></thead>
+          <tbody>
+            <tr><td>Comprador / Vendedor</td><td>1 a 5</td><td data-precio="basico:0" class="n">$ 22.500</td><td data-precio="vin:0" class="n">$ 37.000</td><td data-precio="full:0" class="n">$ 45.000</td></tr>
+            <tr><td>Dealer / Revendedor</td><td>6 a 50</td><td data-precio="basico:1" class="n">$ 17.500</td><td data-precio="vin:1" class="n">$ 29.000</td><td data-precio="full:1" class="n">$ 35.000</td></tr>
+            <tr><td>Mayorista</td><td>51 a 200</td><td data-precio="basico:2" class="n">$ 11.000</td><td data-precio="vin:2" class="n">$ 18.500</td><td data-precio="full:2" class="n">$ 22.000</td></tr>
+            <tr><td>Flotas</td><td>201 o más</td><td data-precio="basico:3" class="n">$ 10.000</td><td data-precio="vin:3" class="n">$ 16.500</td><td data-precio="full:3" class="n">$ 20.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="field-hint">Precios finales con IVA.</p>
+    </div>
+  </section>
+
+  <!-- ============ CTA FINAL ============ -->
+  <section class="section container">
+    <div class="card cta-band">
+      <h2 data-cms="cierre.titulo">¿Ya tienes la placa?</h2>
+      <p data-cms="cierre.texto">Revisa el vehículo antes de dar el primer peso.</p>
+      <a class="btn-cta" href="#inicio" data-focus-plate>
+        <span>Analizar vehículo</span>
+        <svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============ PREGUNTAS ============ -->
+  <section class="section container narrow" id="preguntas" aria-labelledby="faq-title">
+    <div class="section-head">
+      <h2 data-cms="preguntas.titulo" id="faq-title">Preguntas frecuentes</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary><span data-cms="preguntas.1.pregunta">¿Qué informe me conviene?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.1.respuesta">Si vas en serio con un vehículo, el Full: es el único que incluye multas, impuestos e historial de propietarios. Si aún no tienes la cédula del propietario, el Por VIN revisa casi todo lo demás. El Básico sirve como primer filtro: solo necesita la placa, pero no identifica el vehículo.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.2.pregunta">¿Por qué el informe Full pide la cédula del propietario?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.2.respuesta">El RUNT solo entrega la información completa cuando la consulta incluye el documento del propietario actual. Pídesela al vendedor: si no coincide con el propietario registrado, te lo decimos y no se descuenta de tu saldo. En el informe el documento nunca aparece.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.3.pregunta">¿Mi saldo vence?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.3.respuesta">No. Los informes que compras quedan en tu saldo hasta que los uses. Cada compra sirve para un solo tipo de informe.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.4.pregunta">¿Qué pasa si la consulta falla?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.4.respuesta">Si no se puede completar, el informe vuelve a tu saldo. Si solo falla una fuente, recibes un informe parcial en el que esa verificación aparece como "No disponible", y puedes consultar el mismo vehículo otra vez en las siguientes 24 horas sin costo.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.5.pregunta">¿Cuánto tiempo tengo mi informe?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.5.respuesta">Lo puedes ver y descargar en PDF durante 7 días desde que se genera. Después se elimina.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.6.pregunta">¿Es un certificado oficial?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.6.respuesta">No. Carro Sin Rollos no es el RUNT ni una entidad del Estado. Consultamos registros públicos a través de proveedores de datos y organizamos la información para que sepas qué revisar. Un resultado "sin hallazgos" no es una certificación ni garantiza el traspaso.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.7.pregunta">¿Qué significa "No disponible"?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.7.respuesta">Que no tuvimos acceso a ese dato: no está incluido en tu tipo de informe, la fuente no respondió o no publica esa información para el vehículo. No significa que no exista un problema. Por eso nunca lo mostramos como "sin hallazgos".</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.8.pregunta">¿Reemplaza la revisión de un mecánico?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.8.respuesta">No. Revisamos la situación legal, administrativa e histórica del vehículo. El estado mecánico, la carrocería y el kilometraje se revisan en persona, con un mecánico de confianza o un peritaje.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.9.pregunta">¿Cuánto tarda la consulta?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.9.respuesta">Normalmente menos de un minuto. Consultamos varias fuentes y esperamos a que respondan para armar el informe.</p>
+      </details>
+      <details>
+        <summary><span data-cms="preguntas.10.pregunta">¿Qué hacen con mis datos?</span><svg class="icon" aria-hidden="true"><use href="#i-chevron"/></svg></summary>
+        <p data-cms="preguntas.10.respuesta">Los usamos solo para hacer la consulta y generar tu informe, conforme a la Ley 1581 de 2012. <a href="privacidad.html">Lee el aviso de privacidad</a>.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div class="footer-brand">
+      <img class="brand-icon" src="img/logo-icono.png" alt="" width="24" height="32">
+      <img class="brand-name" src="img/logo-nombre.png" alt="Carro Sin Rollos" width="150" height="12">
+    </div>
+    <p data-cms="pie.aviso" class="footer-legal">Carro Sin Rollos no es el RUNT ni una entidad oficial. La información de cada informe proviene de registros públicos consultados en la fecha indicada.</p>
+    <div class="footer-links">
+      <a href="privacidad.html">Aviso de privacidad</a>
+      <a href="terminos.html">Términos y condiciones</a>
+      <span>© 2026 Carro Sin Rollos</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="js/landing.js"></script>
+</body>
+</html>

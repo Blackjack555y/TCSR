@@ -1,0 +1,908 @@
+{
+  "info": {
+    "name": "Carro Sin Rollos API",
+    "description": "API del backend de Carro Sin Rollos. Documentación completa en backend/README.md.\n\nPara correrla en orden contra el backend en modo de desarrollo (PlacApi simulado, sin Supabase):\n1. Arranca el backend: `npm run dev` en backend/.\n2. Ejecuta la colección completa (Runner) con el entorno \"Carro Sin Rollos · local\".\n\nEn desarrollo la sesión es un token `dev-<uuid>`: la colección lo genera sola si `token` está vacío.\nCon Supabase, pon en `token` el access_token de una sesión real.\n\nDocumentos que simulan errores en modo simulado: 0000000409 (no coincide), 0000000404 (sin resultados), 0000000502 (fuente caída).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Genera un usuario de desarrollo si no hay token.",
+          "if (!pm.environment.get('token')) {",
+          "  pm.environment.set('token', 'dev-' + require('uuid').v4());",
+          "}"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Sistema",
+      "item": [
+        {
+          "name": "Salud",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('responde ok', () => pm.expect(pm.response.json().ok).to.eql(true));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/salud",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "salud"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Precios",
+      "item": [
+        {
+          "name": "Tabla de precios",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('trae los 4 rangos', () => pm.expect(pm.response.json().rangos).to.have.length(4));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/precios",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "precios"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "Cotizar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "      const c = pm.response.json();",
+                  "      pm.test('5 Full cuestan 225.000', () => pm.expect(c.total).to.eql(225000));",
+                  "      pm.test('sugiere 6 por menos', () => pm.expect(c.mejorOpcion.cantidad).to.eql(6));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/precios/cotizar?tipo=full&cantidad=5",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "precios",
+                "cotizar"
+              ],
+              "query": [
+                {
+                  "key": "tipo",
+                  "value": "full"
+                },
+                {
+                  "key": "cantidad",
+                  "value": "5"
+                }
+              ]
+            },
+            "description": "Total de una compra. Si comprar más sale más barato, trae `mejorOpcion`.",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Compras",
+      "item": [
+        {
+          "name": "Crear compra",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "      pm.test('201', () => pm.response.to.have.status(201));",
+                  "      const r = pm.response.json();",
+                  "      pm.environment.set('compra_id', r.compra.id);",
+                  "      pm.environment.set('compra_referencia', r.widget.reference);",
+                  "      pm.environment.set('compra_centavos', r.widget.amountInCents);",
+                  "      pm.test('firma de integridad', () => pm.expect(r.widget.signatureIntegrity).to.have.length(64));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/compras",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "compras"
+              ]
+            },
+            "description": "Crea la compra pendiente y devuelve los datos para abrir el widget de Wompi. El precio lo calcula el servidor.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"full\",\n  \"cantidad\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Webhook de Wompi (pago aprobado)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "        const tx = 'TX-' + Date.now();",
+                  "        const ts = Math.floor(Date.now() / 1000);",
+                  "        const monto = pm.environment.get('compra_centavos');",
+                  "        pm.variables.set('tx_id', tx);",
+                  "        pm.variables.set('tx_timestamp', ts);",
+                  "        pm.variables.set('tx_checksum', CryptoJS.SHA256(tx + 'APPROVED' + monto + ts + pm.environment.get('wompi_secreto_eventos')).toString());",
+                  "        // El monto debe ir como número en el cuerpo.",
+                  "        pm.request.body.raw = pm.request.body.raw.replace('\"{{compra_centavos}}\"', monto).replace('\"{{tx_timestamp}}\"', ts);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "        pm.test('Wompi recibe 200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/webhooks/wompi",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "webhooks",
+                "wompi"
+              ]
+            },
+            "description": "Simula el evento transaction.updated de Wompi, firmado con `wompi_secreto_eventos`. Enviarlo dos veces acredita una sola vez.",
+            "auth": {
+              "type": "noauth"
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"transaction.updated\",\n  \"data\": {\n    \"transaction\": {\n      \"id\": \"{{tx_id}}\",\n      \"status\": \"APPROVED\",\n      \"reference\": \"{{compra_referencia}}\",\n      \"amount_in_cents\": \"{{compra_centavos}}\",\n      \"payment_method_type\": \"PSE\"\n    }\n  },\n  \"timestamp\": \"{{tx_timestamp}}\",\n  \"signature\": {\n    \"properties\": [\n      \"transaction.id\",\n      \"transaction.status\",\n      \"transaction.amount_in_cents\"\n    ],\n    \"checksum\": \"{{tx_checksum}}\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Saldo",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('la compra quedó acreditada', () => pm.expect(pm.response.json().saldos.full).to.be.at.least(2));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/saldo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "saldo"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "Historial de compras",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('la compra está aprobada', () => pm.expect(pm.response.json().compras[0].estado).to.eql('aprobada'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/compras",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "compras"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "Verificar compra con Wompi",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "      pm.test('200', () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/compras/{{compra_id}}/verificar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "compras",
+                "{{compra_id}}",
+                "verificar"
+              ]
+            },
+            "description": "El frontend envía el id de transacción que devolvió Wompi y el servidor la confirma con la llave privada. Sin llave privada (desarrollo) solo devuelve el estado actual.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"transaccionId\": \"TX-123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Aprobar compra sin pagar (solo desarrollo)",
+          "event": [],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/dev/compras/{{compra_id}}/aprobar",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "dev",
+                "compras",
+                "{{compra_id}}",
+                "aprobar"
+              ]
+            },
+            "description": "Solo existe con PlacApi simulado y fuera de producción.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultas",
+      "item": [
+        {
+          "name": "Crear consulta Full",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "      pm.test('202 o 200 (reutilizada)', () => pm.expect(pm.response.code).to.be.oneOf([200, 202]));",
+                  "      pm.environment.set('consulta_id', pm.response.json().id);",
+                  "      pm.environment.set('intentos', 0);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/consultas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas"
+              ]
+            },
+            "description": "Otros tipos: `{ \"tipo\": \"basico\", \"placa\": \"ABC123\" }` o `{ \"tipo\": \"vin\", \"vin\": \"9FLA37CZ0EA000001\" }`. Responde 402 sin saldo y 429 después de 5 fallidas por datos en 24 h.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"full\",\n  \"placa\": \"ABC123\",\n  \"docType\": \"CC\",\n  \"docNumber\": \"1020304050\",\n  \"consentimiento\": {\n    \"aceptado\": true,\n    \"version\": \"2026-11\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Estado de la consulta",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "        if (Number(pm.environment.get('intentos')) > 0) setTimeout(() => {}, 1500);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "        const c = pm.response.json();",
+                  "        const n = Number(pm.environment.get('intentos')) + 1;",
+                  "        pm.environment.set('intentos', n);",
+                  "        if (['en_curso', 'generando_pdf'].includes(c.estado) && n < 30) {",
+                  "          pm.execution.setNextRequest(pm.info.requestName);",
+                  "          return;",
+                  "        }",
+                  "        pm.test('completada', () => pm.expect(c.estado).to.eql('completada'));",
+                  "        pm.test('trae la conclusión', () => pm.expect(c.resultado.conclusion.titulo).to.be.a('string'));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultas/{{consulta_id}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas",
+                "{{consulta_id}}"
+              ]
+            },
+            "description": "Repite cada 2–3 segundos hasta que el estado sea `completada` o `error`. En el Runner se repite sola.",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PDF (vista previa)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('es un PDF', () => pm.expect(pm.response.headers.get('Content-Type')).to.eql('application/pdf'));",
+                  "    pm.test('inline', () => pm.expect(pm.response.headers.get('Content-Disposition')).to.match(/^inline/));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultas/{{consulta_id}}/pdf",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas",
+                "{{consulta_id}}",
+                "pdf"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "PDF (descarga)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('como archivo', () => pm.expect(pm.response.headers.get('Content-Disposition')).to.match(/^attachment/));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultas/{{consulta_id}}/pdf?descargar=1",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas",
+                "{{consulta_id}}",
+                "pdf"
+              ],
+              "query": [
+                {
+                  "key": "descargar",
+                  "value": "1"
+                }
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "Historial de consultas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('incluye la consulta', () => pm.expect(pm.response.json().consultas.map((c) => c.id)).to.include(pm.environment.get('consulta_id')));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        }
+      ]
+    },
+    {
+      "name": "Errores esperados",
+      "item": [
+        {
+          "name": "Sin sesión → 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('401', () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/saldo",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "saldo"
+              ]
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "header": []
+          }
+        },
+        {
+          "name": "Placa inválida → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('400 con el campo', () => {",
+                  "      pm.response.to.have.status(400);",
+                  "      pm.expect(pm.response.json().error.campos[0].campo).to.eql('placa');",
+                  "    });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/consultas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"basico\",\n  \"placa\": \"AB1\",\n  \"consentimiento\": {\n    \"aceptado\": true,\n    \"version\": \"2026-11\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Sin aceptar el aviso → 400",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('400', () => pm.response.to.have.status(400));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/consultas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"basico\",\n  \"placa\": \"ABC123\",\n  \"consentimiento\": {\n    \"aceptado\": false,\n    \"version\": \"2026-11\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Sin saldo → 402",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('402 sin_saldo', () => {",
+                  "      pm.response.to.have.status(402);",
+                  "      pm.expect(pm.response.json().error.codigo).to.eql('sin_saldo');",
+                  "    });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "url": {
+              "raw": "{{base_url}}/api/consultas",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"vin\",\n  \"vin\": \"9FLA37CZ0EA000001\",\n  \"consentimiento\": {\n    \"aceptado\": true,\n    \"version\": \"2026-11\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Consulta inexistente → 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "    pm.test('404', () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "url": {
+              "raw": "{{base_url}}/api/consultas/00000000-0000-4000-8000-000000000000",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "api",
+                "consultas",
+                "00000000-0000-4000-8000-000000000000"
+              ]
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "header": []
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>PlacApi — Qué cubre y qué falta frente a Carro Sin Rollos</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --card: #161922;
+    --border: #2a2f3a;
+    --text: #e6e8ec;
+    --muted: #9aa1ac;
+    --accent: #4f8cff;
+    --accent-soft: rgba(79,140,255,0.12);
+    --ok: #3ddc84;
+    --ok-bg: rgba(61,220,132,0.10);
+    --no: #ff6b6b;
+    --no-bg: rgba(255,107,107,0.10);
+    --warn: #f5b85c;
+    --warn-bg: rgba(245,184,92,0.10);
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 40px 24px;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+  }
+  .wrap { max-width: 1080px; width: 100%; }
+  h1 { font-size: 22px; font-weight: 600; margin: 0 0 4px 0; }
+  p.subtitle { color: var(--muted); margin: 0 0 20px 0; font-size: 14px; }
+  .legend {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .legend span {
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-weight: 600;
+  }
+  .legend .l-ok { color: var(--ok); background: var(--ok-bg); }
+  .legend .l-no { color: var(--no); background: var(--no-bg); }
+  .legend .l-warn { color: var(--warn); background: var(--warn-bg); }
+
+  .table-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  thead th {
+    text-align: left;
+    padding: 14px 18px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+  }
+  tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+
+  td.necesidad { font-weight: 600; width: 24%; }
+  td.detalle { color: var(--muted); width: 48%; }
+  td.estado { width: 28%; }
+
+  .pill {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 999px;
+    margin-bottom: 6px;
+  }
+  .pill-ok { color: var(--ok); background: var(--ok-bg); }
+  .pill-no { color: var(--no); background: var(--no-bg); }
+  .pill-warn { color: var(--warn); background: var(--warn-bg); }
+
+  .section-title {
+    margin: 30px 0 10px 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .note {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 8px;
+    padding: 14px 18px;
+    font-size: 13.5px;
+    color: var(--text);
+    margin-top: 20px;
+    line-height: 1.6;
+  }
+  footer { margin-top: 22px; font-size: 12px; color: var(--muted); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>PlacApi — Qué cubre y qué falta frente a Carro Sin Rollos</h1>
+  <p class="subtitle">Consolidado a partir de la documentación pública de PlacApi, cruzado contra las fuentes que pide el requerimiento original (punto 5).</p>
+
+  <div class="legend">
+    <span class="l-ok">Cubierto</span>
+    <span class="l-warn">Parcial / no confirmado</span>
+    <span class="l-no">No encontrado</span>
+  </div>
+
+  <div class="table-card">
+    <table>
+      <thead>
+        <tr>
+          <th>Necesidad de Carro Sin Rollos</th>
+          <th>Estado</th>
+          <th>Detalle</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="necesidad">RUNT (ficha del vehículo, SOAT, RTM, estado de matrícula)</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Endpoints consulta, consulta-por-vin, vehiculo-basico, apto-traspaso. Es justo lo que vimos en el JSON de ejemplo para la placa ENL18D.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Comparendos (SIMIT)</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Endpoint dedicado de API SIMIT, consulta por placa.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Impuestos vehiculares departamentales</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Según su propia documentación, cubren impuestos departamentales en más de 30 ciudades.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Prendas, embargos, gravámenes, limitaciones a la propiedad</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Ya viene parte en la ficha RUNT, más un endpoint dedicado de prendas y embargos.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">FASECOLDA (avalúo / valor comercial de referencia)</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Endpoint dedicado /api/avaluo: valor comercial de referencia y rango de mercado.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Robo / pérdida total</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Endpoints reporte-hurto y perdida-total.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Pico y placa</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Endpoint dedicado. No estaba pedido en el documento original, pero es un extra disponible.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">RUES (si el vendedor es empresa)</td>
+          <td class="estado"><span class="pill pill-ok">Cubierto</span></td>
+          <td class="detalle">Endpoint dedicado. Tampoco estaba en el alcance original, pero podría ser útil.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Accidentalidad asegurada</td>
+          <td class="estado"><span class="pill pill-warn">Parcial</span></td>
+          <td class="detalle">Solo se encontró un endpoint específico para Bogotá (accidentes-bogota). No hay confirmación de cobertura nacional.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Antecedentes judiciales (procesos ante la Rama Judicial)</td>
+          <td class="estado"><span class="pill pill-warn">No confirmado</span></td>
+          <td class="detalle">Mencionan "antecedentes" de forma genérica bajo la categoría "persona", pero no hay evidencia explícita de que cubran la Consulta de Procesos Nacional Unificada.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Antecedentes de Policía Nacional</td>
+          <td class="estado"><span class="pill pill-warn">No confirmado</span></td>
+          <td class="detalle">Mismo caso que lo judicial: mencionado de forma genérica, sin detalle documentado.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Listas restrictivas internacionales (OFAC, ONU, Interpol, etc.)</td>
+          <td class="estado"><span class="pill pill-no">No encontrado</span></td>
+          <td class="detalle">No aparece mencionado en ninguna parte de la documentación pública de PlacApi.</td>
+        </tr>
+        <tr>
+          <td class="necesidad">Historial de publicaciones / precios de mercado (CarroYa, TuCarro, etc.)</td>
+          <td class="estado"><span class="pill pill-no">No encontrado</span></td>
+          <td class="detalle">FASECOLDA da un valor de referencia, pero eso es distinto a monitorear anuncios reales en plataformas de clasificados.</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>Conclusión:</strong> PlacApi resuelve, con endpoints separados, casi toda la parte de tránsito y financiera del documento original (RUNT, SIMIT, impuestos, prendas, gravámenes, FASECOLDA). Lo que queda sin confirmar o sin cobertura son los antecedentes judiciales y de policía de la persona, las listas restrictivas internacionales, y el monitoreo de precios de mercado en plataformas comerciales. Para esos puntos, si son relevantes para Carro Sin Rollos, hay que preguntarle directamente a PlacApi si existen aunque no estén documentados públicamente, o complementar con un segundo proveedor que sí los cubra (como el que usa CertifiCar).
+  </div>
+
+  <footer>Consolidado a partir de la documentación pública de PlacApi y el JSON de ejemplo de la placa ENL18D, en el contexto del backend de Carro Sin Rollos.</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "_nota": "Respuesta real de PlacApi (11/11/2026), anonimizada: placa, VIN, motor, chasis, licencia, pólizas y certificados son ficticios.",
+  "source": "siniestros",
+  "status": "ok",
+  "data": {
+    "placa": "XYZ12A",
+    "perdidaTotal": false,
+    "totalSiniestros": 0,
+    "siniestros": [],
+    "fuente": "Reclamaciones reportadas por aseguradoras",
+    "cobertura": "Solo vehículos que estuvieron asegurados; reclamaciones reportadas por las aseguradoras desde 2008."
+  },
+  "fetchedAt": "2026-11-11T23:42:56.523Z",
+  "mode": "live"
+}

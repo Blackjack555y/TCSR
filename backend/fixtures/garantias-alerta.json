@@ -1,0 +1,24 @@
+{
+  "source": "garantias",
+  "status": "warn",
+  "data": {
+    "placa": "ABC123",
+    "tienePrenda": true,
+    "garantias": [
+      {
+        "folio": "20210930000036900",
+        "acreedores": [
+          "RCI COLOMBIA S.A. COMPAÑIA DE FINANCIAMIENTO"
+        ],
+        "deudor": "JUAN PEREZ",
+        "docDeudor": "73140250",
+        "fechaInscripcion": "30/09/2021 10:55:38 a. m.",
+        "ultimaOperacion": "Formulario Registral de Modificación"
+      }
+    ],
+    "fuente": "Prendas y garantías mobiliarias registradas"
+  },
+  "mode": "live",
+  "fetchedAt": "2026-07-24T15:04:05.000Z",
+  "_nota": "Ejemplo de la especificación pública de PlacApi (datos ficticios). No es una respuesta real."
+}

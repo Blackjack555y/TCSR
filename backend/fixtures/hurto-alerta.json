@@ -1,0 +1,67 @@
+{
+  "source": "hurto",
+  "status": "danger",
+  "data": {
+    "placa": "ABC123",
+    "reportadoHurto": true,
+    "denunciaHurtoActiva": true,
+    "totalRegistros": 2,
+    "registros": [
+      {
+        "categoria": "hurto",
+        "tipoVinculacion": "HURTADO",
+        "fechaVinculacion": "2026-09-21",
+        "noticiaCriminal": "760016000193202612345",
+        "vehiculo": {
+          "marca": "YAMAHA",
+          "linea": "FZN150D (FZ-S)",
+          "modelo": "2025",
+          "clase": "FAMILIAR",
+          "servicio": "PRIVADO",
+          "color": "AZUL"
+        },
+        "delitos": [
+          "HURTO CALIFICADO DE AUTOMOTOR MENOR CUANTIA ART. 240 C.P."
+        ],
+        "estadoCaso": "ACTIVO",
+        "motivoEstado": null,
+        "etapa": "INDAGACIÓN",
+        "fechaHechos": "2026-09-20",
+        "seccional": "DIRECCIÓN SECCIONAL DE CALI",
+        "reservado": false,
+        "detalleDisponible": true
+      },
+      {
+        "categoria": "accidente",
+        "tipoVinculacion": "ELEMENTO CAUSANTE DEL DELITO",
+        "fechaVinculacion": "2023-05-14",
+        "noticiaCriminal": "760016000193202300987",
+        "vehiculo": {
+          "marca": "YAMAHA",
+          "linea": "FZN150D (FZ-S)",
+          "modelo": "2025",
+          "clase": "FAMILIAR",
+          "servicio": "PRIVADO",
+          "color": "AZUL"
+        },
+        "delitos": [
+          "LESIONES CULPOSAS ART. 120 C.P. MEDIO MOTORIZADO INCISO 2"
+        ],
+        "estadoCaso": "INACTIVO",
+        "motivoEstado": "Archivo por conducta atipica art.79 c.p.",
+        "etapa": "INDAGACIÓN",
+        "fechaHechos": "2023-05-13",
+        "seccional": "DIRECCIÓN SECCIONAL DE CALI",
+        "reservado": false,
+        "detalleDisponible": true
+      }
+    ],
+    "extincionDominio": [],
+    "bienesAdministrados": 0,
+    "fuente": "Noticias criminales y procesos de extinción de dominio registrados por la autoridad judicial",
+    "cobertura": "Denuncias y procesos penales en los que la placa quedó vinculada. Un vehículo robado y recuperado sin denuncia no aparece; una denuncia activa no significa que el vehículo siga desaparecido. Compara los datos del vehículo de cada registro con la ficha: una placa mal digitada en una denuncia puede caer sobre otra placa."
+  },
+  "mode": "live",
+  "fetchedAt": "2026-07-24T15:04:05.000Z",
+  "_nota": "Ejemplo de la especificación pública de PlacApi (datos ficticios). No es una respuesta real."
+}

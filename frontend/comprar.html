@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Comprar informes · Carro Sin Rollos</title>
+<meta name="theme-color" content="#131516">
+<link rel="icon" type="image/png" href="img/logo-icono.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/main_stylesheet.css">
+<link rel="stylesheet" href="css/app.css">
+<script src="vendor/supabase.js"></script>
+</head>
+<body>
+
+<svg class="hex-field" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true" focusable="false">
+  <defs>
+    <pattern id="hexes" width="140" height="121" patternUnits="userSpaceOnUse" patternTransform="translate(-40,-30)">
+      <polygon points="70,4 132,39 132,91 70,126 8,91 8,39" fill="none" stroke="#2a3d3a" stroke-width="1.1"/>
+    </pattern>
+    <radialGradient id="fade" cx="25%" cy="15%" r="80%">
+      <stop offset="0%" stop-color="#131516" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#131516" stop-opacity="0.95"/>
+    </radialGradient>
+  </defs>
+  <rect width="1440" height="900" fill="url(#hexes)"/>
+  <rect width="1440" height="900" fill="url(#fade)"/>
+</svg>
+
+<a class="skip-link" href="#contenido">Saltar al contenido</a>
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="index.html" aria-label="Carro Sin Rollos, ir al inicio">
+      <img class="brand-icon" src="img/logo-icono.png" alt="" width="30" height="40">
+      <img class="brand-name" src="img/logo-nombre.png" alt="Carro Sin Rollos" width="180" height="15">
+    </a>
+    <nav class="app-nav" id="nav" aria-label="Principal"></nav>
+  </div>
+</header>
+
+<main id="contenido" class="app-main container app-medium">
+  <h1 class="page-title">Compra tus informes</h1>
+  <p class="page-lead">Precios finales con IVA. Entre más informes compres, menor es el precio por unidad. Tu saldo no vence.</p>
+  <div class="stack">
+    <fieldset class="opciones" id="tipos"><legend>¿Qué informe necesitas?</legend></fieldset>
+    <section class="card">
+      <h2 class="card-title"><label for="cantidad">¿Cuántos?</label></h2>
+      <div class="cantidad">
+        <button type="button" id="menos" aria-label="Uno menos">−</button>
+        <div class="field"><input id="cantidad" type="number" inputmode="numeric" min="1" max="10000" value="1"></div>
+        <button type="button" id="mas" aria-label="Uno más">+</button>
+      </div>
+      <div class="cotizacion mt" aria-live="polite">
+        <dl>
+          <div><dt>Plan</dt><dd id="segmento">—</dd></div>
+          <div><dt>Precio por informe</dt><dd id="unitario">—</dd></div>
+          <div class="total"><dt>Total con IVA</dt><dd id="total">—</dd></div>
+        </dl>
+      </div>
+      <p class="notice mt" id="mejor" hidden><strong id="mejor-texto"></strong> <button type="button" class="link-btn" id="usar-mejor">Usar esta opción</button></p>
+      <p class="field-error" id="error" role="alert" hidden></p>
+      <button type="button" class="btn-cta btn-block mt" id="pagar"><span>Pagar</span></button>
+      <p class="field-hint center">El pago se hace en la pasarela segura de Wompi: tarjeta, PSE, Nequi y otros medios.</p>
+    </section>
+    <section class="card">
+      <h2 class="card-title">Precios por cantidad</h2>
+      <div class="tabla-wrap"><table class="precios" id="tabla"></table></div>
+    </section>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="footer-legal">Carro Sin Rollos no es el RUNT ni una entidad oficial. La información de cada informe proviene de registros públicos consultados en la fecha indicada.</p>
+    <div class="footer-links">
+      <a href="privacidad.html">Aviso de privacidad</a>
+      <a href="terminos.html">Términos y condiciones</a>
+      <span>© 2026 Carro Sin Rollos</span>
+    </div>
+  </div>
+</footer>
+<script type="module" src="js/pagina-comprar.js"></script>
+</body>
+</html>
