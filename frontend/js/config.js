@@ -3,12 +3,23 @@
 // Sin SUPABASE_URL el sitio funciona en modo de desarrollo (cuentas de prueba locales
 // y pagos simulados), siempre contra el backend en modo simulado.
 
-export const CONFIG = {
-  API_URL: 'http://localhost:3000',
-  SUPABASE_URL: '',
-  SUPABASE_LLAVE_PUBLICA: '',
-  TURNSTILE_LLAVE_SITIO: ''
-};
+// En el computador (localhost) se usa el backend local en modo de desarrollo;
+// en cualquier otro dominio, el backend y el Supabase de producción.
+const LOCAL = ['localhost', '127.0.0.1'].includes(location.hostname);
+
+export const CONFIG = LOCAL
+  ? {
+      API_URL: 'http://localhost:3000',
+      SUPABASE_URL: '',
+      SUPABASE_LLAVE_PUBLICA: '',
+      TURNSTILE_LLAVE_SITIO: ''
+    }
+  : {
+      API_URL: 'https://carro-sin-rollos.onrender.com',
+      SUPABASE_URL: 'https://xufwueysgfokiknwnnfy.supabase.co',
+      SUPABASE_LLAVE_PUBLICA: 'sb_publishable_V7jNV4E3bXndyiuFdIdOug_RiwBKP5l',
+      TURNSTILE_LLAVE_SITIO: ''
+    };
 
 /** Versión del aviso de privacidad. Cada cambio de texto debe subirla: queda guardada en cada consulta. */
 export const AVISO_VERSION = '2026-11';
